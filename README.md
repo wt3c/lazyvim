@@ -17,5 +17,8 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim
 ```
 
+# Ruff
+```shell
+pip install ruff-lsp
 
-
+```

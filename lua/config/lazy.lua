@@ -8,13 +8,33 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
 require("lazy").setup({
   spec = {
+
+    -- add LazyVim and import its plugins
+    {
+      "LazyVim/LazyVim",
+      import = "lazyvim.plugins",
+      opts = {
+        -- colorscheme = "solarized-osaka",
+        colorscheme = "tokyonight",
+        news = {
+          lazyvim = true,
+          neovim = true,
+        },
+      },
+    },
+
+    {
+      "neovim/nvim-lspconfig",
+      "astral-sh/ruff-lsp",
+    },
+
     -- add LazyVim and import its plugins
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     -- import any extras modules here
     -- { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.json" },
     { import = "lazyvim.plugins.extras.lang.rust" },
-    { import = "lazyvim.plugins.extras.lang.python" },
+    -- { import = "lazyvim.plugins.extras.lang.python" },
     -- { import = "lazyvim.plugins.extras.formatting.ruff" },
     { import = "lazyvim.plugins.extras.ui.mini-animate" },
     { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
