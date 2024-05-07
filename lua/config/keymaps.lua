@@ -15,6 +15,7 @@ keymap.set("n", "<C-a>", "gg<S-v>G")
 keymap.set("n", "te", ":tabedit")
 keymap.set("n", "<tab>", ":tabnext<Return>", opts)
 keymap.set("n", "<s-tab>", ":tabprev<Return>", opts)
+
 -- Split window
 keymap.set("n", "ss", ":split<Return>", opts)
 keymap.set("n", "sv", ":vsplit<Return>", opts)
@@ -24,11 +25,14 @@ keymap.set("n", "sk", "<C-w>k")
 keymap.set("n", "sj", "<C-w>j")
 keymap.set("n", "sl", "<C-w>l")
 
+-- Comment
+keymap.set("n", "<leader>/", "gc")
+
 -- Diagnostics
 keymap.set("n", "<C-j>", function()
   vim.diagnostic.goto_next()
 end, opts)
 
 keymap.set("n", "<leader>r", function()
-  require("boladuz.utils").replaceHexWithHSL()
+  require("~/.config/nvim/lua/config/boladuz/utils").replaceHexWithHSL()
 end)

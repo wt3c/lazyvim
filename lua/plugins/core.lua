@@ -1,10 +1,10 @@
 return {
-  -- {
-  --   "LazyVim/LazyVim",
-  --   opts = {
-  --     colorscheme = "catppuccin",
-  --   },
-  -- },
+  --  {
+  --    "LazyVim/LazyVim",
+  --    opts = {
+  --      colorscheme = "catppuccin",
+  --    },
+  --  },
   inlay_hints = {
     enabled = false,
   },

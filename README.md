@@ -19,6 +19,6 @@ git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim
 
 # Ruff
 ```shell
-pip install ruff-lsp
+pip install ruff ruff-lsp
 
 ```
