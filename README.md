@@ -21,4 +21,8 @@ git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim
 ```shell
 pip install ruff ruff-lsp
 
+pip install django-stubs
+# Se você usa Django REST Framework, instale também:
+pip install djangorestframework-stubs
+pip install django-types[core]
 ```
