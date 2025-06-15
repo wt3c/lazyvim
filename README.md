@@ -24,5 +24,6 @@ pip install ruff ruff-lsp
 pip install django-stubs
 # Se você usa Django REST Framework, instale também:
 pip install djangorestframework-stubs
-pip install django-types[core]
+pip install django-types
+pip install django-stubs-ext
 ```
