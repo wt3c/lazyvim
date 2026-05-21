@@ -51,10 +51,12 @@ return {
             args = { "--log-level", "DEBUG", "-vv", "--tb=short" }, -- Verbose output
             runner = "pytest",
             python = function()
-              -- Use virtualenv if available
               local cwd = vim.fn.getcwd()
-              if vim.fn.filereadable(cwd .. "/.venv/bin/python") == 1 then
-                return cwd .. "/.venv/bin/python"
+              for _, venv in ipairs({ ".venv", "venv", "env" }) do
+                local path = cwd .. "/" .. venv .. "/bin/python"
+                if vim.fn.filereadable(path) == 1 then
+                  return path
+                end
               end
               return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
             end,

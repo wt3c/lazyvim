@@ -4,20 +4,11 @@ return {
   {
     "williamboman/mason.nvim",
     opts = {
+      -- Ferramentas globais não gerenciadas por arquivos de feature específicos.
+      -- Python → python-tools.lua | Docker → docker-tools.lua
       ensure_installed = {
-        -- Python
-        "pyright",
-        "ruff",
-        "mypy",
-        "debugpy",
-
         -- SQL
         "sqlfluff",
-
-        -- Docker
-        "dockerfile-language-server",
-        "docker-compose-language-service",
-        "hadolint", -- Dockerfile linter
 
         -- Markdown
         "marksman",
@@ -34,11 +25,11 @@ return {
         "shellcheck",
 
         -- TOML
-        "taplo", -- TOML formatter (pyproject.toml, Cargo.toml, etc.)
+        "taplo",
 
         -- General
-        "stylua", -- Lua formatter
-        "prettier", -- Multi-language formatter (JS, TS, HTML, CSS, JSON, YAML, Markdown)
+        "stylua",
+        "prettier",
       },
     },
   },

@@ -44,11 +44,6 @@ return {
       keymap("i", "<C-_>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
       keymap("i", "<C-/>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
       keymap("i", "<A-/>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
-      keymap("i", "<C-c>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
-
-      -- Ctrl+c (if you prefer)
-      -- keymap("n", "<C-c>", "gcc", { remap = true, desc = "Comment line", silent = true })
-      -- keymap("v", "<C-c>", "gc", { remap = true, desc = "Comment selection", silent = true })
     end,
   },
 }

@@ -109,7 +109,11 @@ return {
     config = function()
       require("dapui").setup()
 
-      local debugpy = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
+      local mason_debugpy = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
+      local debugpy = vim.fn.executable(mason_debugpy) == 1 and mason_debugpy
+        or vim.fn.exepath("python3")
+        or vim.fn.exepath("python")
+        or "python"
       require("dap-python").setup(debugpy)
 
       local dap, dapui = require("dap"), require("dapui")
@@ -124,6 +128,18 @@ return {
         dapui.close()
       end
 
+      -- Registrar config Django no init (não sobrescreve outras configs ao pressionar tecla)
+      dap.configurations.python = dap.configurations.python or {}
+      table.insert(dap.configurations.python, {
+        type = "python",
+        request = "launch",
+        name = "Django: runserver",
+        program = "${workspaceFolder}/manage.py",
+        args = { "runserver" },
+        django = true,
+        justMyCode = true,
+      })
+
       vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
       vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue" })
       vim.keymap.set("n", "<leader>do", dap.step_over, { desc = "Step Over" })
@@ -133,18 +149,12 @@ return {
         require("dap-python").test_method()
       end, { desc = "Debug Test Method" })
       vim.keymap.set("n", "<leader>dj", function()
-        dap.configurations.python = {
-          {
-            type = "python",
-            request = "launch",
-            name = "Django: runserver",
-            program = "${workspaceFolder}/manage.py",
-            args = { "runserver" },
-            django = true,
-            justMyCode = true,
-          },
-        }
-        dap.continue()
+        for _, config in ipairs(dap.configurations.python or {}) do
+          if config.name == "Django: runserver" then
+            dap.run(config)
+            return
+          end
+        end
       end, { desc = "Launch Django Server" })
     end,
   },
