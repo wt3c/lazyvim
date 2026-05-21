@@ -6,21 +6,18 @@
 -- EDITOR BASICS
 -- ============================================================================
 
--- Better Ctrl+/ for commenting (more standard than Ctrl+Space)
-vim.keymap.set("n", "<C-/>", function()
-  return vim.v.count == 0 and "<Plug>(comment_toggle_linewise_current)"
-    or "<Plug>(comment_toggle_linewise_count)"
-end, { expr = true, desc = "Toggle comment line" })
+-- Better commenting with Ctrl+/ (using LazyVim's default "gc")
+-- Ctrl+/ in most terminals is actually sent as Ctrl+_
+vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "Toggle comment line" })
+vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "Toggle comment selection" })
 
-vim.keymap.set("x", "<C-/>", "<Plug>(comment_toggle_linewise_visual)", { desc = "Toggle comment selection" })
+-- Try Ctrl+/ too (works in some terminals)
+vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "Toggle comment line" })
+vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "Toggle comment selection" })
 
--- Alternative for terminals that don't support Ctrl+/
-vim.keymap.set("n", "<C-_>", function()
-  return vim.v.count == 0 and "<Plug>(comment_toggle_linewise_current)"
-    or "<Plug>(comment_toggle_linewise_count)"
-end, { expr = true, desc = "Toggle comment line" })
-
-vim.keymap.set("x", "<C-_>", "<Plug>(comment_toggle_linewise_visual)", { desc = "Toggle comment selection" })
+-- Fallback: Alt+/ (always works)
+vim.keymap.set("n", "<A-/>", "gcc", { remap = true, desc = "Toggle comment line" })
+vim.keymap.set("v", "<A-/>", "gc", { remap = true, desc = "Toggle comment selection" })
 
 -- Save with Ctrl+S (very modern)
 vim.keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
