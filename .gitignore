@@ -6,3 +6,23 @@ debug
 foo.*
 *.log
 data
+
+# Lock file (muda frequentemente)
+lazy-lock.json
+
+# Cache
+.cache/
+.luarc.json
+
+# Backups
+*.bak
+*.backup
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.swp
+*.swo
+*~

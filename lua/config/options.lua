@@ -54,16 +54,18 @@ opt.swapfile = false -- Não criar arquivos de swap
 opt.scrolloff = 8 -- Manter 8 linhas de contexto acima/abaixo do cursor
 opt.sidescrolloff = 8 -- Manter 8 colunas de contexto à esquerda/direita do cursor
 
--- Opcional: Retornar uma tabela para o framework do LazyVim, se necessário
--- para sobrescrever opções específicas do LazyVim.
--- Para vim.opt, geralmente não é necessário retornar nada aqui,
--- a menos que você esteja sobrescrevendo algo que LazyVim define
--- através do seu sistema de `opts` interno para `vim.g` ou `vim.opt`.
--- As atribuições diretas a `vim.opt` acima devem funcionar.
--- return {
---   -- Por exemplo, se LazyVim tivesse uma opção `ui.relativenumber = true`
---   -- você poderia sobrescrevê-la aqui:
---   -- ui = {
---   --   relativenumber = false,
---   -- },
--- }
+-- Better diagnostic display
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = "●", -- Could be '■', '▎', 'x', etc.
+    source = "if_many", -- Show source if multiple sources report the same diagnostic
+  },
+  float = {
+    source = "always", -- Show source in floating window
+    border = "rounded",
+  },
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+})
