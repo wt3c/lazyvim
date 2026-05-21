@@ -7,17 +7,9 @@
 -- ============================================================================
 
 -- Better commenting with Ctrl+/ (using LazyVim's default "gc")
--- Ctrl+/ in most terminals is actually sent as Ctrl+_
-vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "Toggle comment line" })
-vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "Toggle comment selection" })
-
--- Try Ctrl+/ too (works in some terminals)
-vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "Toggle comment line" })
-vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "Toggle comment selection" })
-
--- Fallback: Alt+/ (always works)
-vim.keymap.set("n", "<A-/>", "gcc", { remap = true, desc = "Toggle comment line" })
-vim.keymap.set("v", "<A-/>", "gc", { remap = true, desc = "Toggle comment selection" })
+-- Configured in lua/plugins/comments.lua for all modes (Normal, Visual, Insert)
+-- Multiple options: Ctrl+/, Ctrl+_, Alt+/, Space+/, gcc
+-- Note: Ctrl+/ in most terminals is sent as Ctrl+_
 
 -- Save with Ctrl+S (very modern)
 vim.keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })

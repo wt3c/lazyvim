@@ -11,6 +11,11 @@ Diferentes terminais enviam `Ctrl+/` de formas diferentes:
 
 Abra um arquivo Python/Lua e teste na ordem:
 
+### TODOS OS MODOS SUPORTADOS:
+- ✅ **Normal mode** - Comentar linha atual
+- ✅ **Visual mode** - Comentar seleção
+- ✅ **Insert mode** - Comentar linha atual (fica em Insert!)
+
 ### 1️⃣ Ctrl+/ (Tente primeiro)
 ```
 Modo Normal: Ctrl+/
@@ -39,6 +44,11 @@ Modo Visual: Selecione linhas + <Space>/
 ```
 Modo Normal: gcc (aperte g-c-c rapidamente)
 Modo Visual: Selecione linhas + gc
+```
+
+### 6️⃣ Ctrl+c (Insert mode - fácil de alcançar)
+```
+Modo Insert: Ctrl+c (enquanto digita!)
 ```
 
 ## 🧪 Como Testar
@@ -73,6 +83,15 @@ print("linha 3")
 5. Se não funcionar, tente: `Alt+/`
 6. Se não funcionar, tente: `<Space>/`
 7. **Sempre funciona:** `gc`
+
+**Modo Insert (comentar enquanto digita):**
+1. Entre em Insert mode (`i`)
+2. Digite algum texto: `print("teste")`
+3. Tente: `Ctrl+c` (mais fácil!)
+4. Ou tente: `Ctrl+/`
+5. Ou tente: `Ctrl+_`
+6. Ou tente: `Alt+/`
+7. A linha é comentada e você continua em Insert mode!
 
 ## 🔍 Descobrir Qual Tecla Seu Terminal Envia
 

@@ -28,21 +28,23 @@ return {
       -- Additional keymaps for convenience
       local keymap = vim.keymap.set
 
-      -- Ctrl+/ (most terminals send this as Ctrl+_)
+      -- Normal mode: Toggle comment on current line
       keymap("n", "<C-_>", "gcc", { remap = true, desc = "Comment line", silent = true })
-      keymap("v", "<C-_>", "gc", { remap = true, desc = "Comment selection", silent = true })
-
-      -- Ctrl+/ (try this too, works in some terminals)
       keymap("n", "<C-/>", "gcc", { remap = true, desc = "Comment line", silent = true })
-      keymap("v", "<C-/>", "gc", { remap = true, desc = "Comment selection", silent = true })
-
-      -- Alt+/ (fallback - always works)
       keymap("n", "<A-/>", "gcc", { remap = true, desc = "Comment line", silent = true })
-      keymap("v", "<A-/>", "gc", { remap = true, desc = "Comment selection", silent = true })
-
-      -- Leader+/ (another fallback)
       keymap("n", "<leader>/", "gcc", { remap = true, desc = "Comment line", silent = true })
+
+      -- Visual mode: Toggle comment on selection
+      keymap("v", "<C-_>", "gc", { remap = true, desc = "Comment selection", silent = true })
+      keymap("v", "<C-/>", "gc", { remap = true, desc = "Comment selection", silent = true })
+      keymap("v", "<A-/>", "gc", { remap = true, desc = "Comment selection", silent = true })
       keymap("v", "<leader>/", "gc", { remap = true, desc = "Comment selection", silent = true })
+
+      -- Insert mode: Toggle comment and stay in insert mode
+      keymap("i", "<C-_>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
+      keymap("i", "<C-/>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
+      keymap("i", "<A-/>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
+      keymap("i", "<C-c>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
 
       -- Ctrl+c (if you prefer)
       -- keymap("n", "<C-c>", "gcc", { remap = true, desc = "Comment line", silent = true })
