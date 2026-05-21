@@ -6,12 +6,23 @@
 
 ## 📚 Documentação
 
+- **[INSTALL.md](./INSTALL.md)** - 🚀 Instalação completa (pré-requisitos + troubleshooting)
 - **[KEYBINDINGS.md](./KEYBINDINGS.md)** - 📖 Guia completo de atalhos (LEIA PRIMEIRO!)
 - **[CHANGELOG.md](./CHANGELOG.md)** - 📋 Todas mudanças e funcionalidades
 
 ---
 
 ## ⚡ Quick Start
+
+### 0. Pré-requisito: Clipboard do sistema
+
+```bash
+# Wayland (Hyprland, Sway, GNOME Wayland)
+yay -S wl-clipboard
+
+# X11
+yay -S xclip
+```
 
 ### 1. Primeira Vez
 ```bash
@@ -239,6 +250,9 @@ Reinstale as ferramentas necessárias.
 
 ### Ctrl+/ não funciona
 Use `Ctrl+_` ou `gcc` (padrão LazyVim).
+
+### Clipboard não sincroniza com o sistema (yy/p)
+Instale `wl-clipboard` (Wayland) ou `xclip` (X11). Veja [INSTALL.md](./INSTALL.md).
 
 ### Performance lenta
 ```vim

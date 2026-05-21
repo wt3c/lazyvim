@@ -2,9 +2,18 @@
 
 ## 📋 Pré-requisitos
 
-- **Neovim** >= 0.9.0
+- **Neovim** >= 0.10.0
 - **Git**
 - **Python** 3.10+ (para Python/Django features)
+- **wl-clipboard** (Wayland) ou **xclip** (X11) — clipboard do sistema
+
+```bash
+# Wayland (Hyprland, Sway, GNOME Wayland, etc.)
+yay -S wl-clipboard
+
+# X11
+yay -S xclip
+```
 
 ---
 
@@ -154,6 +163,16 @@ cd ~/.config/nvim
 # Verifique se ~/.config/ruff/pyproject.toml existe
 ```
 
+### Problema: Clipboard não funciona (yy não copia para fora do Neovim)
+```bash
+# Wayland
+yay -S wl-clipboard
+
+# X11
+yay -S xclip
+```
+Reinicie o Neovim após instalar.
+
 ### Problema: Scripts não executam
 ```bash
 cd ~/.config/nvim
@@ -215,6 +234,7 @@ Edite: `~/.config/nvim/lua/config/options.lua`
 - [ ] `<Space>` mostra Which-key
 - [ ] `Ctrl+/` comenta linha
 - [ ] `./check-ruff.sh` mostra line-length = 120
+- [ ] `yy` copia para o clipboard do sistema (requer wl-clipboard ou xclip)
 - [ ] Ler KEYBINDINGS.md
 
 ---
