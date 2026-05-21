@@ -81,10 +81,39 @@ else
     echo "   ⚠️  Ruff não instalado (será instalado via Mason)"
 fi
 
+# Python e pip
+if command -v python3 &> /dev/null; then
+    echo "   ✅ Python: $(python3 --version)"
+else
+    echo "   ❌ Python3 não instalado!"
+    exit 1
+fi
+
+if command -v pip3 &> /dev/null; then
+    echo "   ✅ pip instalado"
+else
+    echo "   ❌ pip3 não instalado!"
+    exit 1
+fi
+
 echo ""
 
-# 3. Tornar scripts executáveis
-echo "3️⃣  Tornando scripts executáveis..."
+# 3. Instalar Django type stubs (para LSP)
+echo "3️⃣  Instalando Django type stubs para pyright/pylance..."
+
+# Verificar se já estão instalados
+if python3 -c "import django_stubs" 2>/dev/null; then
+    echo "   ✅ django-stubs já instalado"
+else
+    echo "   📦 Instalando stubs..."
+    pip3 install --user django-stubs djangorestframework-stubs django-types django-stubs-ext
+    echo "   ✅ Type stubs instalados"
+fi
+
+echo ""
+
+# 4. Tornar scripts executáveis
+echo "4️⃣  Tornando scripts executáveis..."
 chmod +x "$NVIM_DIR"/*.sh 2>/dev/null || true
 echo "   ✅ Scripts prontos"
 
@@ -106,6 +135,8 @@ echo ""
 echo "3. Instale ferramentas LSP:"
 echo "   :Mason"
 echo "   (Instale: pyright, ruff, mypy, debugpy, sqlfluff, etc)"
+echo ""
+echo "   💡 Django type stubs já instalados para melhor LSP!"
 echo ""
 echo "4. Reinicie o Neovim:"
 echo "   :qa"
