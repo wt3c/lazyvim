@@ -1,8 +1,21 @@
 # 🚀 Changelog - Reconfiguração Completa do LazyVim
 
-## 📦 Versão 2.1 - Django Type Stubs & uv Support (20/05/2026 - 23:39)
+## 📦 Versão 2.1 - Django Type Stubs & uv Support (20/05/2026)
 
 ### ✨ Novidades
+
+#### 🗑️ Script de Desinstalação Completa
+- **Novo script:** `uninstall.sh` para remover completamente o LazyVim
+- Confirmação obrigatória antes de deletar
+- Opção de backup automático antes da remoção
+- Remove todos os diretórios do Neovim:
+  - `~/.config/nvim` (configuração)
+  - `~/.local/share/nvim` (plugins e dados)
+  - `~/.local/state/nvim` (estado)
+  - `~/.cache/nvim` (cache)
+  - `~/.config/ruff` (configuração global)
+- Opção para remover Django type stubs (se não forem usados em outros projetos)
+- Instruções de restauração e reinstalação
 
 #### 🐍 Django Type Stubs Instalados Automaticamente
 - **Django type stubs** agora são instalados automaticamente pelo `install.sh`

@@ -246,6 +246,13 @@ Use `Ctrl+_` ou `gcc` (padrão LazyVim).
 ```
 Identifique plugins lentos e desabilite se necessário.
 
+### Desinstalar Completamente
+```bash
+cd ~/.config/nvim
+./uninstall.sh
+```
+Remove tudo (com opção de backup). Veja [INSTALL.md](./INSTALL.md) para detalhes.
+
 ---
 
 ## 📖 Recursos Externos

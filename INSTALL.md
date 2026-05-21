@@ -60,6 +60,33 @@ nvim
 
 ---
 
+## 🗑️ Desinstalar (Remover Completamente)
+
+**ATENÇÃO:** Remove TODOS os dados do Neovim!
+
+```bash
+cd ~/.config/nvim
+./uninstall.sh
+```
+
+O script `uninstall.sh`:
+- ⚠️  Pede confirmação obrigatória (digite 'SIM')
+- 📦 Oferece backup antes de deletar
+- 🗑️  Remove:
+  - `~/.config/nvim` (configuração)
+  - `~/.local/share/nvim` (plugins)
+  - `~/.local/state/nvim` (estado)
+  - `~/.cache/nvim` (cache)
+  - `~/.config/ruff` (config global)
+- 🐍 Opcionalmente remove Django type stubs
+
+**Alternativa rápida (sem backup):**
+```bash
+rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim ~/.config/ruff
+```
+
+---
+
 ## 📦 O Que o `install.sh` Faz?
 
 1. ✅ Copia config do Ruff para `~/.config/ruff/pyproject.toml`
