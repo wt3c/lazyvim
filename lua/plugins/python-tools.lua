@@ -33,6 +33,8 @@ return {
         },
         -- Ruff LSP for linting + formatting (unified)
         ruff = {
+          -- Only enable for Python files (not markdown, etc)
+          filetypes = { "python" },
           init_options = {
             settings = {
               -- Force line length to 120
@@ -55,12 +57,14 @@ return {
     },
   },
 
-  -- Formatting: Use Ruff via conform.nvim
+  -- Formatting: Use Ruff via conform.nvim (Python only)
   {
     "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
         python = { "ruff_format", "ruff_organize_imports" },
+        -- Explicitly disable for markdown
+        markdown = {},
       },
       formatters = {
         ruff_format = {

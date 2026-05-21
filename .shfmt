@@ -1,0 +1,6 @@
+# shfmt configuration for shell scripts
+# Line length = 120
+-i 2
+-bn
+-ci
+-sr
