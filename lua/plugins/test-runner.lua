@@ -13,31 +13,119 @@ return {
       "nvim-neotest/neotest-python",
     },
     keys = {
+      -- Run tests
       { "<leader>tt", function() require("neotest").run.run() end, desc = "Test: Run Nearest" },
       { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Test: Run File" },
       { "<leader>tT", function() require("neotest").run.run(vim.uv.cwd()) end, desc = "Test: Run All" },
+
+      -- View results
       { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Test: Toggle Summary" },
-      { "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Test: Show Output" },
+      { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Test: Show Output" },
       { "<leader>tO", function() require("neotest").output_panel.toggle() end, desc = "Test: Toggle Output Panel" },
+
+      -- Output with auto-open
+      { "<leader>tr", function()
+        require("neotest").output_panel.open()
+        require("neotest").run.run()
+      end, desc = "Test: Run + Show Output" },
+
+      { "<leader>tF", function()
+        require("neotest").output_panel.open()
+        require("neotest").run.run(vim.fn.expand("%"))
+      end, desc = "Test: Run File + Show Output" },
+
+      -- Control
       { "<leader>tS", function() require("neotest").run.stop() end, desc = "Test: Stop" },
       { "<leader>tw", function() require("neotest").watch.toggle() end, desc = "Test: Toggle Watch" },
       { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Test: Debug Nearest" },
+
+      -- Navigation
+      { "[t", function() require("neotest").jump.prev({ status = "failed" }) end, desc = "Previous Failed Test" },
+      { "]t", function() require("neotest").jump.next({ status = "failed" }) end, desc = "Next Failed Test" },
     },
     opts = function()
       return {
         adapters = {
           require("neotest-python")({
             dap = { justMyCode = false },
-            args = { "--log-level", "DEBUG" },
+            args = { "--log-level", "DEBUG", "-vv", "--tb=short" }, -- Verbose output
             runner = "pytest",
+            python = function()
+              -- Use virtualenv if available
+              local cwd = vim.fn.getcwd()
+              if vim.fn.filereadable(cwd .. "/.venv/bin/python") == 1 then
+                return cwd .. "/.venv/bin/python"
+              end
+              return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
+            end,
           }),
         },
-        status = { virtual_text = true },
-        output = { open_on_run = true },
+        -- Show test status in the sign column
+        status = {
+          virtual_text = true,
+          signs = true,
+        },
+        -- Icons for test status
+        icons = {
+          running_animated = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+          passed = "✓",
+          running = "⟳",
+          failed = "✗",
+          skipped = "⊘",
+          unknown = "?",
+        },
+        -- Automatically open output
+        output = {
+          enabled = true,
+          open_on_run = "short", -- "short" opens only for failed/errors
+        },
+        -- Output panel config
+        output_panel = {
+          enabled = true,
+          open = "botright split | resize 15",
+        },
+        -- Show floating window on run
+        floating = {
+          border = "rounded",
+          max_height = 0.8,
+          max_width = 0.9,
+        },
+        -- Use Trouble for quickfix
         quickfix = {
+          enabled = true,
           open = function()
-            vim.cmd("Trouble quickfix")
+            if pcall(require, "trouble") then
+              vim.cmd("Trouble quickfix")
+            else
+              vim.cmd("copen")
+            end
           end,
+        },
+        -- Summary window config
+        summary = {
+          enabled = true,
+          expand_errors = true,
+          follow = true,
+          mappings = {
+            attach = "a",
+            clear_marked = "M",
+            clear_target = "T",
+            debug = "d",
+            debug_marked = "D",
+            expand = { "<CR>", "<2-LeftMouse>" },
+            expand_all = "e",
+            jumpto = "i",
+            mark = "m",
+            next_failed = "J",
+            output = "o",
+            prev_failed = "K",
+            run = "r",
+            run_marked = "R",
+            short = "O",
+            stop = "u",
+            target = "t",
+            watch = "w",
+          },
         },
       }
     end,
