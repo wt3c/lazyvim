@@ -36,6 +36,10 @@ opt.swapfile = false
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 
+-- Spell
+opt.spelllang = { "pt", "en" }
+opt.spellfile = vim.fn.stdpath("config") .. "/spell/pt.utf-8.add," .. vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
+
 -- Diagnosticos
 vim.diagnostic.config({
   virtual_text = {

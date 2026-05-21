@@ -26,3 +26,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Spell: ignorar binários compilados, commitar apenas palavras customizadas (.add)
+spell/*.spl
+spell/*.sug
