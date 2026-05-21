@@ -7,6 +7,7 @@ return {
     opts = {
       formatters_by_ft = {
         lua = { "stylua" },
+        toml = { "taplo" },
         sh = { "shfmt" },
         bash = { "shfmt" },
         zsh = { "shfmt" },

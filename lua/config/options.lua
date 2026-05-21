@@ -1,67 +1,49 @@
 -- Options are automatically loaded before lazy.nvim startup
--- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
--- Add any additional options here
---
+-- Default options: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 
--- ~/.config/nvim/lua/config/options.lua
-
--- Garanta que 'opt' está disponível
 local opt = vim.opt
 
--- Configurações já existentes do LazyVim ou suas outras configurações podem estar aqui...
--- Exemplo:
--- opt.autowrite = true -- Salva automaticamente ao sair de um buffer modificado
--- opt.clipboard = "unnamedplus" -- Usa o clipboard do sistema
--- opt.completeopt = "menu,menuone,noselect"
--- ... e assim por diante.
+-- Clipboard: usa clipboard do sistema (wl-clipboard no Wayland, xclip no X11)
+opt.clipboard = "unnamedplus"
 
--- [[ Configurações Adicionais Solicitadas ]]
-
--- 1. Linha Vertical (Colorcolumn) em 120 colunas
+-- Exibicao de linha
 opt.colorcolumn = "120"
--- Se quisesse múltiplas colunas, seria algo como "80,120"
-
--- 2. Números de Linha Sequenciais
-opt.number = true -- Mostrar números de linha
-opt.relativenumber = false -- DESABILITAR números de linha relativos
--- LazyVim pode habilitar relativenumber por padrão,
--- então é importante definir explicitamente como false.
-
--- [[ Outras Opções Úteis (Muitas já são padrão no LazyVim, mas para referência) ]]
+opt.number = true
+opt.relativenumber = false
 
 -- UI
-opt.termguicolors = true -- Habilita cores verdadeiras no terminal
-opt.signcolumn = "yes" -- Sempre mostrar a signcolumn, para não deslocar o texto (LSP, GitSigns)
-opt.cursorline = true -- Destaca a linha atual
-opt.wrap = false -- Desabilitar quebra de linha (preferência pessoal)
+opt.termguicolors = true
+opt.signcolumn = "yes"
+opt.cursorline = true
+opt.wrap = false
 
--- Indentação (LazyVim já configura bem para Python via treesitter, mas para garantir)
-opt.expandtab = true -- Usar espaços em vez de TABs
-opt.shiftwidth = 4 -- Número de espaços para indentação automática
-opt.tabstop = 4 -- Número de espaços que um TAB conta como
-opt.softtabstop = 4 -- Número de espaços que um TAB insere no modo de inserção
+-- Indentacao (Python/Lua)
+opt.expandtab = true
+opt.shiftwidth = 4
+opt.tabstop = 4
+opt.softtabstop = 4
 
 -- Busca
-opt.ignorecase = true -- Ignorar caixa na busca
-opt.smartcase = true -- Não ignorar caixa se a busca contiver letras maiúsculas
+opt.ignorecase = true
+opt.smartcase = true
 
 -- Comportamento
-opt.mouse = "a" -- Habilitar mouse em todos os modos
-opt.undofile = true -- Persistir histórico de undo entre sessões
-opt.backup = false -- Não criar arquivos de backup
-opt.writebackup = false -- Não criar arquivos de backup ao salvar
-opt.swapfile = false -- Não criar arquivos de swap
-opt.scrolloff = 8 -- Manter 8 linhas de contexto acima/abaixo do cursor
-opt.sidescrolloff = 8 -- Manter 8 colunas de contexto à esquerda/direita do cursor
+opt.mouse = "a"
+opt.undofile = true
+opt.backup = false
+opt.writebackup = false
+opt.swapfile = false
+opt.scrolloff = 8
+opt.sidescrolloff = 8
 
--- Better diagnostic display
+-- Diagnosticos
 vim.diagnostic.config({
   virtual_text = {
-    prefix = "●", -- Could be '■', '▎', 'x', etc.
-    source = "if_many", -- Show source if multiple sources report the same diagnostic
+    prefix = "●",
+    source = "if_many",
   },
   float = {
-    source = "always", -- Show source in floating window
+    source = "always",
     border = "rounded",
   },
   signs = true,

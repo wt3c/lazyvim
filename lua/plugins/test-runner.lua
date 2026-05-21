@@ -255,30 +255,15 @@ return {
     config = function(_, opts)
       require("toggleterm").setup(opts)
 
-      -- Custom terminal shortcuts
       local Terminal = require("toggleterm.terminal").Terminal
 
-      -- Python REPL
       local python_repl = Terminal:new({ cmd = "python", hidden = true })
-      function _PYTHON_TOGGLE()
-        python_repl:toggle()
-      end
-
-      -- Docker
       local docker_logs = Terminal:new({ cmd = "docker-compose logs -f", hidden = true })
-      function _DOCKER_LOGS()
-        docker_logs:toggle()
-      end
-
-      -- Git lazygit
       local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
-      function _LAZYGIT_TOGGLE()
-        lazygit:toggle()
-      end
 
-      vim.keymap.set("n", "<leader>tp", "<cmd>lua _PYTHON_TOGGLE()<cr>", { desc = "Terminal: Python REPL" })
-      vim.keymap.set("n", "<leader>tl", "<cmd>lua _DOCKER_LOGS()<cr>", { desc = "Terminal: Docker Logs" })
-      vim.keymap.set("n", "<leader>tg", "<cmd>lua _LAZYGIT_TOGGLE()<cr>", { desc = "Terminal: Lazygit" })
+      vim.keymap.set("n", "<leader>tp", function() python_repl:toggle() end, { desc = "Terminal: Python REPL" })
+      vim.keymap.set("n", "<leader>tl", function() docker_logs:toggle() end, { desc = "Terminal: Docker Logs" })
+      vim.keymap.set("n", "<leader>tg", function() lazygit:toggle() end, { desc = "Terminal: Lazygit" })
     end,
   },
 

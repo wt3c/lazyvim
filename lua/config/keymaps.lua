@@ -121,8 +121,25 @@ end, { desc = "Docker: Exec Into Container" })
 
 -- Quick file operations
 vim.keymap.set("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
-vim.keymap.set("n", "<leader>fR", "<cmd>!mv % ", { desc = "Rename File" })
-vim.keymap.set("n", "<leader>fD", "<cmd>!rm %<cr>", { desc = "Delete File" })
+vim.keymap.set("n", "<leader>fR", function()
+  local old = vim.fn.expand("%")
+  vim.ui.input({ prompt = "Rename to: ", default = old }, function(new)
+    if new and new ~= "" and new ~= old then
+      vim.cmd("saveas " .. vim.fn.fnameescape(new))
+      vim.fn.delete(old)
+      vim.cmd("redraw!")
+    end
+  end)
+end, { desc = "Rename File" })
+vim.keymap.set("n", "<leader>fD", function()
+  local file = vim.fn.expand("%")
+  vim.ui.input({ prompt = 'Delete "' .. file .. '"? (yes/no): ' }, function(answer)
+    if answer == "yes" then
+      vim.fn.delete(file)
+      vim.cmd("bdelete!")
+    end
+  end)
+end, { desc = "Delete File" })
 
 -- Format file
 vim.keymap.set("n", "<leader>fm", function()

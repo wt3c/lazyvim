@@ -1,29 +1,28 @@
 -- ~/.config/nvim/lua/plugins/python-tools.lua
 return {
-  -- Mason: Ensure Python tools are installed
+  -- Mason: Python tools
   {
     "williamboman/mason.nvim",
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed, {
-        "pyright",      -- Type checker (LSP)
-        "ruff",         -- Linter + Formatter (unified LSP)
-        "mypy",         -- Strict type checker
-        "debugpy",      -- Python debugger
+        "pyright",
+        "ruff",
+        "mypy",
+        "debugpy",
       })
     end,
   },
 
-  -- LSP Configuration: Pyright + Ruff
+  -- LSP: Pyright + Ruff
   {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        -- Pyright for IDE features (hover, completion, go-to-def)
         pyright = {
           settings = {
             python = {
               analysis = {
-                typeCheckingMode = "basic", -- or "strict" for more strictness
+                typeCheckingMode = "basic",
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
                 diagnosticMode = "openFilesOnly",
@@ -31,25 +30,14 @@ return {
             },
           },
         },
-        -- Ruff LSP for linting + formatting (unified)
         ruff = {
-          -- Only enable for Python files (not markdown, etc)
           filetypes = { "python" },
           init_options = {
             settings = {
-              -- Force line length to 120
               lineLength = 120,
-              -- Configuration file path (fallback to global)
               configurationPreference = "filesystemFirst",
-              -- Enable all Ruff's LSP features
-              lint = {
-                enable = true,
-                args = {},
-              },
-              format = {
-                enable = true,
-                args = { "--line-length=120" },
-              },
+              lint = { enable = true },
+              format = { enable = true, args = { "--line-length=120" } },
             },
           },
         },
@@ -57,14 +45,12 @@ return {
     },
   },
 
-  -- Formatting: Use Ruff via conform.nvim (Python only)
+  -- Formatting: Ruff via conform.nvim
   {
     "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
         python = { "ruff_format", "ruff_organize_imports" },
-        -- Explicitly disable for markdown
-        markdown = {},
       },
       formatters = {
         ruff_format = {
@@ -77,7 +63,7 @@ return {
     },
   },
 
-  -- Linting: Add Mypy via nvim-lint
+  -- Linting: Mypy via nvim-lint
   {
     "mfussenegger/nvim-lint",
     opts = {
@@ -101,31 +87,25 @@ return {
     },
   },
 
-  -- Treesitter: Ensure Django-related parsers
+  -- Treesitter: Python + Django templates + filetype detection
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed, {
         "python",
-        "html",          -- Django templates
-        "htmldjango",    -- Django-specific HTML
+        "html",
+        "htmldjango",
         "css",
         "javascript",
-        "toml",          -- pyproject.toml
-        "rst",           -- ReStructuredText (docs)
-        "sql",           -- SQL (for Django queries)
+        "toml",
+        "rst",
+        "sql",
       })
     end,
-  },
-
-  -- Django template filetype detection
-  {
-    "nvim-treesitter/nvim-treesitter",
     init = function()
       vim.filetype.add({
         extension = {
-          html = function(path, bufnr)
-            -- If file is in a Django templates directory, treat as htmldjango
+          html = function(path, _)
             if path:match("templates/.*%.html$") then
               return "htmldjango"
             end
@@ -136,7 +116,7 @@ return {
     end,
   },
 
-  -- DAP: Django debugging setup
+  -- DAP: Python debugging via Mason-installed debugpy
   {
     "mfussenegger/nvim-dap",
     dependencies = {
@@ -146,11 +126,12 @@ return {
     },
     config = function()
       require("dapui").setup()
-      require("dap-python").setup("~/.virtualenvs/debugpy/bin/python")
+
+      local debugpy = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
+      require("dap-python").setup(debugpy)
 
       local dap, dapui = require("dap"), require("dapui")
 
-      -- Auto-open/close DAP UI
       dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
       end
@@ -161,7 +142,6 @@ return {
         dapui.close()
       end
 
-      -- DAP Keymaps
       vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
       vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue" })
       vim.keymap.set("n", "<leader>do", dap.step_over, { desc = "Step Over" })
@@ -170,8 +150,6 @@ return {
       vim.keymap.set("n", "<leader>dl", function()
         require("dap-python").test_method()
       end, { desc = "Debug Test Method" })
-
-      -- Django runserver debug configuration
       vim.keymap.set("n", "<leader>dj", function()
         dap.configurations.python = {
           {
@@ -189,41 +167,19 @@ return {
     end,
   },
 
-  -- Virtual Environment Selector (with uv support)
+  -- Virtual Environment Selector
   {
     "linux-cultist/venv-selector.nvim",
     dependencies = { "neovim/nvim-lspconfig" },
-    opts = {
-      -- Search paths for virtual environments
-      search_venv_managers = true, -- Search for Poetry, Pipenv, etc
-      search_workspace = true,     -- Search for .venv in project root
-      search = true,               -- Enable auto-search on startup
-
-      -- Priority order: uv > Poetry > .venv > venv > virtualenvwrapper
-      pipenv_path = vim.fn.expand("~/.local/share/virtualenvs"),
-      poetry_path = vim.fn.expand("~/.cache/pypoetry/virtualenvs"),
-      venvwrapper_path = vim.fn.expand("~/workspace"), -- MPRJ legacy projects
-
-      -- uv-specific: detect .venv in project root
-      name = {
-        ".venv",
-        "venv",
-        "env",
-      },
-
-      -- Auto-select if only one venv found
-      auto_refresh = true,
-
-      -- Show Python version in selection
-      show_python_version = true,
-
-      -- Notify on venv change
-      notify_user_on_activate = true,
-    },
+    cmd = { "VenvSelect", "VenvSelectCached" },
     keys = {
       { "<leader>cv", "<cmd>VenvSelect<cr>", desc = "Select VirtualEnv" },
       { "<leader>cV", "<cmd>VenvSelectCached<cr>", desc = "Select VirtualEnv (Cached)" },
     },
-    cmd = { "VenvSelect", "VenvSelectCached" },
+    opts = {
+      name = { ".venv", "venv", "env" },
+      search_workspace = true,
+      notify_user_on_activate = true,
+    },
   },
 }

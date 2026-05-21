@@ -1,19 +1,6 @@
+-- Neovim 0.10+ has built-in OSC52 support via vim.ui.clipboard.osc52.
+-- For local desktop (Wayland/X11), system clipboard via vim.opt.clipboard is preferred.
+-- OSC52 is only needed for SSH sessions — enable it per-project if necessary.
 return {
-  "ojroques/nvim-osc52",
-  event = "VeryLazy",
-  config = function()
-    require("osc52").setup({})
-    local function copy(lines, _)
-      require("osc52").copy(table.concat(lines, "\n"))
-    end
-    vim.g.clipboard = {
-      name = "osc52",
-      copy = { ["+"] = copy, ["*"] = copy },
-      paste = { ["+"] = function() return { "" }, {} end, ["*"] = function() return { "" }, {} end },
-    }
-    -- opcional: mapear y para copiar automaticamente via osc52
-    vim.keymap.set({ "n", "x" }, "y", function()
-      require("osc52").copy_visual()
-    end, { expr = true })
-  end,
+  { "ojroques/nvim-osc52", enabled = false },
 }

@@ -33,6 +33,9 @@ return {
         "shfmt",
         "shellcheck",
 
+        -- TOML
+        "taplo", -- TOML formatter (pyproject.toml, Cargo.toml, etc.)
+
         -- General
         "stylua", -- Lua formatter
       },
