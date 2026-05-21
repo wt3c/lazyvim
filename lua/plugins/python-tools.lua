@@ -45,24 +45,6 @@ return {
     },
   },
 
-  -- Formatting: Ruff via conform.nvim
-  {
-    "stevearc/conform.nvim",
-    opts = {
-      formatters_by_ft = {
-        python = { "ruff_format", "ruff_organize_imports" },
-      },
-      formatters = {
-        ruff_format = {
-          prepend_args = { "--line-length=120" },
-        },
-        ruff_organize_imports = {
-          prepend_args = { "--line-length=120" },
-        },
-      },
-    },
-  },
-
   -- Linting: Mypy via nvim-lint
   {
     "mfussenegger/nvim-lint",

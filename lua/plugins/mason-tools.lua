@@ -38,6 +38,7 @@ return {
 
         -- General
         "stylua", -- Lua formatter
+        "prettier", -- Multi-language formatter (JS, TS, HTML, CSS, JSON, YAML, Markdown)
       },
     },
   },

@@ -141,9 +141,9 @@ vim.keymap.set("n", "<leader>fD", function()
   end)
 end, { desc = "Delete File" })
 
--- Format file
+-- Format file (via conform.nvim, com fallback para LSP)
 vim.keymap.set("n", "<leader>fm", function()
-  vim.lsp.buf.format({ async = false })
+  require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "Format File" })
 
 -- ============================================================================
