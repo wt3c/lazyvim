@@ -63,9 +63,10 @@ nvim
 ## 📦 O Que o `install.sh` Faz?
 
 1. ✅ Copia config do Ruff para `~/.config/ruff/pyproject.toml`
-2. ✅ Verifica dependências (Neovim, Git)
-3. ✅ Torna scripts executáveis
-4. ✅ Mostra próximos passos
+2. ✅ Verifica dependências (Neovim, Git, Python, pip)
+3. ✅ Instala Django type stubs (django-stubs, djangorestframework-stubs, django-types, django-stubs-ext)
+4. ✅ Torna scripts executáveis
+5. ✅ Mostra próximos passos
 
 ---
 

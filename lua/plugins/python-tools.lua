@@ -185,12 +185,41 @@ return {
     end,
   },
 
-  -- Virtual Environment Selector
+  -- Virtual Environment Selector (with uv support)
   {
     "linux-cultist/venv-selector.nvim",
+    dependencies = { "neovim/nvim-lspconfig" },
+    opts = {
+      -- Search paths for virtual environments
+      search_venv_managers = true, -- Search for Poetry, Pipenv, etc
+      search_workspace = true,     -- Search for .venv in project root
+      search = true,               -- Enable auto-search on startup
+
+      -- Priority order: uv > Poetry > .venv > venv > virtualenvwrapper
+      pipenv_path = vim.fn.expand("~/.local/share/virtualenvs"),
+      poetry_path = vim.fn.expand("~/.cache/pypoetry/virtualenvs"),
+      venvwrapper_path = vim.fn.expand("~/workspace"), -- MPRJ legacy projects
+
+      -- uv-specific: detect .venv in project root
+      name = {
+        ".venv",
+        "venv",
+        "env",
+      },
+
+      -- Auto-select if only one venv found
+      auto_refresh = true,
+
+      -- Show Python version in selection
+      show_python_version = true,
+
+      -- Notify on venv change
+      notify_user_on_activate = true,
+    },
     keys = {
       { "<leader>cv", "<cmd>VenvSelect<cr>", desc = "Select VirtualEnv" },
       { "<leader>cV", "<cmd>VenvSelectCached<cr>", desc = "Select VirtualEnv (Cached)" },
     },
+    cmd = { "VenvSelect", "VenvSelectCached" },
   },
 }

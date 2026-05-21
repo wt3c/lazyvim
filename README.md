@@ -51,9 +51,11 @@ nvim
 ### 🐍 Python/Django
 - Ruff (lint + format, line-length 120)
 - Mypy + Pyright (type checking)
+- Django type stubs (instalados automaticamente para melhor LSP)
 - Debug (DAP)
 - Neotest (testes com UI)
 - Django management commands (`<Space>p`)
+- Virtual environment selector (suporta uv, Poetry, venv, virtualenvwrapper)
 
 ### 🐳 Docker
 - LSP para Dockerfile e docker-compose

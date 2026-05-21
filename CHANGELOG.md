@@ -1,5 +1,45 @@
 # 🚀 Changelog - Reconfiguração Completa do LazyVim
 
+## 📦 Versão 2.1 - Django Type Stubs & uv Support (20/05/2026 - 23:39)
+
+### ✨ Novidades
+
+#### 🐍 Django Type Stubs Instalados Automaticamente
+- **Django type stubs** agora são instalados automaticamente pelo `install.sh`
+- Pacotes instalados:
+  - `django-stubs` - Type stubs para Django
+  - `djangorestframework-stubs` - Type stubs para DRF
+  - `django-types` - Type definitions adicionais
+  - `django-stubs-ext` - Extensões para django-stubs
+- Melhora **significativamente** a experiência do LSP (pyright/pylance) em projetos Django
+- Detecção automática: só instala se ainda não estiver instalado
+
+#### 🔧 Suporte Completo a uv (Python Package Manager)
+- **venv-selector.nvim** agora configurado explicitamente para uv
+- Detecção automática de `.venv` criado por uv
+- Ordem de prioridade: **uv** → Poetry → .venv → venv → virtualenvwrapper
+- Paths configurados:
+  - Poetry: `~/.cache/pypoetry/virtualenvs`
+  - Pipenv: `~/.local/share/virtualenvs`
+  - Virtualenvwrapper: `~/workspace` (projetos MPRJ legados)
+- Features habilitadas:
+  - `auto_refresh` - Atualiza lista automaticamente
+  - `show_python_version` - Mostra versão Python na seleção
+  - `notify_user_on_activate` - Notifica ao trocar ambiente
+- **Novo keybinding:** `<leader>cV` - Selecionar virtualenv (cached, mais rápido)
+
+### 📝 Documentação Atualizada
+- **KEYBINDINGS.md**: Adicionado `<leader>cV` (venv cached)
+- **README.md**: Mencionado Django type stubs e suporte a uv
+- **INSTALL.md**: Documentado instalação automática dos stubs
+
+### 🔧 Arquivos Modificados
+1. `install.sh` - Adicionada seção de instalação de Django type stubs
+2. `lua/plugins/python-tools.lua` - Configuração explícita de uv no venv-selector
+3. Documentação (KEYBINDINGS.md, README.md, INSTALL.md)
+
+---
+
 ## Data: 20/05/2026
 
 ---
