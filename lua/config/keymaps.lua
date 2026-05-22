@@ -34,6 +34,12 @@ vim.keymap.set("v", "p", '"_dP', { desc = "Paste without yank" })
 -- Select all
 vim.keymap.set("n", "<C-a>", "gg<S-v>G", { desc = "Select all" })
 
+-- System clipboard (Ctrl+C / Ctrl+V)
+vim.keymap.set("v", "<C-c>", '"+y', { desc = "Copy to clipboard" })
+vim.keymap.set("n", "<C-c>", '"+yy', { desc = "Copy line to clipboard" })
+vim.keymap.set({ "n", "v" }, "<C-v>", '"+p', { desc = "Paste from clipboard" })
+vim.keymap.set("i", "<C-v>", "<C-r>+", { desc = "Paste from clipboard" })
+
 -- Clear search highlight
 vim.keymap.set("n", "<Esc>", "<cmd>noh<cr>", { desc = "Clear search highlight" })
 
