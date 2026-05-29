@@ -29,7 +29,13 @@ return {
           prepend_args = { "--column-width", "120" },
         },
         prettier = {
-          prepend_args = { "--print-width", "120" },
+          prepend_args = function(_, ctx)
+            local args = { "--print-width", "120" }
+            if ctx.filename:match("%.md$") then
+              vim.list_extend(args, { "--prose-wrap", "always" })
+            end
+            return args
+          end,
         },
         shfmt = {
           prepend_args = { "-i", "2", "-bn", "-ci", "-sr" },
