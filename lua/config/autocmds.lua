@@ -5,6 +5,16 @@
 -- Linting: gerenciado pelo nvim-lint (configurado em plugins/markdown-tools.lua e python-tools.lua)
 -- Ambos sao inicializados automaticamente pelo LazyVim -- nao e necessario duplicar aqui.
 
+-- Auto-reload: recarregar buffers quando arquivos sao modificados externamente
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "WinEnter", "CursorHold", "CursorHoldI" }, {
+  group = vim.api.nvim_create_augroup("auto_reload_files", { clear = true }),
+  callback = function()
+    if vim.fn.getcmdwintype() == "" then
+      vim.cmd("checktime")
+    end
+  end,
+})
+
 -- Spell: habilitar apenas em filetypes de texto (nao em codigo)
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("spell_text", { clear = true }),

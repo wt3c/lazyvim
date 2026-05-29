@@ -28,6 +28,7 @@ opt.ignorecase = true
 opt.smartcase = true
 
 -- Comportamento
+opt.autoread = true
 opt.mouse = "a"
 opt.undofile = true
 opt.backup = false
