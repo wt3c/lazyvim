@@ -18,6 +18,9 @@ lazy-lock.json
 .cache/
 .luarc.json
 
+# Dependências baixadas para os testes (ex.: plenary)
+tests/.deps/
+
 # Backups
 *.bak
 *.backup

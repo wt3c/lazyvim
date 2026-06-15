@@ -214,6 +214,24 @@ nvim
 
 ---
 
+## 🧪 Testes
+
+A config tem uma suíte de testes em `tests/` (specs com plenary/busted + smoke de boot):
+
+```bash
+make test         # tudo: sintaxe + specs + smoke (boot da config completa)
+make test-unit    # só sintaxe + specs (não instala todos os plugins)
+make test-smoke   # só o smoke de boot
+make syntax       # só validação de sintaxe Lua
+```
+
+- **Specs** (`tests/config_spec.lua`): invariantes — Ruff no conform, picker = Telescope, sem colisão de keymaps,
+  plugins presentes, APIs não-deprecadas.
+- **Smoke** (`tests/smoke.lua`): boota a config real e valida o estado em runtime.
+- **CI**: `.github/workflows/test.yml` roda `make test-ci` (sintaxe + specs) a cada push/PR.
+
+---
+
 ## 🛠️ Comandos Úteis
 
 ```vim
