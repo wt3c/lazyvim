@@ -14,34 +14,108 @@ return {
     },
     keys = {
       -- Run tests
-      { "<leader>tt", function() require("neotest").run.run() end, desc = "Test: Run Nearest" },
-      { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Test: Run File" },
-      { "<leader>tT", function() require("neotest").run.run(vim.uv.cwd()) end, desc = "Test: Run All" },
+      {
+        "<leader>tt",
+        function()
+          require("neotest").run.run()
+        end,
+        desc = "Test: Run Nearest",
+      },
+      {
+        "<leader>tf",
+        function()
+          require("neotest").run.run(vim.fn.expand("%"))
+        end,
+        desc = "Test: Run File",
+      },
+      {
+        "<leader>tT",
+        function()
+          require("neotest").run.run(vim.uv.cwd())
+        end,
+        desc = "Test: Run All",
+      },
 
       -- View results
-      { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Test: Toggle Summary" },
-      { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Test: Show Output" },
-      { "<leader>tO", function() require("neotest").output_panel.toggle() end, desc = "Test: Toggle Output Panel" },
+      {
+        "<leader>ts",
+        function()
+          require("neotest").summary.toggle()
+        end,
+        desc = "Test: Toggle Summary",
+      },
+      {
+        "<leader>to",
+        function()
+          require("neotest").output.open({ enter = true, auto_close = true })
+        end,
+        desc = "Test: Show Output",
+      },
+      {
+        "<leader>tO",
+        function()
+          require("neotest").output_panel.toggle()
+        end,
+        desc = "Test: Toggle Output Panel",
+      },
 
       -- Output with auto-open
-      { "<leader>tr", function()
-        require("neotest").output_panel.open()
-        require("neotest").run.run()
-      end, desc = "Test: Run + Show Output" },
+      {
+        "<leader>tr",
+        function()
+          require("neotest").output_panel.open()
+          require("neotest").run.run()
+        end,
+        desc = "Test: Run + Show Output",
+      },
 
-      { "<leader>tF", function()
-        require("neotest").output_panel.open()
-        require("neotest").run.run(vim.fn.expand("%"))
-      end, desc = "Test: Run File + Show Output" },
+      {
+        "<leader>tF",
+        function()
+          require("neotest").output_panel.open()
+          require("neotest").run.run(vim.fn.expand("%"))
+        end,
+        desc = "Test: Run File + Show Output",
+      },
 
       -- Control
-      { "<leader>tS", function() require("neotest").run.stop() end, desc = "Test: Stop" },
-      { "<leader>tw", function() require("neotest").watch.toggle() end, desc = "Test: Toggle Watch" },
-      { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Test: Debug Nearest" },
+      {
+        "<leader>tS",
+        function()
+          require("neotest").run.stop()
+        end,
+        desc = "Test: Stop",
+      },
+      {
+        "<leader>tw",
+        function()
+          require("neotest").watch.toggle()
+        end,
+        desc = "Test: Toggle Watch",
+      },
+      {
+        "<leader>td",
+        function()
+          require("neotest").run.run({ strategy = "dap" })
+        end,
+        desc = "Test: Debug Nearest",
+      },
 
       -- Navigation
-      { "[t", function() require("neotest").jump.prev({ status = "failed" }) end, desc = "Previous Failed Test" },
-      { "]t", function() require("neotest").jump.next({ status = "failed" }) end, desc = "Next Failed Test" },
+      {
+        "[t",
+        function()
+          require("neotest").jump.prev({ status = "failed" })
+        end,
+        desc = "Previous Failed Test",
+      },
+      {
+        "]t",
+        function()
+          require("neotest").jump.next({ status = "failed" })
+        end,
+        desc = "Next Failed Test",
+      },
     },
     opts = function()
       return {
@@ -224,11 +298,13 @@ return {
   {
     "akinsho/toggleterm.nvim",
     version = "*",
+    -- NOTE: terminal usa o prefixo <leader>T (maiusculo) para nao colidir com
+    -- os mapeamentos de teste em <leader>t (ex: <leader>tf = Test: Run File).
     keys = {
       { "<C-\\>", "<cmd>ToggleTerm<cr>", desc = "Terminal: Toggle", mode = { "n", "t" } },
-      { "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Terminal: Float" },
-      { "<leader>th", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Terminal: Horizontal" },
-      { "<leader>tv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Terminal: Vertical" },
+      { "<leader>Tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Terminal: Float" },
+      { "<leader>Th", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Terminal: Horizontal" },
+      { "<leader>Tv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Terminal: Vertical" },
     },
     opts = {
       size = function(term)
@@ -263,9 +339,15 @@ return {
       local docker_logs = Terminal:new({ cmd = "docker-compose logs -f", hidden = true })
       local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
 
-      vim.keymap.set("n", "<leader>tp", function() python_repl:toggle() end, { desc = "Terminal: Python REPL" })
-      vim.keymap.set("n", "<leader>tl", function() docker_logs:toggle() end, { desc = "Terminal: Docker Logs" })
-      vim.keymap.set("n", "<leader>tg", function() lazygit:toggle() end, { desc = "Terminal: Lazygit" })
+      vim.keymap.set("n", "<leader>Tp", function()
+        python_repl:toggle()
+      end, { desc = "Terminal: Python REPL" })
+      vim.keymap.set("n", "<leader>Tl", function()
+        docker_logs:toggle()
+      end, { desc = "Terminal: Docker Logs" })
+      vim.keymap.set("n", "<leader>Tg", function()
+        lazygit:toggle()
+      end, { desc = "Terminal: Lazygit" })
     end,
   },
 
@@ -279,7 +361,11 @@ return {
       { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Trouble: Location List" },
       { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Trouble: Quickfix List" },
       { "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Trouble: Symbols" },
-      { "<leader>xl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "Trouble: LSP Definitions / References" },
+      {
+        "<leader>xl",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "Trouble: LSP Definitions / References",
+      },
     },
     opts = {}, -- default configuration
   },

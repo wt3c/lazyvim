@@ -75,6 +75,10 @@
 
 ## 🔍 TELESCOPE (BUSCA)
 
+> **Picker unificado:** o Telescope é usado em tudo, inclusive nos internos do LazyVim (`gr`, `gd`, referências). Além
+> dos atalhos abaixo, o LazyVim também expõe o esquema `<leader>s*` (ex.: `<leader>sg` grep, `<leader>sk` keymaps,
+> `<leader>sw` palavra) — descubra com `<Space>` + Which-key.
+
 ### Arquivos e Navegação
 
 - `<leader>ff` - Buscar arquivos
@@ -107,7 +111,12 @@
 - `<leader>pr` - Python REPL
 - `<leader>pf` - Executar arquivo Python
 - `<leader>cv` - Selecionar virtualenv (detecta uv, Poetry, venv, etc)
-- `<leader>cV` - Selecionar virtualenv (cached - mais rápido)
+
+### Ruff (lint + format + imports)
+
+- `<leader>cR` - Ruff: Fix All (aplica todas as correções automáticas)
+- `<leader>co` - Ruff: Organize Imports
+- Formatação e organização de imports rodam automaticamente no salvar (conform)
 
 ### Django Management
 
@@ -179,20 +188,49 @@
 
 ---
 
+## 🎯 HARPOON (NAVEGAÇÃO RÁPIDA)
+
+Marque arquivos e salte entre eles instantaneamente.
+
+- `<leader>ha` - Adicionar arquivo atual à lista
+- `<leader>hh` - Abrir menu rápido (quick menu)
+- `<leader>hp` / `<leader>hn` - Arquivo anterior / próximo
+- `<leader>h1`..`<leader>h4` - Saltar direto para o arquivo 1–4
+
+---
+
+## 🔁 SEARCH & REPLACE NO PROJETO (SPECTRE)
+
+- `<leader>sr` - Abrir Spectre (substituição no projeto, com preview/regex)
+- `<leader>sr` (Visual) - Substituir a palavra selecionada
+
+---
+
+## 📂 OIL (EDITAR DIRETÓRIO COMO BUFFER)
+
+- `-` - Abrir o diretório pai como buffer (criar/renomear/mover arquivos)
+- `q` (dentro do Oil) - Fechar
+
+> O explorer padrão (neo-tree) continua em `<leader>e`.
+
+---
+
 ## 💻 TERMINAL (TOGGLETERM)
+
+> Prefixo **`<leader>T`** (maiúsculo) para não colidir com os testes em `<leader>t`.
 
 ### Abrir/Fechar
 
 - `Ctrl+\` - Toggle terminal
-- `<leader>tf` - Terminal flutuante
-- `<leader>th` - Terminal horizontal
-- `<leader>tv` - Terminal vertical
+- `<leader>Tf` - Terminal flutuante
+- `<leader>Th` - Terminal horizontal
+- `<leader>Tv` - Terminal vertical
 
 ### Terminais Especiais
 
-- `<leader>tp` - Python REPL (terminal)
-- `<leader>tl` - Docker logs (terminal)
-- `<leader>tg` - Lazygit (terminal)
+- `<leader>Tp` - Python REPL (terminal)
+- `<leader>Tl` - Docker logs (terminal)
+- `<leader>Tg` - Lazygit (terminal)
 
 ---
 
@@ -215,11 +253,10 @@
 ### GitSigns (Hunks)
 
 - `]h` / `[h` - Próximo/anterior hunk
-- `<leader>gs` - Stage hunk
+- `<leader>gs` - Stage/unstage hunk (alterna)
 - `<leader>gr` - Reset hunk
 - `<leader>gS` - Stage buffer inteiro
 - `<leader>gR` - Reset buffer inteiro
-- `<leader>gu` - Undo stage
 - `<leader>gv` - Preview hunk
 - `<leader>gb` - Blame line (full)
 - `<leader>gB` - Toggle blame inline
@@ -228,20 +265,37 @@
 
 ## 🔧 LSP (LANGUAGE SERVER)
 
+> Fornecidos pelo LazyVim no `LspAttach` (buffer-local, ativos só quando há LSP), usando o Telescope como picker para
+> definições/referências.
+
 ### Navegação
 
-- `gd` - Go to Definition
+- `gd` - Go to Definition (Telescope)
 - `gD` - Go to Declaration
-- `gi` - Go to Implementation
-- `gr` - Go to References
+- `gI` - Go to Implementation
+- `gr` - Go to References (Telescope)
+- `gy` - Go to Type Definition
 - `K` - Hover documentation
 
 ### Ações
 
 - `<leader>ca` - Code action
 - `<leader>cr` - Rename symbol
-- `<leader>cs` - Signature help
-- `<leader>fm` - Format file
+- `<leader>cf` - Format file (conform → Ruff em Python)
+- `<leader>fm` - Format file (atalho alternativo)
+
+---
+
+## ⌨️ AUTOCOMPLETE (BLINK.CMP)
+
+No modo Insert, enquanto o menu de sugestões está aberto:
+
+- `<C-Space>` - Abrir/forçar o menu de completion
+- `<Tab>` / `<S-Tab>` - Próxima / anterior sugestão (e pula snippets)
+- `<CR>` ou `<C-y>` - Confirmar sugestão
+- `<C-e>` - Fechar o menu
+- `<C-b>` / `<C-f>` - Rolar a janela de documentação
+- Ghost text inline mostra a sugestão atual; docs e assinatura aparecem automaticamente
 
 ---
 
@@ -280,6 +334,7 @@
 - `<leader>us` - Toggle spell check
 - `<leader>ul` - Toggle list chars
 - `<leader>ur` - Toggle relative numbers
+- `<leader>ut` - Toggle Treesitter Context (cabeçalho fixo de classe/função)
 - `<leader>un` - Dismiss notifications
 
 ---

@@ -3,6 +3,12 @@
 
 local opt = vim.opt
 
+-- Picker unificado: Telescope em tudo (inclusive nos internos do LazyVim como
+-- gr/gd/references). Isso faz o LazyVim auto-importar o extra editor.telescope e
+-- NAO carregar o snacks.picker -- eliminando a redundancia de dois fuzzy finders.
+-- Deve ser definido antes do startup do lazy.nvim (este arquivo carrega antes).
+vim.g.lazyvim_picker = "telescope"
+
 -- Clipboard: usa clipboard do sistema (wl-clipboard no Wayland, xclip no X11)
 opt.clipboard = "unnamedplus"
 
@@ -48,7 +54,7 @@ vim.diagnostic.config({
     source = "if_many",
   },
   float = {
-    source = "always",
+    source = true,
     border = "rounded",
   },
   signs = true,

@@ -1,4 +1,36 @@
 -- ~/.config/nvim/lua/plugins/python-tools.lua
+
+-- Ruff code actions (fix all / organize imports) como keymaps buffer-local.
+-- O conform ja roda ruff_format + ruff_organize_imports no save; estes atalhos
+-- permitem aplicar sob demanda sem salvar.
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("ruff_code_actions", { clear = true }),
+  pattern = "python",
+  callback = function(args)
+    local function ruff_action(kind, desc)
+      return function()
+        vim.lsp.buf.code_action({
+          context = { only = { kind }, diagnostics = {} },
+          apply = true,
+        })
+      end
+    end
+    local opts = { buffer = args.buf, silent = true }
+    vim.keymap.set(
+      "n",
+      "<leader>cR",
+      ruff_action("source.fixAll.ruff"),
+      vim.tbl_extend("force", opts, { desc = "Ruff: Fix All" })
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>co",
+      ruff_action("source.organizeImports.ruff"),
+      vim.tbl_extend("force", opts, { desc = "Ruff: Organize Imports" })
+    )
+  end,
+})
+
 return {
   -- Mason: Python tools
   {
@@ -37,7 +69,9 @@ return {
               lineLength = 120,
               configurationPreference = "filesystemFirst",
               lint = { enable = true },
-              format = { enable = true, args = { "--line-length=120" } },
+              -- Formatacao e organizada pelo conform (ruff_format + ruff_organize_imports).
+              -- Manter o LSP fora disso evita duas fontes de formatacao em conflito.
+              format = { enable = false },
             },
           },
         },
@@ -159,19 +193,7 @@ return {
     end,
   },
 
-  -- Virtual Environment Selector
-  {
-    "linux-cultist/venv-selector.nvim",
-    dependencies = { "neovim/nvim-lspconfig" },
-    cmd = { "VenvSelect", "VenvSelectCached" },
-    keys = {
-      { "<leader>cv", "<cmd>VenvSelect<cr>", desc = "Select VirtualEnv" },
-      { "<leader>cV", "<cmd>VenvSelectCached<cr>", desc = "Select VirtualEnv (Cached)" },
-    },
-    opts = {
-      name = { ".venv", "venv", "env" },
-      search_workspace = true,
-      notify_user_on_activate = true,
-    },
-  },
+  -- NOTE: venv-selector.nvim ja e configurado pelo extra lang.python do LazyVim
+  -- (keymap <leader>cv, API nova com opts.options.*). O override anterior usava a
+  -- API antiga (name/search_workspace) e era ignorado -- por isso foi removido.
 }

@@ -153,31 +153,25 @@ vim.keymap.set("n", "<leader>fm", function()
 end, { desc = "Format File" })
 
 -- ============================================================================
--- LSP KEYMAPS (Enhanced)
+-- LSP KEYMAPS
 -- ============================================================================
-
-vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to Declaration" })
-vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to Implementation" })
-vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Go to References" })
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation" })
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
-vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename Symbol" })
-vim.keymap.set("n", "<leader>cs", vim.lsp.buf.signature_help, { desc = "Signature Help" })
+--
+-- NOTE: gd/gD/gi/gr/K/<leader>ca/<leader>cr/<leader>cs sao fornecidos pelo
+-- LazyVim no evento LspAttach, com UI superior (picker fzf/Snacks) e ativos
+-- apenas em buffers com LSP. Nao redefinir aqui para evitar regressao.
 
 -- ============================================================================
 -- DIAGNOSTIC NAVIGATION
 -- ============================================================================
+-- Usa vim.diagnostic.jump (API atual no nvim 0.11+); goto_prev/goto_next deprecados.
 
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev Diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
+-- Navegar apenas por ERROS (complementa os []d do LazyVim que cobrem tudo)
 vim.keymap.set("n", "[e", function()
-  vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+  vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR, float = true })
 end, { desc = "Prev Error" })
 vim.keymap.set("n", "]e", function()
-  vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+  vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR, float = true })
 end, { desc = "Next Error" })
-vim.keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
 -- ============================================================================
 -- QUICK COMMANDS
@@ -211,11 +205,10 @@ vim.keymap.set("n", "<leader>ur", "<cmd>set relativenumber!<cr>", { desc = "Togg
 --   <leader>gD - Diffview: Close
 --   <leader>gh - Diffview: File History
 --   <leader>gH - Diffview: Project History
---   <leader>gs - GitSigns: Stage Hunk
+--   <leader>gs - GitSigns: Stage/Unstage Hunk
 --   <leader>gr - GitSigns: Reset Hunk
 --   <leader>gS - GitSigns: Stage Buffer
 --   <leader>gR - GitSigns: Reset Buffer
---   <leader>gu - GitSigns: Undo Stage
 --   <leader>gv - GitSigns: Preview Hunk
 --   <leader>gb - GitSigns: Blame Line
 --   <leader>gB - GitSigns: Toggle Blame
@@ -239,14 +232,14 @@ vim.keymap.set("n", "<leader>ur", "<cmd>set relativenumber!<cr>", { desc = "Togg
 --   <leader>ri - Run: Info
 --   <leader>ra - Run: Task Action
 --
--- TERMINAL (test-runner.lua):
+-- TERMINAL (test-runner.lua) -- prefixo <leader>T para nao colidir com testes:
 --   <C-\> - Terminal: Toggle
---   <leader>tf - Terminal: Float
---   <leader>th - Terminal: Horizontal
---   <leader>tv - Terminal: Vertical
---   <leader>tp - Terminal: Python REPL
---   <leader>tl - Terminal: Docker Logs
---   <leader>tg - Terminal: Lazygit
+--   <leader>Tf - Terminal: Float
+--   <leader>Th - Terminal: Horizontal
+--   <leader>Tv - Terminal: Vertical
+--   <leader>Tp - Terminal: Python REPL
+--   <leader>Tl - Terminal: Docker Logs
+--   <leader>Tg - Terminal: Lazygit
 --
 -- TROUBLE (test-runner.lua):
 --   <leader>xx - Trouble: Diagnostics

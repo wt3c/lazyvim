@@ -1,3 +1,7 @@
+# ## IDEs
+.idea
+.idea/
+
 tt.*
 .tests
 doc/tags

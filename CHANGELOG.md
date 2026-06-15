@@ -1,10 +1,61 @@
 # 🚀 Changelog - Reconfiguração Completa do LazyVim
 
+## 📦 Versão 2.2 - Ruff-First, Autocomplete & Cleanup (15/06/2026)
+
+### 🐍 Ruff como ferramenta central (Python/Django)
+
+- Ruff-LSP focado em **lint** (formatação saiu do LSP para evitar fonte dupla)
+- **conform** é o dono da formatação: `ruff_format` + `ruff_organize_imports` no save
+- Novos code actions sob demanda (buffer-local em Python):
+  - `<leader>cR` - Ruff: Fix All
+  - `<leader>co` - Ruff: Organize Imports
+
+### ⌨️ Autocomplete (blink.cmp)
+
+- Novo `lua/plugins/completion.lua`: ghost text inline, documentação automática, signature help e realce treesitter no
+  menu de sugestões
+
+### 🔭 Picker unificado no Telescope
+
+- `vim.g.lazyvim_picker = "telescope"` → LazyVim passa a usar Telescope em **tudo** (inclusive internos como
+  `gr`/`gd`/referências); o `snacks.picker` deixa de carregar
+- Bloco custom do Telescope refatorado para **estender** os defaults do extra (sem `config`/dependência fzf redundantes
+  — o extra já cuida disso)
+
+### ➕ Novos plugins
+
+- **Harpoon 2** - navegação rápida entre arquivos marcados (`<leader>h*`)
+- **nvim-spectre** - search & replace no projeto com preview (`<leader>sr`)
+- **oil.nvim** - editar diretórios como buffer (`-`)
+- **nvim-treesitter-context** - cabeçalho fixo de classe/função (`<leader>ut`)
+
+### 🐛 Correções e limpeza
+
+- **Colisão de keymap resolvida:** terminal movido de `<leader>t*` para `<leader>T*` (não conflita mais com os testes,
+  ex.: `<leader>tf` = Test: Run File)
+- Removidos os overrides de LSP (`gd/gr/K/ca/cr`) que regrediam o LazyVim — voltam aos defaults (picker Telescope,
+  buffer-local no `LspAttach`)
+- **APIs deprecadas atualizadas (Neovim 0.12):** `vim.diagnostic.jump`, `gitsigns.nav_hunk`; removido `undo_stage_hunk`
+  (agora `stage_hunk` alterna)
+- Removido `mini.indentscope` (duplicava o `snacks.indent` do LazyVim)
+- Override antigo do venv-selector removido (o extra do LazyVim já o configura)
+- Docs `.md` de desenvolvimento removidas (LINE-LENGTH-FIX, COMMENT-TEST, TEST-GUIDE)
+
+### 🔧 Arquivos modificados
+
+- `lua/config/options.lua`, `lua/config/keymaps.lua`
+- `lua/plugins/python-tools.lua`, `git-modern.lua`, `modern-ui.lua`, `test-runner.lua`
+- Novos: `lua/plugins/completion.lua`, `lua/plugins/editor-extras.lua`
+- Docs: README.md, KEYBINDINGS.md, CHANGELOG.md
+
+---
+
 ## 📦 Versão 2.1 - Django Type Stubs & uv Support (20/05/2026)
 
 ### ✨ Novidades
 
 #### 🗑️ Script de Desinstalação Completa
+
 - **Novo script:** `uninstall.sh` para remover completamente o LazyVim
 - Confirmação obrigatória antes de deletar
 - Opção de backup automático antes da remoção
@@ -18,6 +69,7 @@
 - Instruções de restauração e reinstalação
 
 #### 🐍 Django Type Stubs Instalados Automaticamente
+
 - **Django type stubs** agora são instalados automaticamente pelo `install.sh`
 - Pacotes instalados:
   - `django-stubs` - Type stubs para Django
@@ -28,6 +80,7 @@
 - Detecção automática: só instala se ainda não estiver instalado
 
 #### 🔧 Suporte Completo a uv (Python Package Manager)
+
 - **venv-selector.nvim** agora configurado explicitamente para uv
 - Detecção automática de `.venv` criado por uv
 - Ordem de prioridade: **uv** → Poetry → .venv → venv → virtualenvwrapper
@@ -42,11 +95,13 @@
 - **Novo keybinding:** `<leader>cV` - Selecionar virtualenv (cached, mais rápido)
 
 ### 📝 Documentação Atualizada
+
 - **KEYBINDINGS.md**: Adicionado `<leader>cV` (venv cached)
 - **README.md**: Mencionado Django type stubs e suporte a uv
 - **INSTALL.md**: Documentado instalação automática dos stubs
 
 ### 🔧 Arquivos Modificados
+
 1. `install.sh` - Adicionada seção de instalação de Django type stubs
 2. `lua/plugins/python-tools.lua` - Configuração explícita de uv no venv-selector
 3. Documentação (KEYBINDINGS.md, README.md, INSTALL.md)
@@ -60,18 +115,21 @@
 ## 📦 NOVOS PLUGINS INSTALADOS
 
 ### 🐳 Docker & Docker Compose
+
 - **dockerfile-language-server** - LSP para Dockerfiles
 - **docker-compose-language-service** - LSP para docker-compose.yml
 - **hadolint** - Linter para Dockerfiles
 - Atalhos dedicados sob `<leader>D`
 
 ### 🌿 Git Moderno
+
 - **Neogit** - Interface Git moderna (tipo Magit)
 - **Diffview** - Visualizador de diffs avançado
 - **GitSigns** (melhorado) - Integração Git inline
 - Telescope Git pickers
 
 ### 🧪 Testes e Execução
+
 - **Neotest** - Framework de testes moderno com UI
   - Adapter Python/pytest integrado
   - Debug de testes
@@ -83,6 +141,7 @@
   - Lazygit integrado
 
 ### 🎨 UI/UX Moderna
+
 - **Noice** - UI moderna para mensagens, cmdline, popupmenu
 - **Notify** - Notificações bonitas
 - **Dressing** - Melhora interfaces vim.ui
@@ -98,6 +157,7 @@
 ## 🗂️ ARQUIVOS CRIADOS/MODIFICADOS
 
 ### ✨ Novos Arquivos
+
 1. `/lua/plugins/docker-tools.lua` - Suporte Docker completo
 2. `/lua/plugins/git-modern.lua` - Git moderno (Neogit, Diffview)
 3. `/lua/plugins/test-runner.lua` - Testes e task runner (Neotest, Overseer, ToggleTerm, Trouble)
@@ -106,6 +166,7 @@
 6. `/CHANGELOG.md` - Este arquivo
 
 ### 🔧 Arquivos Modificados
+
 1. `/lazyvim.json` - Adicionado SQL extra
 2. `/lua/config/keymaps.lua` - **COMPLETAMENTE REFEITO**
    - Ctrl+/ para comentar (antes: Ctrl+Space)
@@ -125,6 +186,7 @@
 ## ⌨️ MUDANÇAS DE KEYBINDINGS
 
 ### 🔄 Alterações Principais
+
 - **Comentar:** `Ctrl+Space` ➜ `Ctrl+/` (mais padrão)
   - Alternativa: `Ctrl+_` (compatibilidade terminal)
 - **Salvar:** Adicionado `Ctrl+s` (todos os modos)
@@ -133,6 +195,7 @@
 ### ➕ Novos Atalhos
 
 #### 🐳 Docker (`<leader>D`)
+
 - `Du` - docker-compose up -d
 - `Dd` - docker-compose down
 - `Dr` - docker-compose restart
@@ -145,6 +208,7 @@
 - `De` - docker exec -it (interativo)
 
 #### 🌿 Git (`<leader>g`)
+
 - `gg` - Neogit open
 - `gc` - Neogit commit
 - `gp` - Neogit push
@@ -164,6 +228,7 @@
 - `]h`/`[h` - Next/prev hunk
 
 #### 🧪 Testes (`<leader>t`)
+
 - `tt` - Test nearest
 - `tf` - Test file
 - `tT` - Test all
@@ -181,15 +246,18 @@
 - `tg` - Lazygit terminal
 
 #### ⚙️ Task Runner (`<leader>r`)
+
 - `rr` - Run task
 - `rt` - Toggle task list
 - `ri` - Task info
 - `ra` - Task action
 
 #### 💻 Terminal
+
 - `Ctrl+\` - Toggle terminal
 
 #### 🪟 Window Management (`<leader>w`)
+
 - `wv` - Split vertical
 - `wh` - Split horizontal
 - `we` - Equal size
@@ -198,12 +266,14 @@
 - `Ctrl+arrows` - Resize
 
 #### 📄 Buffers (`<leader>b`)
+
 - `bd` - Delete buffer
 - `bD` - Delete all except current
 - `Shift+h/l` - Prev/next buffer
 - `[b`/`]b` - Prev/next buffer
 
 #### 🔍 Telescope (`<leader>f`)
+
 - `ff` - Find files
 - `fr` - Recent files
 - `fg` - Live grep
@@ -220,6 +290,7 @@
 - `fgh` - Git stash
 
 #### 🚨 Trouble (`<leader>x`)
+
 - `xx` - Diagnostics
 - `xX` - Buffer diagnostics
 - `xL` - Location list
@@ -228,6 +299,7 @@
 - `xl` - LSP defs/refs
 
 #### ⚡ Toggles (`<leader>u`)
+
 - `uw` - Toggle wrap
 - `us` - Toggle spell
 - `ul` - Toggle list chars
@@ -235,6 +307,7 @@
 - `un` - Dismiss notifications
 
 #### 📝 Edição Moderna
+
 - `Alt+j/k` - Move line down/up
 - `v` then `p` - Paste without yank
 - `Ctrl+a` - Select all
@@ -245,34 +318,41 @@
 ## 🛠️ FERRAMENTAS INSTALADAS (MASON)
 
 ### Python
+
 - pyright ✓
 - ruff ✓
 - mypy ✓
 - debugpy ✓
 
 ### Docker
+
 - dockerfile-language-server ✓
 - docker-compose-language-service ✓
 - hadolint ✓
 
 ### SQL
+
 - sqlfluff ✓
 
 ### Markdown
+
 - marksman ✓
 - markdownlint-cli2 ✓
 - markdown-toc ✓
 
 ### JSON/YAML
+
 - json-lsp ✓
 - yaml-language-server ✓
 
 ### Shell
+
 - bash-language-server ✓
 - shfmt ✓
 - shellcheck ✓
 
 ### Geral
+
 - stylua ✓
 
 ---
@@ -280,6 +360,7 @@
 ## 🎯 FUNCIONALIDADES PRINCIPAIS
 
 ### 1. 🐍 Python/Django Completo
+
 - Ruff (lint + format, line-length 120)
 - Mypy (type checking estrito)
 - Pyright (LSP features)
@@ -288,6 +369,7 @@
 - Django management commands
 
 ### 2. 🐳 Docker Workflow Completo
+
 - LSP para Dockerfile e docker-compose
 - Linting com hadolint
 - Atalhos para todas operações comuns
@@ -295,6 +377,7 @@
 - Exec interativo em containers
 
 ### 3. 🌿 Git Moderno e Fácil
+
 - Neogit (interface tipo Magit)
 - Diffview (diffs lindos)
 - GitSigns (hunks inline)
@@ -302,6 +385,7 @@
 - Lazygit integrado
 
 ### 4. 🧪 Testes Profissionais
+
 - Neotest com UI
 - Run/Debug testes
 - Watch mode
@@ -309,12 +393,14 @@
 - Integração com DAP
 
 ### 5. ⚙️ Task Runner
+
 - Overseer para scripts
 - Templates customizáveis
 - Execução assíncrona
 - Output tracking
 
 ### 6. 💻 Terminais Modernos
+
 - ToggleTerm com float/split
 - Python REPL dedicado
 - Docker logs dedicado
@@ -322,6 +408,7 @@
 - Toggle com Ctrl+\
 
 ### 7. 🎨 UI/UX de Última Geração
+
 - Noice (mensagens lindas)
 - Notify (notificações)
 - Dressing (inputs bonitos)
@@ -330,6 +417,7 @@
 - Trouble (diagnósticos organizados)
 
 ### 8. 🔍 Busca Poderosa
+
 - Telescope otimizado
 - FZF nativo
 - Pickers Git
@@ -341,57 +429,72 @@
 ## 📋 COMO TESTAR
 
 ### 1. Reiniciar Neovim
+
 ```bash
 # Feche qualquer instância do Neovim e abra novamente
 nvim
 ```
 
 ### 2. Sincronizar Plugins
+
 ```vim
 :Lazy sync
 ```
+
 Aguarde todos os plugins serem instalados/atualizados.
 
 ### 3. Instalar Ferramentas
+
 ```vim
 :Mason
 ```
-Verifique se todas as ferramentas listadas acima estão instaladas (✓).
-Se não, selecione e pressione `i` para instalar.
+
+Verifique se todas as ferramentas listadas acima estão instaladas (✓). Se não, selecione e pressione `i` para instalar.
 
 ### 4. Verificar LSPs
+
 Abra um arquivo Python:
+
 ```vim
 :e test.py
 :LspInfo
 ```
+
 Deve mostrar: `pyright` e `ruff` ativos.
 
 ### 5. Testar Comentários
+
 - Modo Normal: `Ctrl+/` em uma linha
 - Modo Visual: Selecione linhas, `Ctrl+/`
 
 ### 6. Testar Git
+
 ```vim
 :Neogit
 ```
+
 Ou use `<Space>gg`
 
 ### 7. Testar Docker
+
 Em um projeto com docker-compose.yml:
+
 ```vim
 <Space>Du     " docker-compose up -d
 <Space>Dl     " docker-compose logs -f
 ```
 
 ### 8. Testar Testes
+
 Em um arquivo de teste Python:
+
 ```vim
 <Space>tt     " Rodar teste sob cursor
 <Space>ts     " Abrir summary
 ```
 
 ### 9. Testar Terminal
+
 ```vim
 Ctrl+\        " Toggle terminal
 <Space>tp     " Python REPL
@@ -399,6 +502,7 @@ Ctrl+\        " Toggle terminal
 ```
 
 ### 10. Testar Telescope
+
 ```vim
 <Space>ff     " Buscar arquivos
 <Space>fg     " Live grep
@@ -406,6 +510,7 @@ Ctrl+\        " Toggle terminal
 ```
 
 ### 11. Ver Ajuda de Keybindings
+
 ```vim
 <Space>       " Aguarde 1 segundo - Which-key aparece
 <Space>fk     " Telescope keymaps
@@ -417,14 +522,18 @@ Ctrl+\        " Toggle terminal
 ## ⚠️ POSSÍVEIS PROBLEMAS
 
 ### Ctrl+/ não funciona
+
 **Causa:** Alguns terminais não capturam Ctrl+/
 
 **Solução:**
+
 - Use `Ctrl+_` (alternativa configurada)
 - Ou use `gcc` (padrão LazyVim)
 
 ### Plugins não carregam
+
 **Solução:**
+
 ```vim
 :Lazy restore
 :Lazy clean
@@ -432,22 +541,28 @@ Ctrl+\        " Toggle terminal
 ```
 
 ### LSP não ativa
+
 **Solução:**
+
 ```vim
 :LspInfo
 :LspRestart
 :Mason
 ```
+
 Reinstale as ferramentas.
 
 ### Neotest não encontra testes
+
 **Solução:**
+
 - Certifique-se que pytest está instalado no venv
 - Ative o venv correto: `<Space>cv`
 
 ### Lazygit não abre
-**Solução:**
-Instale lazygit no sistema:
+
+**Solução:** Instale lazygit no sistema:
+
 ```bash
 # Arch/Garuda
 yay -S lazygit
@@ -461,21 +576,25 @@ sudo apt install lazygit
 ## 🎓 PRÓXIMOS PASSOS
 
 ### 1. Personalize
+
 - Edite cores em `:Lazy` → busque por "colorscheme"
 - Ajuste keybindings em `~/.config/nvim/lua/config/keymaps.lua`
 - Configure databases em `~/.config/nvim/lua/plugins/sql-tools.lua`
 
 ### 2. Aprenda
+
 - Leia `KEYBINDINGS.md` completo
 - Use `<Space>fk` para explorar keybindings
 - Use `<Space>` e aguarde para ver opções
 
 ### 3. Explore Plugins
+
 - `:Lazy` - Ver todos plugins instalados
 - `:Mason` - Ver ferramentas disponíveis
 - `:Telescope` - Ver todos pickers
 
 ### 4. Documentação
+
 - `:h nvim` - Ajuda Neovim
 - `:h lazy.nvim` - Ajuda Lazy
 - `:h telescope` - Ajuda Telescope
@@ -485,19 +604,19 @@ sudo apt install lazygit
 
 ## 📊 COMPARAÇÃO ANTES vs DEPOIS
 
-| Funcionalidade | Antes | Depois |
-|----------------|-------|--------|
-| Comentar | Ctrl+Space | Ctrl+/ ✨ |
-| Git | Básico (gitsigns) | Neogit + Diffview + Lazygit ✨ |
-| Testes | Manual | Neotest com UI ✨ |
-| Docker | Nenhum | Completo (LSP + atalhos) ✨ |
-| Terminal | :terminal | ToggleTerm + especializados ✨ |
-| Task Runner | Nenhum | Overseer ✨ |
-| UI | Padrão | Noice + Notify + Dressing ✨ |
-| Diagnósticos | Lista | Trouble ✨ |
-| Busca | Básica | Telescope otimizado ✨ |
-| Keybindings | ~30 | 150+ ✨ |
-| Plugins | ~40 | ~60 ✨ |
+| Funcionalidade | Antes             | Depois                         |
+| -------------- | ----------------- | ------------------------------ |
+| Comentar       | Ctrl+Space        | Ctrl+/ ✨                      |
+| Git            | Básico (gitsigns) | Neogit + Diffview + Lazygit ✨ |
+| Testes         | Manual            | Neotest com UI ✨              |
+| Docker         | Nenhum            | Completo (LSP + atalhos) ✨    |
+| Terminal       | :terminal         | ToggleTerm + especializados ✨ |
+| Task Runner    | Nenhum            | Overseer ✨                    |
+| UI             | Padrão            | Noice + Notify + Dressing ✨   |
+| Diagnósticos   | Lista             | Trouble ✨                     |
+| Busca          | Básica            | Telescope otimizado ✨         |
+| Keybindings    | ~30               | 150+ ✨                        |
+| Plugins        | ~40               | ~60 ✨                         |
 
 ---
 
@@ -512,7 +631,7 @@ Seu Neovim agora é um **IDE moderno completo** com:
 ✅ Task runner  
 ✅ Terminais especializados  
 ✅ Interface linda  
-✅ 150+ keybindings produtivos  
+✅ 150+ keybindings produtivos
 
 **Aproveite! 🚀**
 
@@ -521,24 +640,27 @@ Seu Neovim agora é um **IDE moderno completo** com:
 ## 📝 MANUTENÇÃO
 
 ### Atualizar Plugins
+
 ```vim
 :Lazy sync
 ```
 
 ### Atualizar Ferramentas
+
 ```vim
 :Mason
 u (para atualizar tudo)
 ```
 
 ### Verificar Saúde
+
 ```vim
 :checkhealth
 ```
 
 ### Backup
-Seu config está em: `~/.config/nvim/`
-Faça backup regular ou use Git para versionar.
+
+Seu config está em: `~/.config/nvim/` Faça backup regular ou use Git para versionar.
 
 ---
 

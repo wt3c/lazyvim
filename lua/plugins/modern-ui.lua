@@ -136,11 +136,13 @@ return {
         { "<leader>f", group = "find/file" },
         { "<leader>fg", group = "git" },
         { "<leader>g", group = "git" },
+        { "<leader>h", group = "harpoon" },
         { "<leader>p", group = "python/django" },
         { "<leader>q", group = "quit" },
         { "<leader>r", group = "run" },
         { "<leader>s", group = "search/noice" },
-        { "<leader>t", group = "test/terminal" },
+        { "<leader>t", group = "test" },
+        { "<leader>T", group = "terminal" },
         { "<leader>u", group = "toggle" },
         { "<leader>w", group = "window" },
         { "<leader>x", group = "diagnostics/trouble" },
@@ -171,35 +173,8 @@ return {
     end,
   },
 
-  -- Mini.indentscope: Animated indent guides
-  {
-    "nvim-mini/mini.indentscope",
-    version = false,
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      symbol = "│",
-      options = { try_as_border = true },
-    },
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = {
-          "help",
-          "alpha",
-          "dashboard",
-          "neo-tree",
-          "Trouble",
-          "lazy",
-          "mason",
-          "notify",
-          "toggleterm",
-          "lazyterm",
-        },
-        callback = function()
-          vim.b.miniindentscope_disable = true
-        end,
-      })
-    end,
-  },
+  -- NOTE: indent guides + scope sao fornecidos pelo snacks.indent (default do
+  -- LazyVim). Nao adicionar mini.indentscope para evitar scope duplicado.
 
   -- Colorizer: Show colors in code
   {
@@ -223,13 +198,35 @@ return {
     },
   },
 
+  -- Treesitter Context: cabecalho fixo da classe/funcao atual no topo da janela.
+  -- Muito util para navegar metodos longos em models/views Django.
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = { "BufReadPost", "BufNewFile" },
+    keys = {
+      {
+        "<leader>ut",
+        function()
+          require("treesitter-context").toggle()
+        end,
+        desc = "Toggle Treesitter Context",
+      },
+    },
+    opts = {
+      max_lines = 3,
+      multiline_threshold = 1,
+      trim_scope = "outer",
+      mode = "cursor",
+      separator = "─",
+    },
+  },
+
   -- Telescope enhancements
+  -- O extra editor.telescope (auto-importado via vim.g.lazyvim_picker="telescope")
+  -- ja traz fzf-native, setup e defaults robustos. Aqui apenas ESTENDEMOS:
+  -- keymaps no esquema <leader>f* (preferencia do usuario) + mappings/pickers extras.
   {
     "nvim-telescope/telescope.nvim",
-    dependencies = {
-      "nvim-telescope/telescope-fzf-native.nvim",
-      build = "make",
-    },
     keys = {
       -- Better file navigation
       { "<leader><space>", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
@@ -245,45 +242,31 @@ return {
       -- Diagnostics
       { "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
     },
-    opts = function()
+    opts = function(_, opts)
       local actions = require("telescope.actions")
-      return {
-        defaults = {
-          prompt_prefix = " ",
-          selection_caret = " ",
-          mappings = {
-            i = {
-              ["<C-j>"] = actions.move_selection_next,
-              ["<C-k>"] = actions.move_selection_previous,
-              ["<C-n>"] = actions.cycle_history_next,
-              ["<C-p>"] = actions.cycle_history_prev,
-              ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
-              ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
-            },
-            n = {
-              ["q"] = actions.close,
-            },
+      opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
+        prompt_prefix = " ",
+        selection_caret = " ",
+        mappings = {
+          i = {
+            ["<C-j>"] = actions.move_selection_next,
+            ["<C-k>"] = actions.move_selection_previous,
+            ["<C-n>"] = actions.cycle_history_next,
+            ["<C-p>"] = actions.cycle_history_prev,
+            ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+            ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+          },
+          n = {
+            ["q"] = actions.close,
           },
         },
-        pickers = {
-          find_files = {
-            hidden = true,
-            find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
-          },
+      })
+      opts.pickers = vim.tbl_deep_extend("force", opts.pickers or {}, {
+        find_files = {
+          hidden = true,
+          find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
         },
-        extensions = {
-          fzf = {
-            fuzzy = true,
-            override_generic_sorter = true,
-            override_file_sorter = true,
-            case_mode = "smart_case",
-          },
-        },
-      }
-    end,
-    config = function(_, opts)
-      require("telescope").setup(opts)
-      require("telescope").load_extension("fzf")
+      })
     end,
   },
 }
