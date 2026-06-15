@@ -2,7 +2,7 @@
 -- Global Mason tool installation
 return {
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = {
       -- Ferramentas globais não gerenciadas por arquivos de feature específicos.
       -- Python → python-tools.lua | Docker → docker-tools.lua

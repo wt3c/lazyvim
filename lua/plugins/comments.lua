@@ -4,7 +4,7 @@
 return {
   -- LazyVim uses mini.comment by default
   {
-    "echasnovski/mini.comment",
+    "nvim-mini/mini.comment",
     event = "VeryLazy",
     opts = {
       options = {
