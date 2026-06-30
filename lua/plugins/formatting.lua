@@ -39,7 +39,7 @@ return {
         html = { "prettier" },
         css = { "prettier" },
         scss = { "prettier" },
-        markdown = { "prettier" },
+        markdown = { "prettier", "md_table_sep" },
       },
       formatters = {
         ruff_format = { command = find_ruff },
@@ -58,6 +58,16 @@ return {
         },
         shfmt = {
           prepend_args = { "-i", "2", "-bn", "-ci", "-sr" },
+        },
+        -- Convert table separator rows to match PyCharm style:
+        -- | --- | --- |  →  |---|---|  (spaces become dashes, same column width)
+        -- Skips lines inside ``` / ~~~ fenced code blocks and lines with : (alignment markers).
+        md_table_sep = {
+          command = "awk",
+          args = {
+            [[/^```/ || /^~~~/ { in_code = !in_code } !in_code && /^\|( *-+ *\|)+$/ { gsub(/ /, "-") } { print }]],
+          },
+          stdin = true,
         },
       },
     },
