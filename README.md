@@ -40,7 +40,7 @@ nvim
 ### 2. Atalhos Mais Usados
 
 | Atalho               | Ação                         |
-| -------------------- | ---------------------------- |
+|----------------------|------------------------------|
 | `<Space>` (aguardar) | Ver todas opções (Which-key) |
 | `<Space>ff`          | Buscar arquivo               |
 | `<Space>fg`          | Buscar texto (grep)          |
@@ -195,7 +195,7 @@ nvim
 ## 📦 Plugins Principais
 
 | Plugin             | Função                           |
-| ------------------ | -------------------------------- |
+|--------------------|----------------------------------|
 | LazyVim            | Base do setup                    |
 | blink.cmp          | Autocomplete                     |
 | Ruff (LSP)         | Lint + format + organize imports |
