@@ -3,6 +3,16 @@
 -- Ruff code actions (fix all / organize imports) como keymaps buffer-local.
 -- O conform ja roda ruff_format + ruff_organize_imports no save; estes atalhos
 -- permitem aplicar sob demanda sem salvar.
+local function system_python()
+  for _, executable in ipairs({ "python3", "python" }) do
+    local path = vim.fn.exepath(executable)
+    if path ~= "" then
+      return path
+    end
+  end
+  return "python"
+end
+
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("ruff_code_actions", { clear = true }),
   pattern = "python",
@@ -145,9 +155,7 @@ return {
 
       local mason_debugpy = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
       local debugpy = vim.fn.executable(mason_debugpy) == 1 and mason_debugpy
-        or vim.fn.exepath("python3")
-        or vim.fn.exepath("python")
-        or "python"
+        or system_python()
       require("dap-python").setup(debugpy)
 
       local dap, dapui = require("dap"), require("dapui")

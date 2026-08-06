@@ -339,6 +339,15 @@ No modo Insert, enquanto o menu de sugestões está aberto:
 
 ---
 
+## 📖 DICIONÁRIO DE SIGNIFICADOS
+
+- `<leader>zd` — escolher entre português brasileiro e inglês
+- `<leader>zp` — consultar no Wikcionário em português
+- `<leader>ze` — consultar no Wiktionary em inglês
+
+Os atalhos usam a palavra sob o cursor ou o texto selecionado e abrem a definição
+no navegador padrão.
+
 ## 🎨 INTERFACE
 
 ### Noice (Messages)

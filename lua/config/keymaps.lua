@@ -110,14 +110,27 @@ vim.keymap.set("n", "<leader>DB", "<cmd>!docker-compose build --no-cache<cr>", {
 -- Docker commands
 vim.keymap.set("n", "<leader>Dp", "<cmd>terminal docker ps<cr>", { desc = "Docker: List Containers" })
 vim.keymap.set("n", "<leader>Di", "<cmd>terminal docker images<cr>", { desc = "Docker: List Images" })
-vim.keymap.set("n", "<leader>Ds", "<cmd>!docker system prune -f<cr>", { desc = "Docker: System Prune" })
+vim.keymap.set("n", "<leader>Ds", function()
+  vim.ui.select({ "Cancelar", "Executar docker system prune" }, {
+    prompt = "Remover recursos Docker não utilizados?",
+  }, function(choice)
+    if choice == "Executar docker system prune" then
+      vim.cmd("terminal docker system prune -f")
+    end
+  end)
+end, { desc = "Docker: System Prune" })
 
 -- Docker exec into container
 vim.keymap.set("n", "<leader>De", function()
   vim.ui.input({ prompt = "Container name/ID: " }, function(container)
-    if container then
-      vim.cmd("terminal docker exec -it " .. container .. " /bin/bash")
+    if not container or container == "" then
+      return
     end
+
+    -- Passar argv como lista evita que nomes fornecidos pelo usuario sejam
+    -- interpretados como comandos Ex ou pelo shell.
+    vim.cmd("new")
+    vim.fn.jobstart({ "docker", "exec", "-it", container, "/bin/bash" }, { term = true })
   end)
 end, { desc = "Docker: Exec Into Container" })
 
@@ -189,6 +202,53 @@ vim.keymap.set("n", "<leader>uw", "<cmd>set wrap!<cr>", { desc = "Toggle Line Wr
 vim.keymap.set("n", "<leader>us", "<cmd>set spell!<cr>", { desc = "Toggle Spell Check" })
 vim.keymap.set("n", "<leader>ul", "<cmd>set list!<cr>", { desc = "Toggle List Chars" })
 vim.keymap.set("n", "<leader>ur", "<cmd>set relativenumber!<cr>", { desc = "Toggle Relative Numbers" })
+
+-- ============================================================================
+-- DICTIONARY (DEFINITIONS)
+-- ============================================================================
+
+local function dictionary_word()
+  if vim.fn.mode():match("[vV\22]") then
+    local previous = vim.fn.getreg('"')
+    local previous_type = vim.fn.getregtype('"')
+    vim.cmd("normal! y")
+    local selected = vim.trim(vim.fn.getreg('"'):gsub("[\r\n]+", " "))
+    vim.fn.setreg('"', previous, previous_type)
+    return selected
+  end
+  return vim.fn.expand("<cword>")
+end
+
+local function lookup_dictionary(language)
+  local word = dictionary_word()
+  if word == "" then
+    vim.notify("Nenhuma palavra selecionada", vim.log.levels.WARN)
+    return
+  end
+
+  local host = language == "pt" and "pt.wiktionary.org" or "en.wiktionary.org"
+  local url = ("https://%s/wiki/Special:Search?search=%s"):format(host, vim.uri_encode(word))
+  local ok, err = vim.ui.open(url)
+  if not ok then
+    vim.notify("Não foi possível abrir o dicionário: " .. tostring(err), vim.log.levels.ERROR)
+  end
+end
+
+vim.keymap.set({ "n", "x" }, "<leader>zp", function()
+  lookup_dictionary("pt")
+end, { desc = "Dicionário: português" })
+
+vim.keymap.set({ "n", "x" }, "<leader>ze", function()
+  lookup_dictionary("en")
+end, { desc = "Dictionary: English" })
+
+vim.keymap.set({ "n", "x" }, "<leader>zd", function()
+  vim.ui.select({ "Português brasileiro", "English" }, { prompt = "Consultar em qual dicionário?" }, function(choice)
+    if choice then
+      lookup_dictionary(choice == "Português brasileiro" and "pt" or "en")
+    end
+  end)
+end, { desc = "Dicionário: escolher idioma" })
 
 -- ============================================================================
 -- NOTES

@@ -1,5 +1,15 @@
 -- ~/.config/nvim/lua/plugins/test-runner.lua
 -- Modern test and script execution
+local function system_python()
+  for _, executable in ipairs({ "python3", "python" }) do
+    local path = vim.fn.exepath(executable)
+    if path ~= "" then
+      return path
+    end
+  end
+  return "python"
+end
+
 return {
   -- Neotest: Modern test runner with UI
   {
@@ -132,7 +142,7 @@ return {
                   return path
                 end
               end
-              return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
+              return system_python()
             end,
           }),
         },

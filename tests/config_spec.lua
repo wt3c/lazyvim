@@ -51,6 +51,39 @@ describe("config/keymaps", function()
     assert.is_nil(src:find("lsp%.buf%.definition"))
     assert.is_nil(src:find("lsp%.buf%.references"))
   end)
+
+  it("oferece dicionários de português e inglês", function()
+    assert.truthy(src:find('host = language == "pt" and "pt.wiktionary.org" or "en.wiktionary.org"', 1, true))
+    assert.truthy(src:find('"<leader>zp"', 1, true))
+    assert.truthy(src:find('"<leader>ze"', 1, true))
+    assert.truthy(src:find('"<leader>zd"', 1, true))
+  end)
+end)
+
+describe("correcoes de robustez", function()
+  it("markdownlint não exige configuração global inexistente", function()
+    local content = read("lua/plugins/markdown-tools.lua")
+    assert.is_nil(content:find("~/.markdownlint.json", 1, true))
+  end)
+
+  it("docker exec usa argv e não concatena entrada do usuário", function()
+    local content = read("lua/config/keymaps.lua")
+    assert.is_truthy(content:find('{ "docker", "exec", "-it", container, "/bin/bash" }', 1, true))
+    assert.is_nil(content:find('"terminal docker exec -it " .. container', 1, true))
+  end)
+
+  it("docker system prune pede confirmação", function()
+    local content = read("lua/config/keymaps.lua")
+    assert.is_truthy(content:find('vim.ui.select({ "Cancelar", "Executar docker system prune" }', 1, true))
+  end)
+
+  it("fallbacks de Python não tratam string vazia como executável", function()
+    for _, file in ipairs({ "lua/plugins/python-tools.lua", "lua/plugins/test-runner.lua" }) do
+      local content = read(file)
+      assert.is_truthy(content:find('if path ~= "" then', 1, true))
+      assert.is_nil(content:find('exepath("python3") or vim.fn.exepath', 1, true))
+    end
+  end)
 end)
 
 describe("plugins/formatting (conform)", function()
