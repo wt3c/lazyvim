@@ -103,52 +103,11 @@ return {
     },
   },
 
-  -- Which-key: Show keybindings (LazyVim includes this, but we enhance it)
-  {
-    "folke/which-key.nvim",
-    opts = {
-      plugins = {
-        marks = true,
-        registers = true,
-        spelling = {
-          enabled = true,
-          suggestions = 20,
-        },
-        presets = {
-          operators = true,
-          motions = true,
-          text_objects = true,
-          windows = true,
-          nav = true,
-          z = true,
-          g = true,
-        },
-      },
-      win = {
-        border = "rounded",
-        padding = { 2, 2, 2, 2 },
-      },
-      spec = {
-        { "<leader>b", group = "buffer" },
-        { "<leader>c", group = "code/lsp" },
-        { "<leader>d", group = "debug" },
-        { "<leader>D", group = "docker" },
-        { "<leader>f", group = "find/file" },
-        { "<leader>fg", group = "git" },
-        { "<leader>g", group = "git" },
-        { "<leader>h", group = "harpoon" },
-        { "<leader>p", group = "python/django" },
-        { "<leader>q", group = "quit" },
-        { "<leader>r", group = "run" },
-        { "<leader>s", group = "search/noice" },
-        { "<leader>t", group = "test" },
-        { "<leader>T", group = "terminal" },
-        { "<leader>u", group = "toggle" },
-        { "<leader>w", group = "window" },
-        { "<leader>x", group = "diagnostics/trouble" },
-      },
-    },
-  },
+  -- Which-key: desabilitado -- substituido por legendary.nvim (lua/plugins/legendary.lua)
+  -- enabled = false sobrescreve o spec que o LazyVim core (lazyvim.plugins.editor) importa;
+  -- LazyVim.mini.ai_whichkey (coding.lua) so roda via LazyVim.on_load("which-key.nvim", ...),
+  -- entao nao carregar o plugin nao gera erro.
+  { "folke/which-key.nvim", enabled = false },
 
   -- Illuminate: Highlight same words under cursor
   {
