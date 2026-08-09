@@ -198,10 +198,9 @@ vim.keymap.set("n", "<leader>qQ", "<cmd>qa!<cr>", { desc = "Quit All Force" })
 vim.keymap.set("n", "<leader>so", "<cmd>source %<cr>", { desc = "Source Current File" })
 
 -- Toggle options
-vim.keymap.set("n", "<leader>uw", "<cmd>set wrap!<cr>", { desc = "Toggle Line Wrap" })
-vim.keymap.set("n", "<leader>us", "<cmd>set spell!<cr>", { desc = "Toggle Spell Check" })
-vim.keymap.set("n", "<leader>ul", "<cmd>set list!<cr>", { desc = "Toggle List Chars" })
-vim.keymap.set("n", "<leader>ur", "<cmd>set relativenumber!<cr>", { desc = "Toggle Relative Numbers" })
+-- NOTE: wrap/spell/relativenumber/line-number ja sao cobertos pelo LazyVim core
+-- (Snacks.toggle em <leader>uw/us/uL/ul) -- nao duplicar aqui, so o que falta:
+vim.keymap.set("n", "<leader>uv", "<cmd>set list!<cr>", { desc = "Toggle List Chars (view whitespace)" })
 
 -- ============================================================================
 -- DICTIONARY (DEFINITIONS)

@@ -6,7 +6,16 @@ return {
   "zaldih/themery.nvim",
   lazy = false,
   keys = {
-    { "<leader>uc", "<cmd>Themery<cr>", desc = "Themery: Switch colorscheme" },
+    -- uC maiusculo: <leader>uc minusculo ja e "Toggle Conceal Level" no LazyVim core (Snacks.toggle)
+    { "<leader>uC", "<cmd>Themery<cr>", desc = "Themery: Switch colorscheme" },
+    {
+      "<leader>uB",
+      function()
+        local light, dark = "catppuccin-latte", "tokyonight-moon"
+        require("themery").setThemeByName(vim.g.colors_name == light and dark or light, true)
+      end,
+      desc = "Toggle light/dark theme",
+    },
   },
   opts = {
     themes = {

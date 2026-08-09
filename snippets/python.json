@@ -1,0 +1,49 @@
+{
+  "Django Class-Based View": {
+    "prefix": "djcbv",
+    "body": [
+      "class ${1:Name}View(${2:generic.View}):",
+      "    def ${3:get}(self, request, *args, **kwargs):",
+      "        ${0:pass}"
+    ],
+    "description": "Django generic class-based view"
+  },
+  "DRF ModelSerializer": {
+    "prefix": "drfserializer",
+    "body": [
+      "class ${1:Name}Serializer(serializers.ModelSerializer):",
+      "    class Meta:",
+      "        model = ${2:Model}",
+      "        fields = [${0:\"__all__\"}]"
+    ],
+    "description": "DRF ModelSerializer"
+  },
+  "DRF ModelViewSet": {
+    "prefix": "drfviewset",
+    "body": [
+      "class ${1:Name}ViewSet(viewsets.ModelViewSet):",
+      "    queryset = ${2:Model}.objects.all()",
+      "    serializer_class = ${1:Name}Serializer",
+      "    permission_classes = [${0:permissions.IsAuthenticated}]"
+    ],
+    "description": "DRF ModelViewSet"
+  },
+  "Django URL Pattern": {
+    "prefix": "djurl",
+    "body": [
+      "path(\"${1:route}/\", ${2:view}.as_view(), name=\"${0:name}\"),"
+    ],
+    "description": "Django urlpatterns entry"
+  },
+  "Django Model": {
+    "prefix": "djmodel",
+    "body": [
+      "class ${1:Name}(models.Model):",
+      "    ${2:field} = models.${3:CharField}(${0:max_length=255})",
+      "",
+      "    def __str__(self):",
+      "        return str(self.${2:field})"
+    ],
+    "description": "Django model"
+  }
+}
