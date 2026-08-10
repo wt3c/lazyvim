@@ -41,7 +41,7 @@ nvim
 
 | Atalho               | Ação                         |
 |----------------------|------------------------------|
-| `<Space>` (aguardar) | Ver todas opções (Which-key) |
+| `<Space>?`           | Ver todas opções (Legendary) |
 | `<Space>ff`          | Buscar arquivo               |
 | `<Space>fg`          | Buscar texto (grep)          |
 | `<Space>fk`          | Ver todos keybindings        |
@@ -113,7 +113,7 @@ nvim
 - Notify (notificações)
 - Telescope (busca fuzzy)
 - Trouble (diagnósticos)
-- Which-key (ajuda)
+- Legendary (paleta de comandos/keymaps — `<Space>?`)
 - Treesitter Context (cabeçalho fixo da classe/função — `<Space>ut` alterna)
 
 ---
@@ -210,7 +210,7 @@ nvim
 | ToggleTerm         | Terminais                        |
 | Noice              | UI moderna                       |
 | Trouble            | Lista de diagnósticos            |
-| Which-key          | Ajuda de keybindings             |
+| Legendary          | Paleta de comandos/keymaps       |
 
 ---
 
@@ -355,7 +355,7 @@ Remove tudo (com opção de backup). Veja [INSTALL.md](./INSTALL.md) para detalh
 
 ## 💡 Dicas
 
-1. **Use Which-key:** Aperte `<Space>` e espere para ver opções
+1. **Use Legendary:** Aperte `<Space>?` para ver todos os comandos/keymaps
 2. **Explore Telescope:** `<Space>fk` mostra todos keybindings
 3. **Aprenda aos poucos:** Não precisa decorar tudo de uma vez
 4. **Use :help:** `:help <termo>` é seu melhor amigo

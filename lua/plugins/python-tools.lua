@@ -17,7 +17,7 @@ vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("ruff_code_actions", { clear = true }),
   pattern = "python",
   callback = function(args)
-    local function ruff_action(kind, desc)
+    local function ruff_action(kind)
       return function()
         vim.lsp.buf.code_action({
           context = { only = { kind }, diagnostics = {} },

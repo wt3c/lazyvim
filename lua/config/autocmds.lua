@@ -15,6 +15,29 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "WinEnter", "CursorHold
   end,
 })
 
+-- Hot-reload: re-executa options/keymaps/autocmds ao salvar, sem precisar
+-- reiniciar o nvim. lua/plugins/*.lua ja e recarregado automaticamente pelo
+-- lazy.nvim (change_detection.enabled = default do LazyVim) -- nao duplicar aqui.
+-- lazy.lua/init.lua ficam de fora: fazem bootstrap do lazy.nvim e nao sao
+-- seguros de re-executar em quente (duplicariam o setup).
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = vim.api.nvim_create_augroup("config_hot_reload", { clear = true }),
+  pattern = vim.fn.stdpath("config") .. "/lua/config/*.lua",
+  callback = function(ev)
+    local reloadable = { ["options.lua"] = true, ["keymaps.lua"] = true, ["autocmds.lua"] = true }
+    local basename = vim.fn.fnamemodify(ev.file, ":t")
+    if not reloadable[basename] then
+      return
+    end
+    local ok, err = pcall(dofile, ev.file)
+    if ok then
+      vim.notify("Config recarregada: " .. basename, vim.log.levels.INFO)
+    else
+      vim.notify("Erro ao recarregar " .. basename .. ": " .. err, vim.log.levels.ERROR)
+    end
+  end,
+})
+
 -- Spell: habilitar apenas em filetypes de texto (nao em codigo)
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("spell_text", { clear = true }),

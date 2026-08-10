@@ -12,6 +12,10 @@ vim.g.lazyvim_picker = "telescope"
 -- Clipboard: usa clipboard do sistema (wl-clipboard no Wayland, xclip no X11)
 opt.clipboard = "unnamedplus"
 
+-- Python host provider: venv dedicado (pynvim) usado tambem pelo molten-nvim
+-- para falar com o kernel Jupyter. Ver lua/plugins/jupyter-tools.lua.
+vim.g.python3_host_prog = vim.fn.expand("~/.local/share/nvim/venvs/jupyter/bin/python")
+
 -- Exibicao de linha
 opt.colorcolumn = "120"
 opt.number = true

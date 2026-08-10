@@ -32,7 +32,8 @@ vim.defer_fn(function()
     )
   end
 
-  check("which-key carregado", pcall(require, "which-key"))
+  check("which-key desabilitado (substituído por legendary.nvim)", not pcall(require, "which-key"))
+  check("legendary carregável", pcall(require, "legendary"))
 
   -- Resolução de keymaps (sem colisão entre teste e terminal).
   check("<leader>tf = Test: Run File", desc(" tf") == "Test: Run File")

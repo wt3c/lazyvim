@@ -134,15 +134,10 @@ describe("plugins/modern-ui", function()
     assert.is_nil(find_plugin(specs, "nvim-mini/mini.indentscope"))
   end)
 
-  it("which-key define o grupo <leader>h (harpoon)", function()
+  it("which-key permanece desabilitado (substituído por legendary.nvim)", function()
     local wk = find_plugin(specs, "folke/which-key.nvim")
-    local has_group = false
-    for _, group in ipairs(wk.opts.spec) do
-      if group[1] == "<leader>h" then
-        has_group = true
-      end
-    end
-    assert.is_true(has_group)
+    assert.is_not_nil(wk)
+    assert.is_false(wk.enabled)
   end)
 
   it("telescope é aditivo (sem config/dependências redundantes)", function()
