@@ -330,10 +330,14 @@ No modo Insert, enquanto o menu de sugestões está aberto:
 
 ## ⚡ TOGGLES E OPÇÕES
 
-- `<leader>uw` - Toggle line wrap
-- `<leader>us` - Toggle spell check
-- `<leader>ul` - Toggle list chars
-- `<leader>ur` - Toggle relative numbers
+- `<leader>uw` - Toggle line wrap (LazyVim core)
+- `<leader>us` - Toggle spell check (LazyVim core)
+- `<leader>ul` - Toggle line number (LazyVim core)
+- `<leader>ur` - Toggle relative numbers (LazyVim core)
+- `<leader>uc` - Toggle conceal level (LazyVim core)
+- `<leader>uv` - Toggle list chars (view whitespace)
+- `<leader>uC` - Themery: trocar colorscheme (live preview)
+- `<leader>uB` - Alternar tema claro/escuro (catppuccin-latte / tokyonight-moon)
 - `<leader>ut` - Toggle Treesitter Context (cabeçalho fixo de classe/função)
 - `<leader>un` - Dismiss notifications
 
@@ -360,6 +364,57 @@ no navegador padrão.
 
 - `]]` - Próxima referência
 - `[[` - Referência anterior
+
+---
+
+## 🤖 CLAUDE CODE (claudecode.nvim)
+
+Bridge com o CLI `claude` já autenticado.
+
+- `<leader>ac` - Toggle painel Claude
+- `<leader>af` - Focus no painel Claude
+- `<leader>am` - Selecionar modelo
+- `<leader>ab` - Adicionar buffer atual ao contexto
+- `<leader>as` - Enviar seleção (modo visual)
+- `<leader>aa` - Aceitar diff
+- `<leader>ad` - Recusar diff
+
+---
+
+## 🐍 PYTHON (uv.nvim)
+
+Prefixo `<leader>U` (o default `<leader>x` colide com Trouble e o core do LazyVim).
+Ativo apenas em buffers `python`.
+
+- `<leader>U` - Menu de comandos UV (picker)
+- `<leader>Ur` - UV Run Current File
+- `<leader>Us` - UV Run Selection (modo visual)
+- `<leader>Uf` - UV Run Function
+- `<leader>Ue` - UV Environment (seletor de venv)
+- `<leader>Ui` - UV Init (novo projeto)
+- `<leader>Ua` - UV Add Package
+- `<leader>Ud` - UV Remove Package
+- `<leader>Uc` - UV Sync Packages
+- `<leader>UC` - UV Sync (all extras/groups/packages)
+
+---
+
+## 📓 JUPYTER (.ipynb)
+
+`jupytext.nvim` converte `.ipynb` ↔ markdown automaticamente ao abrir/salvar.
+`molten-nvim` executa células contra um kernel Jupyter real. Ativo em `python`,
+`markdown` e `quarto`. Renderização de imagem (plots) só funciona no terminal Kitty.
+
+- `<leader>mi` - Molten: Init Kernel
+- `<leader>me` - Molten: Evaluate Operator
+- `<leader>ml` - Molten: Evaluate Line
+- `<leader>mr` - Molten: Re-evaluate Cell
+- `<leader>mv` - Molten: Evaluate Visual (modo visual)
+- `<leader>mo` - Molten: Show Output
+- `<leader>mh` - Molten: Hide Output
+- `<leader>md` - Molten: Delete Cell
+- `<leader>mx` - Molten: Interrupt
+- `<leader>mR` - Molten: Restart Kernel
 
 ---
 

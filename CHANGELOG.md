@@ -1,5 +1,53 @@
 # 🚀 Changelog - Reconfiguração Completa do LazyVim
 
+## 📦 Versão 2.3 - Claude Code, Jupyter, uv.nvim & Temas (09/08/2026)
+
+### 🤖 Claude Code
+
+- **claudecode.nvim** — bridge nativo com o CLI `claude` já autenticado, sob `<leader>a*`
+  (toggle, focus, seleção de modelo, enviar buffer/seleção, aceitar/recusar diff)
+- **which-key removido** em favor de **legendary.nvim**: paleta de comandos/keymaps
+  pesquisável via Telescope (`<leader>?`), com auto-registro dos specs do lazy.nvim
+
+### 📓 Jupyter (.ipynb)
+
+- **jupytext.nvim** converte `.ipynb` ↔ markdown ao abrir/salvar
+- **molten-nvim** executa células contra um kernel Jupyter real, output inline (`<leader>m*`)
+- **image.nvim** + **luarocks.nvim** renderizam plots inline (backend Kitty — só funciona
+  dentro do terminal Kitty; fora dele a execução de células segue normal, sem os plots)
+
+### 🐍 uv.nvim
+
+- Roda/gerencia projeto uv (`run`/`add`/`remove`/`sync`) sem sair do editor, sob `<leader>U`
+  (prefixo default `<leader>x` colidia com Trouble e o core do LazyVim)
+
+### 🎨 Temas
+
+- **themery.nvim** — troca de colorscheme com live preview e persistência entre sessões
+  (`<leader>uC`), toggle rápido claro/escuro (`<leader>uB`)
+- Novos colorschemes: **Kanagawa**, **Gruvbox**, **Nightfox/Carbonfox** (além de Tokyo Night
+  e Catppuccin já existentes)
+
+### 🐛 Correções e limpeza
+
+- **Colisão de keymap resolvida:** bindings de `themery`/listchars sob `<leader>u*`
+  sobrescreviam os toggles core do `Snacks.toggle` (conceallevel, line number, wrap, spell) —
+  movidos para `<leader>uC`/`<leader>uv`, duplicatas (`uw`/`us`/`ur`) removidas em favor dos
+  defaults do LazyVim core
+- Removido override morto de formatter do sqlfluff e parâmetro `desc` não usado em `ruff_action`
+- Adicionado local de save do dadbod-ui
+- **Ruff do venv priorizado sobre o Mason** no `conform` (`find_ruff()`: venv ativo → `.venv/`
+  local → Mason/PATH como fallback) — evitava divergência de versão entre IDE e nvim
+- `md_table_sep` integrado ao `conform` para alinhar separadores de tabela markdown (estilo
+  PyCharm), pulando blocos de código e linhas de marcador de alinhamento
+- **Hot-reload:** `options.lua`/`keymaps.lua`/`autocmds.lua` são re-executados via `dofile` no
+  `BufWritePost`, aplicando mudanças sem reiniciar o nvim (`lua/plugins/*.lua` já hot-recarrega
+  via `change_detection` do lazy.nvim)
+- Dicionário bilíngue (PT-BR/EN) endurecido — ver seção `<leader>z*` no
+  [KEYBINDINGS.md](KEYBINDINGS.md)
+
+---
+
 ## 📦 Versão 2.2 - Ruff-First, Autocomplete & Cleanup (15/06/2026)
 
 ### 🐍 Ruff como ferramenta central (Python/Django)

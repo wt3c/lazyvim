@@ -71,6 +71,14 @@ nvim
 - Neotest (testes com UI, runner pytest)
 - Django management commands (`<Space>p`)
 - Virtual environment selector (`<Space>cv`, fornecido pelo extra do LazyVim)
+- **uv.nvim** — roda/gerencia projeto uv sem sair do editor (`<Space>U`, ver [KEYBINDINGS.md](KEYBINDINGS.md))
+
+### 📓 Jupyter (.ipynb)
+
+- `jupytext.nvim` converte `.ipynb` ↔ markdown automaticamente ao abrir/salvar
+- `molten-nvim` executa células contra um kernel Jupyter real, output inline (`<Space>m*`)
+- Renderização de imagens/plots (`image.nvim`, backend Kitty) só funciona no terminal
+  Kitty — fora dele, a execução de células continua normal, apenas sem os plots
 
 ### ⌨️ Autocomplete
 
@@ -106,6 +114,12 @@ nvim
 - Python REPL (`<Space>Tp`)
 - Docker logs (`<Space>Tl`)
 - Lazygit (`<Space>Tg`)
+
+### 🤖 Claude Code
+
+- `claudecode.nvim` — bridge nativo com o CLI `claude` já autenticado (`<Space>a*`,
+  ver [KEYBINDINGS.md](KEYBINDINGS.md))
+- Toggle/focus do painel, seleção de modelo, envio de seleção/buffer, aceitar/recusar diffs
 
 ### 🎨 UI Moderna
 
@@ -211,6 +225,11 @@ nvim
 | Noice              | UI moderna                       |
 | Trouble            | Lista de diagnósticos            |
 | Legendary          | Paleta de comandos/keymaps       |
+| uv.nvim            | Gerenciador de projeto uv        |
+| molten-nvim        | Execução de células Jupyter      |
+| jupytext.nvim      | Conversão .ipynb ↔ markdown      |
+| Themery            | Troca de colorscheme com preview |
+| claudecode.nvim    | Bridge com o CLI Claude Code     |
 
 ---
 
@@ -436,12 +455,13 @@ Se encontrar problemas:
 
 ## 🎉 Versão
 
-**2.2 - Ruff-First & Autocomplete Edition**  
-Data: 15/06/2026
+**2.3 - Claude Code, Jupyter & Temas**  
+Data: 09/08/2026
 
-> Destaques 2.2: Ruff centralizado (lint+format+imports) com code actions, autocomplete blink.cmp afinado, Treesitter
-> Context, picker unificado no Telescope, novos plugins (Harpoon, Spectre, Oil), terminal movido p/ `<Space>T` (sem
-> colisão com testes), e APIs deprecadas (diagnostic/gitsigns) atualizadas para o Neovim 0.12.
+> Destaques 2.3: claudecode.nvim integrado (`<Space>a*`), which-key trocado por legendary.nvim,
+> suporte a Jupyter notebooks (jupytext + molten, `<Space>m*`), uv.nvim para projetos Python
+> (`<Space>U`), themery.nvim com novos colorschemes (Kanagawa, Gruvbox, Nightfox) e correção de
+> colisões de keymap em `<Space>u*`. Ver [CHANGELOG.md](./CHANGELOG.md) para detalhes.
 
 ---
 
