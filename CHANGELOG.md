@@ -1,5 +1,14 @@
 # 🚀 Changelog - Reconfiguração Completa do LazyVim
 
+## Não lançado
+
+### ⌨️ Atalhos
+
+- Restaurado o **which-key.nvim** fornecido pelo LazyVim: `<Space>` volta a abrir o menu contextual de atalhos,
+  `<leader>?` mostra os atalhos locais do buffer e `<C-w><Space>` ativa o modo contínuo de janelas
+- Removido o **legendary.nvim**, que substituía o comportamento padrão e não descobria automaticamente todos os
+  atalhos declarados diretamente com `vim.keymap.set()`
+
 ## 📦 Versão 2.3 - Claude Code, Jupyter, uv.nvim & Temas (09/08/2026)
 
 ### 🤖 Claude Code

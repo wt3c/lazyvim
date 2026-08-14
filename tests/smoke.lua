@@ -32,8 +32,12 @@ vim.defer_fn(function()
     )
   end
 
-  check("which-key desabilitado (substituído por legendary.nvim)", not pcall(require, "which-key"))
-  check("legendary carregável", pcall(require, "legendary"))
+  local which_key_ok = pcall(require, "which-key")
+  check("which-key carregado pelo LazyVim", which_key_ok)
+  check("<leader>? = atalhos locais do buffer (which-key)", desc(" ?") == "Buffer Keymaps (which-key)")
+
+  local lazy_plugins = require("lazy.core.config").plugins
+  check("legendary não faz parte do spec", lazy_plugins["legendary.nvim"] == nil)
 
   -- Resolução de keymaps (sem colisão entre teste e terminal).
   check("<leader>tf = Test: Run File", desc(" tf") == "Test: Run File")

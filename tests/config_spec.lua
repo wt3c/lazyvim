@@ -134,10 +134,8 @@ describe("plugins/modern-ui", function()
     assert.is_nil(find_plugin(specs, "nvim-mini/mini.indentscope"))
   end)
 
-  it("which-key permanece desabilitado (substituído por legendary.nvim)", function()
-    local wk = find_plugin(specs, "folke/which-key.nvim")
-    assert.is_not_nil(wk)
-    assert.is_false(wk.enabled)
+  it("which-key usa o spec padrão do LazyVim, sem override local", function()
+    assert.is_nil(find_plugin(specs, "folke/which-key.nvim"))
   end)
 
   it("telescope é aditivo (sem config/dependências redundantes)", function()

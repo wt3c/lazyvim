@@ -103,12 +103,6 @@ return {
     },
   },
 
-  -- Which-key: desabilitado -- substituido por legendary.nvim (lua/plugins/legendary.lua)
-  -- enabled = false sobrescreve o spec que o LazyVim core (lazyvim.plugins.editor) importa;
-  -- LazyVim.mini.ai_whichkey (coding.lua) so roda via LazyVim.on_load("which-key.nvim", ...),
-  -- entao nao carregar o plugin nao gera erro.
-  { "folke/which-key.nvim", enabled = false },
-
   -- Illuminate: Highlight same words under cursor
   {
     "RRethy/vim-illuminate",

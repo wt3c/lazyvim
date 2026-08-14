@@ -79,6 +79,12 @@
 > dos atalhos abaixo, o LazyVim também expõe o esquema `<leader>s*` (ex.: `<leader>sg` grep, `<leader>sk` keymaps,
 > `<leader>sw` palavra) — descubra com `<Space>` + Which-key.
 
+### Descobrir atalhos (padrão LazyVim)
+
+- `<Space>` + aguardar - Exibir os próximos atalhos disponíveis no Which-key
+- `<leader>?` - Exibir os atalhos locais do buffer no Which-key
+- `<C-w><Space>` - Abrir o modo contínuo de gerenciamento de janelas no Which-key
+
 ### Arquivos e Navegação
 
 - `<leader>ff` - Buscar arquivos
@@ -471,7 +477,7 @@ Ativo apenas em buffers `python`.
 - Telescope: <https://github.com/nvim-telescope/telescope.nvim>
 - Neogit: <https://github.com/NeogitOrg/neogit>
 - Neotest: <https://github.com/nvim-neotest/neotest>
-- Which-key: Aperte `<Space>` e espere para ver opções disponíveis!
+- Which-key: aperte `<Space>` e espere para ver as opções disponíveis!
 
 ---
 
