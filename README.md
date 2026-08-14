@@ -41,7 +41,7 @@ nvim
 
 | Atalho               | Ação                         |
 |----------------------|------------------------------|
-| `<Space>?`           | Ver todas opções (Legendary) |
+| `<Space>?`           | Atalhos locais (which-key)   |
 | `<Space>ff`          | Buscar arquivo               |
 | `<Space>fg`          | Buscar texto (grep)          |
 | `<Space>fk`          | Ver todos keybindings        |
@@ -54,6 +54,7 @@ nvim
 
 ```vim
 :checkhealth
+:checkhealth nvim_config
 :LspInfo
 ```
 
@@ -67,7 +68,7 @@ nvim
   - Formatação/imports no save via conform (`ruff_format` + `ruff_organize_imports`)
   - Code actions sob demanda: `<Space>cR` (Fix All) e `<Space>co` (Organize Imports)
 - Pyright (type checking + hover/completion) + Mypy (checagem profunda via nvim-lint)
-- Debug (DAP) com config Django pronta (`<Space>dj` sobe o runserver)
+- Debug (DAP) pelo extra oficial do LazyVim, com config Django pronta (`<Space>dPr` sobe o runserver)
 - Neotest (testes com UI, runner pytest)
 - Django management commands (`<Space>p`)
 - Virtual environment selector (`<Space>cv`, fornecido pelo extra do LazyVim)
@@ -77,8 +78,9 @@ nvim
 
 - `jupytext.nvim` converte `.ipynb` ↔ markdown automaticamente ao abrir/salvar
 - `molten-nvim` executa células contra um kernel Jupyter real, output inline (`<Space>m*`)
-- Renderização de imagens/plots (`image.nvim`, backend Kitty) só funciona no terminal
-  Kitty — fora dele, a execução de células continua normal, apenas sem os plots
+- `install.sh` cria um ambiente isolado com `pynvim`, `jupyter-client` e o conversor `jupytext`
+- Renderização de imagens/plots usa `image.nvim`, ImageMagick e o protocolo gráfico Kitty; fora de um terminal
+  compatível, a execução de células continua normal, apenas sem os plots
 
 ### ⌨️ Autocomplete
 
@@ -127,7 +129,7 @@ nvim
 - Notify (notificações)
 - Telescope (busca fuzzy)
 - Trouble (diagnósticos)
-- Legendary (paleta de comandos/keymaps — `<Space>?`)
+- Which-key (descoberta contextual de atalhos; `<Space>?` mostra os atalhos locais do buffer)
 - Treesitter Context (cabeçalho fixo da classe/função — `<Space>ut` alterna)
 
 ---

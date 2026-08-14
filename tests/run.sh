@@ -61,7 +61,16 @@ run_unit() {
 
 run_smoke() {
   step "Smoke (boot da config completa)"
-  if nvim --headless +"luafile tests/smoke.lua"; then pass "smoke"; else err "smoke"; fi
+  local runtime_dir
+  runtime_dir="$(mktemp -d "${TMPDIR:-/tmp}/nvim-config-smoke.XXXXXX")"
+  if XDG_CACHE_HOME="$runtime_dir/cache" XDG_STATE_HOME="$runtime_dir/state" \
+    JUPYTER_DATA_DIR="$runtime_dir/jupyter" \
+    nvim --headless +"luafile tests/smoke.lua"; then
+    pass "smoke"
+  else
+    err "smoke"
+  fi
+  rm -rf -- "$runtime_dir"
 }
 
 case "$MODE" in

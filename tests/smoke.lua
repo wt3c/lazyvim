@@ -38,12 +38,27 @@ vim.defer_fn(function()
 
   local lazy_plugins = require("lazy.core.config").plugins
   check("legendary não faz parte do spec", lazy_plugins["legendary.nvim"] == nil)
+  check("checkhealth nvim_config disponível", pcall(require, "nvim_config.health"))
+  check("provider Python configurado", vim.fn.executable(vim.g.python3_host_prog or "") == 1)
+  check("Molten registrado como plugin remoto", vim.fn.exists(":MoltenInit") == 2)
+  check("dap.core: nvim-nio disponível", pcall(require, "nio"))
+  check("dap.core: dap-ui disponível", pcall(require, "dapui"))
 
   -- Resolução de keymaps (sem colisão entre teste e terminal).
   check("<leader>tf = Test: Run File", desc(" tf") == "Test: Run File")
   check("<leader>Tf = Terminal: Float", desc(" Tf") == "Terminal: Float")
   check("- = Oil", (desc("-") or ""):match("Oil") ~= nil)
   check("<leader>ha = Harpoon", (desc(" ha") or ""):match("Harpoon") ~= nil)
+  check("<leader>dj preservado pelo DAP oficial", desc(" dj") == "Down")
+  check("<leader>dl preservado pelo DAP oficial", desc(" dl") == "Run Last")
+
+  local notebook = vim.fn.getcwd() .. "/tests/fixtures/minimal.ipynb"
+  local opened = pcall(vim.cmd.edit, vim.fn.fnameescape(notebook))
+  local converted = opened
+    and vim.bo.filetype == "markdown"
+    and table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n"):find("nvim%-jupytext%-ok") ~= nil
+  check("Jupytext converte notebook real para Markdown", converted)
+  check("Gitsigns não anexa ao buffer .ipynb", vim.b.gitsigns_status_dict == nil)
 
   if #failures == 0 then
     print("\nSMOKE: TODOS OS TESTES PASSARAM")

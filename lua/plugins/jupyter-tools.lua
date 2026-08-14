@@ -2,34 +2,26 @@
 -- Jupyter (.ipynb) no Neovim:
 --   jupytext.nvim -> converte .ipynb <-> texto (markdown/python) ao abrir/salvar
 --   molten-nvim   -> executa celulas contra um kernel Jupyter real, output inline
---   image.nvim    -> renderiza imagens/plots inline (SO funciona no terminal Kitty;
---                     Alacritty, o $terminal default do Hyprland, nao suporta o
---                     protocolo de graficos Kitty -- fora do Kitty, molten ainda
---                     roda celulas normalmente, so sem os plots).
+--   image.nvim    -> renderiza imagens/plots em terminais compatíveis com o
+--                    protocolo gráfico Kitty; fora deles, Molten continua funcional.
+local jupyter_venv = vim.fn.stdpath("data") .. "/venvs/jupyter/bin"
+
 return {
   {
-    "GCBallesteros/jupytext.nvim",
+    "goerz/jupytext.nvim",
+    version = "0.2.0",
     opts = {
-      style = "markdown",
-      output_extension = "md",
-      force_ft = "markdown",
-    },
-  },
-
-  {
-    "vhyrro/luarocks.nvim",
-    priority = 1001,
-    opts = {
-      rocks = { "magick" },
+      jupytext = jupyter_venv .. "/jupytext",
+      format = "markdown",
+      update = true,
     },
   },
 
   {
     "3rd/image.nvim",
-    dependencies = { "vhyrro/luarocks.nvim" },
     opts = {
       backend = "kitty",
-      processor = "magick_rock",
+      processor = "magick_cli",
       max_width_window_percentage = 100,
       max_height_window_percentage = 50,
     },

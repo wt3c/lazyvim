@@ -137,12 +137,15 @@
 ### Debug (DAP)
 
 - `<leader>db` - Toggle breakpoint
-- `<leader>dc` - Continue
-- `<leader>do` - Step over
+- `<leader>dc` - Executar/continuar
+- `<leader>dO` - Step over
 - `<leader>di` - Step into
-- `<leader>dr` - Abrir REPL
-- `<leader>dl` - Debug test method
-- `<leader>dj` - Launch Django server (debug)
+- `<leader>do` - Step out
+- `<leader>dr` - Alternar REPL
+- `<leader>du` - Alternar a interface do DAP
+- `<leader>dPt` - Debug do método Python
+- `<leader>dPc` - Debug da classe Python
+- `<leader>dPr` - Executar Django `runserver` com debugger
 
 ---
 

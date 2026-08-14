@@ -15,13 +15,8 @@ return {
       { "<leader>sh", "<cmd>Noice history<cr>", desc = "Noice: History" },
     },
     opts = {
-      lsp = {
-        override = {
-          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-          ["vim.lsp.util.stylize_markdown"] = true,
-          ["cmp.entry.get_documentation"] = true,
-        },
-      },
+      -- Os overrides de LSP são fornecidos pelo LazyVim. Não os repetimos
+      -- aqui porque stylize_markdown foi depreciado no Neovim 0.12.
       routes = {
         {
           filter = {

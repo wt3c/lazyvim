@@ -62,10 +62,16 @@ return {
         untracked = { text = "▎" },
       },
       on_attach = function(buffer)
+        -- jupytext.nvim intercepta leitura e escrita de notebooks; o plugin
+        -- documenta que buffers .ipynb não são compatíveis com Gitsigns.
+        if vim.api.nvim_buf_get_name(buffer):match("%.ipynb$") then
+          return false
+        end
+
         local gs = package.loaded.gitsigns
 
         local function map(mode, l, r, desc)
-          vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
+          vim.keymap.set(mode, l, r, { buf = buffer, desc = desc })
         end
 
         -- Navigation (nav_hunk: API atual; next_hunk/prev_hunk deprecados)

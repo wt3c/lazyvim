@@ -25,7 +25,7 @@ vim.api.nvim_create_autocmd("FileType", {
         })
       end
     end
-    local opts = { buffer = args.buf, silent = true }
+    local opts = { buf = args.buf, silent = true }
     vim.keymap.set(
       "n",
       "<leader>cR",
@@ -142,62 +142,52 @@ return {
     end,
   },
 
-  -- DAP: Python debugging via Mason-installed debugpy
+  -- DAP Python: o ciclo de vida/UI/atalhos gerais ficam com o extra dap.core.
+  -- Aqui mantemos apenas a resolução do debugpy e o perfil específico do Django.
   {
-    "mfussenegger/nvim-dap",
-    dependencies = {
-      "mfussenegger/nvim-dap-python",
-      "rcarriga/nvim-dap-ui",
-      "nvim-neotest/nvim-nio",
+    "mfussenegger/nvim-dap-python",
+    keys = {
+      {
+        "<leader>dPr",
+        function()
+          local dap = require("dap")
+          for _, config in ipairs(dap.configurations.python or {}) do
+            if config.name == "Django: runserver" then
+              dap.run(config)
+              return
+            end
+          end
+          vim.notify("Perfil DAP do Django não encontrado", vim.log.levels.ERROR)
+        end,
+        desc = "Python: Debug Django runserver",
+        ft = "python",
+      },
     },
     config = function()
-      require("dapui").setup()
-
       local mason_debugpy = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
-      local debugpy = vim.fn.executable(mason_debugpy) == 1 and mason_debugpy
-        or system_python()
+      local debugpy_adapter = vim.fn.exepath("debugpy-adapter")
+      local debugpy = debugpy_adapter ~= "" and debugpy_adapter
+        or (vim.fn.executable(mason_debugpy) == 1 and mason_debugpy or system_python())
       require("dap-python").setup(debugpy)
 
-      local dap, dapui = require("dap"), require("dapui")
+      local dap = require("dap")
 
-      dap.listeners.after.event_initialized["dapui_config"] = function()
-        dapui.open()
-      end
-      dap.listeners.before.event_terminated["dapui_config"] = function()
-        dapui.close()
-      end
-      dap.listeners.before.event_exited["dapui_config"] = function()
-        dapui.close()
-      end
-
-      -- Registrar config Django no init (não sobrescreve outras configs ao pressionar tecla)
+      -- Não duplica o perfil ao recarregar a spec durante ajustes da configuração.
       dap.configurations.python = dap.configurations.python or {}
-      table.insert(dap.configurations.python, {
-        type = "python",
-        request = "launch",
-        name = "Django: runserver",
-        program = "${workspaceFolder}/manage.py",
-        args = { "runserver" },
-        django = true,
-        justMyCode = true,
-      })
-
-      vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
-      vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue" })
-      vim.keymap.set("n", "<leader>do", dap.step_over, { desc = "Step Over" })
-      vim.keymap.set("n", "<leader>di", dap.step_into, { desc = "Step Into" })
-      vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Open REPL" })
-      vim.keymap.set("n", "<leader>dl", function()
-        require("dap-python").test_method()
-      end, { desc = "Debug Test Method" })
-      vim.keymap.set("n", "<leader>dj", function()
-        for _, config in ipairs(dap.configurations.python or {}) do
-          if config.name == "Django: runserver" then
-            dap.run(config)
-            return
-          end
-        end
-      end, { desc = "Launch Django Server" })
+      local has_django = vim.iter(dap.configurations.python):any(function(config)
+        return config.name == "Django: runserver"
+      end)
+      if not has_django then
+        table.insert(dap.configurations.python, {
+          type = "python",
+          request = "launch",
+          name = "Django: runserver",
+          program = "${workspaceFolder}/manage.py",
+          args = { "runserver" },
+          django = true,
+          justMyCode = true,
+        })
+      end
     end,
   },
 

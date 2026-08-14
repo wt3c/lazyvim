@@ -2,6 +2,30 @@
 
 ## Não lançado
 
+### 🩺 Compatibilidade com Neovim 0.12
+
+- Removidos usos depreciados de `vim.loop`, `buffer` em opções de keymap e `float` em `vim.diagnostic.jump()`
+- Restaurados `swapfile` e `writebackup`, evitando perda de recuperação após crash ou falha durante escrita
+- O provider Python só é fixado quando o executável configurado existe; caminhos inválidos deixam de quebrar o
+  healthcheck
+- Providers remotos Node, Perl e Ruby foram desativados porque não há plugins que os utilizem; LSPs do Mason não
+  dependem deles
+- Download do dicionário migrou de `jobstart()` para `vim.system()` e publica o arquivo somente após sucesso
+- Adicionado `:checkhealth nvim_config` para verificar versão, ferramentas externas, provider Python, Jupyter e debugpy
+- `install.sh` agora valida o Neovim 0.12 e cria um provider isolado com `uv`; stubs Django deixam de ser instalados
+  globalmente e passam a ser responsabilidade de cada projeto
+- Substituído o `jupytext.nvim` antigo pela reescrita com healthcheck atual, caminho isolado do CLI e sincronização
+  segura; Gitsigns não tenta mais anexar a buffers `.ipynb` incompatíveis
+- `image.nvim` passou a usar o CLI do ImageMagick, eliminando a dependência redundante de LuaRocks e Lua 5.1
+
+### 🐛 Debug e saúde de boot
+
+- Ativado o extra oficial `lazyvim.plugins.extras.dap.core`; a configuração local agora estende apenas o adaptador
+  Python e o perfil Django, preservando a UI, os atalhos, os sinais e a integração Mason do LazyVim
+- Corrigida a relação entre `nvim-dap-ui` e `nvim-nio`, que podia quebrar o boot por ordem de carregamento
+- Atalho do Django movido para `<leader>dPr`, sem sobrescrever `<leader>dj` e `<leader>dl` do DAP oficial
+- Smoke test passou a isolar cache e estado em diretório temporário, evitando depender de permissões externas ao repo
+
 ### ⌨️ Atalhos
 
 - Restaurado o **which-key.nvim** fornecido pelo LazyVim: `<Space>` volta a abrir o menu contextual de atalhos,

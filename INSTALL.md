@@ -2,10 +2,15 @@
 
 ## 📋 Pré-requisitos
 
-- **Neovim** >= 0.10.0
-- **Git**
-- **Python** 3.10+ (para Python/Django features)
+- **Neovim** >= 0.12.0, compilado com LuaJIT
+- **Git** >= 2.19
+- **curl**, compilador C e **tree-sitter-cli**
+- **ripgrep** (obrigatório nesta config), **fd** e **fzf**
+- **Python** 3.10+ e **uv** (provider Python/Jupyter isolado)
+- **Node.js/npm** (usados por diversos servidores instalados pelo Mason)
 - **wl-clipboard** (Wayland) ou **xclip** (X11) — clipboard do sistema
+- **ImageMagick** (opcional, para imagens e plots inline do Jupyter)
+- Terminal com true color e undercurl; Nerd Font v3 é opcional, mas necessária para todos os ícones
 
 ```bash
 # Wayland (Hyprland, Sway, GNOME Wayland, etc.)
@@ -51,6 +56,8 @@ nvim
 
 # 7. Verificar tudo (opcional)
 ./check-ruff.sh
+# Dentro do Neovim:
+:checkhealth nvim_config vim.provider
 ```
 
 **Pronto! ✅**

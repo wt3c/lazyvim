@@ -1,7 +1,7 @@
 #!/bin/bash
 # Instalação automática - Execute após clonar o repositório
 
-set -e
+set -euo pipefail
 
 echo "╔═══════════════════════════════════════════════════════════════════╗"
 echo "║                                                                   ║"
@@ -10,13 +10,13 @@ echo "║                                                                   ║"
 echo "╚═══════════════════════════════════════════════════════════════════╝"
 echo ""
 
-NVIM_DIR="$HOME/.config/nvim"
+NVIM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUFF_DIR="$HOME/.config/ruff"
+JUPYTER_VENV="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/venvs/jupyter"
 
 # Verificar se está no diretório correto
-if [ ! -f "$NVIM_DIR/install.sh" ]; then
-  echo "❌ Execute este script de dentro do diretório ~/.config/nvim"
-  echo "   cd ~/.config/nvim && ./install.sh"
+if [ ! -f "$NVIM_DIR/init.lua" ]; then
+  echo "❌ O diretório do script não parece uma configuração do Neovim: $NVIM_DIR"
   exit 1
 fi
 
@@ -56,59 +56,48 @@ echo ""
 # 2. Verificar dependências
 echo "2️⃣  Verificando dependências..."
 
-# Neovim
-if command -v nvim &> /dev/null; then
+# Neovim 0.12+
+if command -v nvim &>/dev/null; then
   nvim_version=$(nvim --version | head -1)
-  echo "   ✅ Neovim: $nvim_version"
+  if nvim --clean --headless -u NONE \
+    '+lua if vim.fn.has("nvim-0.12") == 0 then vim.cmd("cquit") end' +qa &>/dev/null; then
+    echo "   ✅ Neovim: $nvim_version"
+  else
+    echo "   ❌ Neovim 0.12+ é obrigatório; encontrado: $nvim_version"
+    exit 1
+  fi
 else
   echo "   ❌ Neovim não instalado!"
   echo "      Instale: https://neovim.io"
   exit 1
 fi
 
-# Git
-if command -v git &> /dev/null; then
-  echo "   ✅ Git instalado"
-else
-  echo "   ❌ Git não instalado!"
-  exit 1
-fi
+required_tools=(git curl rg make cc tree-sitter node npm python3 uv)
+for tool in "${required_tools[@]}"; do
+  if command -v "$tool" &>/dev/null; then
+    echo "   ✅ $tool instalado"
+  else
+    echo "   ❌ $tool não encontrado"
+    exit 1
+  fi
+done
 
 # Ruff (opcional)
-if command -v ruff &> /dev/null; then
+if command -v ruff &>/dev/null; then
   echo "   ✅ Ruff: $(ruff --version)"
 else
   echo "   ⚠️  Ruff não instalado (será instalado via Mason)"
 fi
 
-# Python e pip
-if command -v python3 &> /dev/null; then
-  echo "   ✅ Python: $(python3 --version)"
-else
-  echo "   ❌ Python3 não instalado!"
-  exit 1
-fi
-
-if command -v pip3 &> /dev/null; then
-  echo "   ✅ pip instalado"
-else
-  echo "   ❌ pip3 não instalado!"
-  exit 1
-fi
-
 echo ""
 
-# 3. Instalar Django type stubs (para LSP)
-echo "3️⃣  Instalando Django type stubs para pyright/pylance..."
-
-# Verificar se já estão instalados
-if python3 -c "import django_stubs" 2> /dev/null; then
-  echo "   ✅ django-stubs já instalado"
-else
-  echo "   📦 Instalando stubs..."
-  pip3 install --user django-stubs djangorestframework-stubs django-types django-stubs-ext
-  echo "   ✅ Type stubs instalados"
-fi
+# 3. Provider Python isolado para Neovim/Jupyter
+echo "3️⃣  Configurando provider Python e Jupyter..."
+uv venv --allow-existing "$JUPYTER_VENV"
+uv pip install --python "$JUPYTER_VENV/bin/python" --upgrade pynvim jupyter-client jupytext
+echo "   ✅ Provider criado em $JUPYTER_VENV"
+echo "   ℹ️  Stubs Django devem ser dependências de desenvolvimento de cada projeto"
+echo "      Exemplo: uv add --dev django-stubs djangorestframework-stubs"
 
 echo ""
 
@@ -119,7 +108,7 @@ echo "   ✅ Scripts prontos"
 
 echo ""
 
-# 4. Instruções finais
+# 5. Instruções finais
 echo "════════════════════════════════════════════════════════════════════"
 echo "✅ Instalação Completa!"
 echo "════════════════════════════════════════════════════════════════════"
@@ -136,8 +125,6 @@ echo "3. Instale ferramentas LSP:"
 echo "   :Mason"
 echo "   (Instale: pyright, ruff, mypy, debugpy, sqlfluff, etc)"
 echo ""
-echo "   💡 Django type stubs já instalados para melhor LSP!"
-echo ""
 echo "4. Reinicie o Neovim:"
 echo "   :qa"
 echo "   nvim"
@@ -145,7 +132,10 @@ echo ""
 echo "5. Verifique line-length:"
 echo "   cd ~/.config/nvim && ./check-ruff.sh"
 echo ""
-echo "6. Leia a documentação:"
+echo "6. Verifique a saúde da configuração:"
+echo "   :checkhealth nvim_config vim.provider"
+echo ""
+echo "7. Leia a documentação:"
 echo "   :e ~/.config/nvim/README.md"
 echo "   :e ~/.config/nvim/KEYBINDINGS.md"
 echo ""
