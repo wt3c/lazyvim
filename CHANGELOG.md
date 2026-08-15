@@ -2,6 +2,11 @@
 
 ## Não lançado
 
+### 🎛️ UI
+
+- Reintroduzido o **legendary.nvim** como paleta de comandos complementar (`<leader>sL`), agora coexistindo com o
+  **which-key** padrão do LazyVim em vez de substituí-lo — `<leader>?` continua sendo o Which-key de buffer
+
 ### 🩺 Compatibilidade com Neovim 0.12
 
 - Removidos usos depreciados de `vim.loop`, `buffer` em opções de keymap e `float` em `vim.diagnostic.jump()`

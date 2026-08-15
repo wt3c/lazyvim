@@ -84,6 +84,7 @@
 - `<Space>` + aguardar - Exibir os próximos atalhos disponíveis no Which-key
 - `<leader>?` - Exibir os atalhos locais do buffer no Which-key
 - `<C-w><Space>` - Abrir o modo contínuo de gerenciamento de janelas no Which-key
+- `<leader>sL` - Abrir a paleta de comandos Legendary (busca fuzzy de keymaps/comandos, complementa o Which-key)
 
 ### Arquivos e Navegação
 
