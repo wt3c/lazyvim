@@ -14,30 +14,48 @@
 
 ## ⚡ Quick Start
 
-### 0. Pré-requisito: Clipboard do sistema
-
 ```bash
-# Wayland (Hyprland, Sway, GNOME Wayland)
-yay -S wl-clipboard
-
-# X11
-yay -S xclip
-```
-
-### 1. Primeira Vez
-
-```bash
-# Abrir Neovim
+git clone https://github.com/wt3c/lazyvim.git ~/.config/nvim
+cd ~/.config/nvim
+./install.sh
 nvim
-
-# Sincronizar plugins (dentro do Neovim)
-:Lazy sync
-
-# Instalar ferramentas
-:Mason
 ```
 
-### 2. Atalhos Mais Usados
+Na primeira abertura, aguarde o Lazy e o Mason instalarem plugins e ferramentas. Depois execute
+`:checkhealth nvim_config vim.provider mason`.
+
+### Dependências obrigatórias do sistema
+
+| Executável | Uso |
+| --- | --- |
+| `nvim` 0.12+ | Runtime da configuração e APIs utilizadas |
+| `git`, `curl` | Bootstrap de plugins e downloads |
+| `rg`, `fd` | Telescope e descoberta de ambientes pelo `venv-selector.nvim` |
+| `make`, `cc`, `tree-sitter` | Extensões nativas e parsers do Treesitter |
+| `node`, `npm` | Servidores e ferramentas JavaScript instalados pelo Mason |
+| `python3`, `uv` | Projetos Python e provider isolado do Neovim/Jupyter |
+| `unzip`, `tar`, `gzip` | Extração de pacotes pelo Mason |
+
+O `install.sh` valida esses executáveis e cria o ambiente Jupyter com `pynvim`, `jupyter-client`, `jupytext` e
+`ipykernel`. Os comandos de instalação para openSUSE e a matriz completa estão em [INSTALL.md](INSTALL.md).
+
+### Dependências por funcionalidade
+
+| Recurso | Dependência externa |
+| --- | --- |
+| Clipboard do sistema | `wl-copy` (`wl-clipboard`) no Wayland ou `xclip` no X11 |
+| Busca fuzzy no terminal | `fzf` |
+| Interface Git em terminal | `lazygit` |
+| Atalhos Docker | Docker com `docker compose` ou o legado `docker-compose` |
+| Plots e imagens inline | ImageMagick (`magick`) e Kitty ou terminal compatível com o protocolo gráfico Kitty |
+| Claude Code | CLI `claude` instalado e autenticado |
+| Bancos via Dadbod | Cliente do banco usado: `psql`, `sqlite3` ou `mysql` |
+| Ícones completos | Nerd Font v3 configurada no terminal |
+
+Pyright, Ruff, Mypy, debugpy, sqlfluff, Marksman, markdownlint, formatadores e servidores de linguagem são
+declarados pela configuração e gerenciados pelo Mason; não devem ser instalados globalmente só para o Neovim.
+
+### Atalhos Mais Usados
 
 | Atalho               | Ação                         |
 |----------------------|------------------------------|
@@ -50,11 +68,11 @@ nvim
 | `Ctrl+\`             | Terminal                     |
 | `<Space>gg`          | Git (Neogit)                 |
 
-### 3. Verificar Tudo Funciona
+### Verificar tudo
 
 ```vim
 :checkhealth
-:checkhealth nvim_config
+:checkhealth nvim_config vim.provider mason
 :LspInfo
 ```
 

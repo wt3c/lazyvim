@@ -24,8 +24,76 @@ echo "📋 Checklist de Instalação:"
 echo "────────────────────────────────────────────────────────────────────"
 echo ""
 
-# 1. Criar configuração global do Ruff
-echo "1️⃣  Configurando Ruff global (line-length 120)..."
+# 1. Verificar dependências antes de modificar o ambiente do usuário
+echo "1️⃣  Verificando dependências..."
+
+# Neovim 0.12+ com LuaJIT
+if command -v nvim &>/dev/null; then
+  nvim_version=$(nvim --version | head -1)
+  if nvim --clean --headless -u NONE \
+    '+lua if vim.fn.has("nvim-0.12") == 0 or not jit then vim.cmd("cquit") end' +qa &>/dev/null; then
+    echo "   ✅ Neovim: $nvim_version"
+  else
+    echo "   ❌ Neovim 0.12+ com LuaJIT é obrigatório; encontrado: $nvim_version"
+    exit 1
+  fi
+else
+  echo "   ❌ Neovim não instalado!"
+  echo "      Instale: https://neovim.io"
+  exit 1
+fi
+
+required_tools=(git curl rg fd make cc tree-sitter node npm python3 uv unzip tar gzip)
+missing_required=()
+for tool in "${required_tools[@]}"; do
+  if command -v "$tool" &>/dev/null; then
+    echo "   ✅ $tool instalado"
+  else
+    echo "   ❌ $tool não encontrado"
+    missing_required+=("$tool")
+  fi
+done
+
+if [ "${#missing_required[@]}" -gt 0 ]; then
+  echo ""
+  echo "   Dependências obrigatórias ausentes: ${missing_required[*]}"
+  echo "   Consulte INSTALL.md para os pacotes de cada sistema. No openSUSE Tumbleweed:"
+  echo "   sudo zypper install neovim git curl ripgrep fd make gcc tree-sitter"
+  echo "     nodejs24 npm24 python313 python313-uv unzip tar gzip"
+  exit 1
+fi
+
+echo ""
+echo "   Integrações opcionais:"
+optional_tools=(fzf lazygit docker magick kitty claude sqlite3 psql mysql)
+for tool in "${optional_tools[@]}"; do
+  if command -v "$tool" &>/dev/null; then
+    echo "   ✅ $tool instalado"
+  else
+    echo "   ⚠️  $tool não encontrado (funcionalidade opcional; veja INSTALL.md)"
+  fi
+done
+
+if command -v wl-copy &>/dev/null; then
+  echo "   ✅ clipboard Wayland disponível (wl-copy)"
+elif command -v xclip &>/dev/null; then
+  echo "   ✅ clipboard X11 disponível (xclip)"
+else
+  echo "   ⚠️  Clipboard externo indisponível (instale wl-clipboard ou xclip)"
+fi
+
+if command -v docker &>/dev/null && docker compose version &>/dev/null; then
+  echo "   ✅ Docker Compose disponível (docker compose)"
+elif command -v docker-compose &>/dev/null; then
+  echo "   ✅ Docker Compose legado disponível (docker-compose)"
+else
+  echo "   ⚠️  Docker Compose não encontrado (atalhos Docker Compose ficarão indisponíveis)"
+fi
+
+echo ""
+
+# 2. Criar configuração global do Ruff
+echo "2️⃣  Configurando Ruff global (line-length 120)..."
 
 if [ -f "$NVIM_DIR/ruff-config/pyproject.toml" ]; then
   mkdir -p "$RUFF_DIR"
@@ -53,51 +121,13 @@ fi
 
 echo ""
 
-# 2. Verificar dependências
-echo "2️⃣  Verificando dependências..."
-
-# Neovim 0.12+
-if command -v nvim &>/dev/null; then
-  nvim_version=$(nvim --version | head -1)
-  if nvim --clean --headless -u NONE \
-    '+lua if vim.fn.has("nvim-0.12") == 0 then vim.cmd("cquit") end' +qa &>/dev/null; then
-    echo "   ✅ Neovim: $nvim_version"
-  else
-    echo "   ❌ Neovim 0.12+ é obrigatório; encontrado: $nvim_version"
-    exit 1
-  fi
-else
-  echo "   ❌ Neovim não instalado!"
-  echo "      Instale: https://neovim.io"
-  exit 1
-fi
-
-required_tools=(git curl rg make cc tree-sitter node npm python3 uv)
-for tool in "${required_tools[@]}"; do
-  if command -v "$tool" &>/dev/null; then
-    echo "   ✅ $tool instalado"
-  else
-    echo "   ❌ $tool não encontrado"
-    exit 1
-  fi
-done
-
-# Ruff (opcional)
-if command -v ruff &>/dev/null; then
-  echo "   ✅ Ruff: $(ruff --version)"
-else
-  echo "   ⚠️  Ruff não instalado (será instalado via Mason)"
-fi
-
-echo ""
-
 # 3. Provider Python isolado para Neovim/Jupyter
 echo "3️⃣  Configurando provider Python e Jupyter..."
 uv venv --allow-existing "$JUPYTER_VENV"
-uv pip install --python "$JUPYTER_VENV/bin/python" --upgrade pynvim jupyter-client jupytext
+uv pip install --python "$JUPYTER_VENV/bin/python" --upgrade pynvim jupyter-client jupytext ipykernel \
+  django-stubs djangorestframework-stubs
 echo "   ✅ Provider criado em $JUPYTER_VENV"
-echo "   ℹ️  Stubs Django devem ser dependências de desenvolvimento de cada projeto"
-echo "      Exemplo: uv add --dev django-stubs djangorestframework-stubs"
+echo "   ✅ Type stubs Django/DRF instalados globalmente (django-stubs, djangorestframework-stubs)"
 
 echo ""
 
@@ -121,9 +151,9 @@ echo ""
 echo "2. Aguarde plugins sincronizarem (Lazy.nvim faz automaticamente)"
 echo "   Ou force: :Lazy sync"
 echo ""
-echo "3. Instale ferramentas LSP:"
+echo "3. Verifique as ferramentas LSP instaladas automaticamente:"
 echo "   :Mason"
-echo "   (Instale: pyright, ruff, mypy, debugpy, sqlfluff, etc)"
+echo "   (A configuração declara Pyright, Ruff, Mypy, debugpy, sqlfluff e as demais.)"
 echo ""
 echo "4. Reinicie o Neovim:"
 echo "   :qa"
@@ -132,8 +162,8 @@ echo ""
 echo "5. Verifique line-length:"
 echo "   cd ~/.config/nvim && ./check-ruff.sh"
 echo ""
-echo "6. Verifique a saúde da configuração:"
-echo "   :checkhealth nvim_config vim.provider"
+echo "6. Verifique a saúde da configuração e do gerenciador de ferramentas:"
+echo "   :checkhealth nvim_config vim.provider mason"
 echo ""
 echo "7. Leia a documentação:"
 echo "   :e ~/.config/nvim/README.md"

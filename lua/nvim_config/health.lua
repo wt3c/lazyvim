@@ -14,12 +14,19 @@ local function check_executable(name, description, required)
   end
 end
 
-local function can_import_pynvim(python)
+local function can_import(python, modules)
   if not python or python == "" or vim.fn.executable(python) ~= 1 then
     return false
   end
-  local result = vim.system({ python, "-c", "import pynvim" }, { text = true }):wait(5000)
+  local result = vim.system({ python, "-c", "import " .. table.concat(modules, ", ") }, { text = true }):wait(5000)
   return result.code == 0
+end
+
+local function command_succeeds(command)
+  if not executable(command[1]) then
+    return false
+  end
+  return vim.system(command, { text = true }):wait(5000).code == 0
 end
 
 function M.check()
@@ -30,12 +37,18 @@ function M.check()
   else
     vim.health.error("Neovim 0.12+ é obrigatório", { "Atualize o Neovim antes de carregar esta configuração." })
   end
+  if jit then
+    vim.health.ok("LuaJIT disponível")
+  else
+    vim.health.error("Esta configuração exige Neovim compilado com LuaJIT")
+  end
 
   vim.health.start("Ferramentas essenciais")
   for _, tool in ipairs({
     { "git", "bootstrap e atualização dos plugins" },
     { "curl", "blink.cmp e download do dicionário" },
     { "rg", "Telescope e busca de texto" },
+    { "fd", "descoberta de ambientes virtuais pelo venv-selector" },
     { "make", "compilação de plugins" },
     { "cc", "parsers do Treesitter e extensões nativas" },
     { "tree-sitter", "geração de parsers" },
@@ -43,27 +56,51 @@ function M.check()
     { "npm", "ferramentas JavaScript instaladas pelo Mason" },
     { "python3", "desenvolvimento Python e plugins remotos" },
     { "uv", "provider Python/Jupyter isolado e projetos Python" },
+    { "unzip", "extração de ferramentas instaladas pelo Mason" },
+    { "tar", "extração de ferramentas instaladas pelo Mason" },
+    { "gzip", "extração de ferramentas instaladas pelo Mason" },
   }) do
     check_executable(tool[1], tool[2], true)
   end
 
   vim.health.start("Integrações opcionais")
   for _, tool in ipairs({
-    { "fd", "acelera alguns pickers de arquivos" },
     { "fzf", "busca fuzzy no terminal" },
     { "lazygit", "atalho <leader>Tg" },
     { "docker", "atalhos <leader>D*" },
-    { "docker-compose", "fallback legado para Docker Compose" },
     { "magick", "renderização opcional de imagens e plots do Jupyter" },
+    { "kitty", "terminal recomendado para imagens e plots inline" },
+    { "claude", "integração claudecode.nvim" },
+    { "sqlite3", "conexões SQLite pelo vim-dadbod" },
+    { "psql", "conexões PostgreSQL pelo vim-dadbod" },
+    { "mysql", "conexões MySQL/MariaDB pelo vim-dadbod" },
   }) do
     check_executable(tool[1], tool[2], false)
+  end
+
+  if command_succeeds({ "docker", "compose", "version" }) then
+    vim.health.ok("Docker Compose disponível (docker compose)")
+  elseif executable("docker-compose") then
+    vim.health.ok("Docker Compose legado disponível (docker-compose)")
+  else
+    vim.health.warn("Docker Compose não encontrado: atalhos de Compose ficarão indisponíveis")
+  end
+
+  if executable("wl-copy") then
+    vim.health.ok("Clipboard Wayland disponível (wl-copy)")
+  elseif executable("xclip") then
+    vim.health.ok("Clipboard X11 disponível (xclip)")
+  else
+    vim.health.warn("Clipboard externo indisponível", {
+      "Instale wl-clipboard no Wayland ou xclip no X11.",
+    })
   end
 
   vim.health.start("Provider Python e Jupyter")
   local configured = vim.g.python3_host_prog
   local pynvim_python = vim.fn.exepath("pynvim-python")
   local candidate = configured or (pynvim_python ~= "" and pynvim_python or vim.fn.exepath("python3"))
-  if can_import_pynvim(candidate) then
+  if can_import(candidate, { "pynvim" }) then
     vim.health.ok("Provider Python consegue importar pynvim: " .. candidate)
   else
     vim.health.warn("Provider Python sem pynvim funcional", {
@@ -75,6 +112,13 @@ function M.check()
   local dedicated = vim.fn.stdpath("data") .. "/venvs/jupyter/bin/python"
   if vim.fn.executable(dedicated) == 1 then
     vim.health.ok("Venv dedicado do Jupyter encontrado: " .. dedicated)
+    if can_import(dedicated, { "pynvim", "jupyter_client", "jupytext", "ipykernel" }) then
+      vim.health.ok("Dependências Python do Jupyter disponíveis")
+    else
+      vim.health.error("Dependências Python do Jupyter incompletas", {
+        "Execute `./install.sh` para instalar pynvim, jupyter-client, jupytext e ipykernel.",
+      })
+    end
   else
     vim.health.warn("Venv dedicado do Jupyter não encontrado: " .. dedicated, {
       "Molten exige um provider Python com pynvim e dependências Jupyter funcionais.",

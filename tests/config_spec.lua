@@ -90,6 +90,20 @@ describe("compatibilidade com Neovim 0.12", function()
     assert.is_function(require("nvim_config.health").check)
   end)
 
+  it("verifica dependências essenciais do venv-selector e do Mason", function()
+    local health = read("lua/nvim_config/health.lua")
+    local install = read("install.sh")
+    for _, tool in ipairs({ "fd", "unzip", "tar", "gzip" }) do
+      assert.is_truthy(health:find('{ "' .. tool .. '"', 1, true))
+    end
+    assert.is_truthy(
+      install:find("required_tools=(git curl rg fd make cc tree-sitter node npm python3 uv unzip tar gzip)", 1, true)
+    )
+    assert.is_truthy(install:find("pynvim jupyter-client jupytext ipykernel", 1, true))
+    assert.is_truthy(health:find('{ "pynvim", "jupyter_client", "jupytext", "ipykernel" }', 1, true))
+    assert.is_truthy(read("quick-install.sh"):find('exec "$NVIM_DIR/install.sh" "$@"', 1, true))
+  end)
+
   it("usa a implementação atual do jupytext com executável isolado", function()
     local content = read("lua/plugins/jupyter-tools.lua")
     assert.is_truthy(content:find('"goerz/jupytext.nvim"', 1, true))

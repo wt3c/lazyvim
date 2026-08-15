@@ -12,8 +12,12 @@
   dependem deles
 - Download do dicionário migrou de `jobstart()` para `vim.system()` e publica o arquivo somente após sucesso
 - Adicionado `:checkhealth nvim_config` para verificar versão, ferramentas externas, provider Python, Jupyter e debugpy
-- `install.sh` agora valida o Neovim 0.12 e cria um provider isolado com `uv`; stubs Django deixam de ser instalados
-  globalmente e passam a ser responsabilidade de cada projeto
+- `install.sh` agora valida o Neovim 0.12 e cria um provider isolado com `uv`, instalando `django-stubs` e
+  `djangorestframework-stubs` globalmente nesse ambiente
+- Auditoria de instalação passou a tratar `fd`, `unzip`, `tar` e `gzip` como requisitos obrigatórios, documentar as
+  dependências opcionais por funcionalidade e instalar `ipykernel` no ambiente Jupyter isolado
+- `quick-install.sh` agora delega ao instalador principal, eliminando o fluxo legado que orientava recriar plugins
+  manualmente a partir do starter do LazyVim
 - Substituído o `jupytext.nvim` antigo pela reescrita com healthcheck atual, caminho isolado do CLI e sincronização
   segura; Gitsigns não tenta mais anexar a buffers `.ipynb` incompatíveis
 - `image.nvim` passou a usar o CLI do ImageMagick, eliminando a dependência redundante de LuaRocks e Lua 5.1
