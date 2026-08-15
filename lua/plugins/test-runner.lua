@@ -128,6 +128,13 @@ return {
       },
     },
     opts = function()
+      local ignored_discovery_dirs = {
+        [".git"] = true,
+        [".pytest_cache"] = true,
+        [".venv"] = true,
+        ["__pycache__"] = true,
+      }
+
       return {
         adapters = {
           require("neotest-python")({
@@ -145,6 +152,11 @@ return {
               return system_python()
             end,
           }),
+        },
+        discovery = {
+          filter_dir = function(name)
+            return not ignored_discovery_dirs[name]
+          end,
         },
         -- Show test status in the sign column
         status = {

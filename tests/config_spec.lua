@@ -236,6 +236,21 @@ describe("plugins/test-runner (sem colisão terminal × teste)", function()
     local keys = lhs_set(find_plugin(specs, "nvim-neotest/neotest"))
     assert.is_true(keys["<leader>tf"])
   end)
+
+  it("neotest ignora ambientes e caches durante a descoberta", function()
+    local previous = package.loaded["neotest-python"]
+    package.loaded["neotest-python"] = function(opts)
+      return opts
+    end
+
+    local opts = find_plugin(specs, "nvim-neotest/neotest").opts()
+    package.loaded["neotest-python"] = previous
+
+    for _, name in ipairs({ ".git", ".pytest_cache", ".venv", "__pycache__" }) do
+      assert.is_false(opts.discovery.filter_dir(name))
+    end
+    assert.is_true(opts.discovery.filter_dir("tests"))
+  end)
 end)
 
 describe("plugins/git-modern (gitsigns com API atual)", function()
