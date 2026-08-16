@@ -57,9 +57,13 @@ done
 if [ "${#missing_required[@]}" -gt 0 ]; then
   echo ""
   echo "   Dependências obrigatórias ausentes: ${missing_required[*]}"
-  echo "   Consulte INSTALL.md para os pacotes de cada sistema. No openSUSE Tumbleweed:"
+  echo "   Consulte INSTALL.md para os pacotes de cada sistema."
+  echo "   openSUSE Tumbleweed:"
   echo "   sudo zypper install neovim git curl ripgrep fd make gcc tree-sitter"
   echo "     nodejs24 npm24 python313 python313-uv unzip tar gzip"
+  echo "   Arch Linux / Garuda Linux:"
+  echo "   sudo pacman -S --needed neovim git curl ripgrep fd make gcc tree-sitter tree-sitter-cli"
+  echo "     nodejs npm python python-pip uv unzip tar gzip"
   exit 1
 fi
 

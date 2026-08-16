@@ -72,6 +72,34 @@ sudo zypper install docker docker-compose-switch
 Para PostgreSQL, instale a versão do cliente compatível com seu ambiente, por exemplo `postgresql18`. Para
 MySQL/MariaDB, instale o cliente correspondente ao servidor utilizado.
 
+## Instalação no Arch Linux / Garuda Linux
+
+Instale os requisitos obrigatórios:
+
+```bash
+sudo pacman -S --needed \
+  neovim git curl ripgrep fd make gcc tree-sitter tree-sitter-cli \
+  nodejs npm python python-pip uv unzip tar gzip
+```
+
+No Arch, `tree-sitter` é só a biblioteca; o binário `tree-sitter` usado pela configuração vem do pacote
+`tree-sitter-cli` — instale os dois.
+
+Instale apenas as integrações que pretende usar:
+
+```bash
+sudo pacman -S --needed fzf lazygit wl-clipboard xclip imagemagick kitty sqlite
+```
+
+Para Docker:
+
+```bash
+sudo pacman -S --needed docker docker-compose
+```
+
+Para PostgreSQL, instale `postgresql` (traz o `psql`). Para MySQL/MariaDB, instale `mariadb-clients`. Todos os
+pacotes acima estão nos repositórios oficiais (`core`/`extra`); nenhum exige AUR.
+
 ## Instalação da configuração
 
 Se já existir uma configuração, mova-a para um backup antes de clonar:
