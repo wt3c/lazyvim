@@ -6,7 +6,7 @@ return {
   cmd = { "Telescope" },
   opts = {
     mode = "portable",
-    sign = "N",
+    sign = "📝",
     filetype = "md",
   },
   config = function(_, opts)
@@ -74,4 +74,14 @@ return {
       desc = "Nota: deletar (arquivo/linha)",
     },
   },
+  init = function()
+    -- Ao entrar em qualquer buffer, mostra na gutter o sinal (ver opts.sign)
+    -- nas linhas que têm nota — sem notificação/lista, só o indicador inline.
+    vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+      group = vim.api.nvim_create_augroup("quicknote_show_signs", { clear = true }),
+      callback = function()
+        require("quicknote").ShowNoteSigns()
+      end,
+    })
+  end,
 }
