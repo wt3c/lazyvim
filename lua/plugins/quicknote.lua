@@ -11,6 +11,7 @@ return {
   },
   config = function(_, opts)
     require("quicknote").setup(opts)
+    require("telescope").load_extension("quicknote")
   end,
   keys = {
     -- <leader>n sozinho já é "Notification History" (LazyVim/Snacks), por isso
@@ -36,6 +37,11 @@ return {
         require("quicknote").ListNotesForCWD()
       end,
       desc = "Nota: listar (projeto)",
+    },
+    {
+      "<leader>Np",
+      "<cmd>Telescope quicknote<cr>",
+      desc = "Nota: listar com preview (projeto)",
     },
     {
       "<leader>Nd",
