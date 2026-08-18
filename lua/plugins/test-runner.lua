@@ -139,7 +139,7 @@ return {
         adapters = {
           require("neotest-python")({
             dap = { justMyCode = false },
-            args = { "--log-level", "DEBUG", "-vv", "--tb=short" }, -- Verbose output
+            args = { "--log-level", "DEBUG", "-vv", "--tb=short", "-n", "auto" }, -- Verbose output + multiprocessing
             runner = "pytest",
             python = function()
               local cwd = vim.fn.getcwd()
@@ -254,7 +254,15 @@ return {
       { "<leader>rs", "<cmd>OverseerSaveBundle<cr>", desc = "Run: Save Bundle" },
     },
     opts = {
-      templates = { "builtin", "user.python_script", "user.docker_compose" },
+      templates = {
+        "builtin",
+        "user.python_script",
+        "user.docker_compose",
+        "user.django_runserver",
+        "user.django_migrate",
+        "user.django_makemigrations",
+        "user.django_shell",
+      },
       task_list = {
         direction = "bottom",
         min_height = 15,
@@ -313,6 +321,32 @@ return {
           }
         end,
       })
+
+      -- Django (uv-managed projects) -- so aparecem quando ha manage.py no cwd
+      local function has_manage_py()
+        return vim.fn.filereadable(vim.fn.getcwd() .. "/manage.py") == 1
+      end
+
+      local function django_template(name, args)
+        require("overseer").register_template({
+          name = name,
+          builder = function()
+            return {
+              cmd = { "uv" },
+              args = args,
+              components = { "default" },
+            }
+          end,
+          condition = {
+            callback = has_manage_py,
+          },
+        })
+      end
+
+      django_template("user.django_runserver", { "run", "python", "manage.py", "runserver" })
+      django_template("user.django_migrate", { "run", "python", "manage.py", "migrate" })
+      django_template("user.django_makemigrations", { "run", "python", "manage.py", "makemigrations" })
+      django_template("user.django_shell", { "run", "python", "manage.py", "shell" })
     end,
   },
 
