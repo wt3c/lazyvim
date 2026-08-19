@@ -4,14 +4,42 @@
 -- Format-on-save: gerenciado pelo conform.nvim (configurado em plugins/formatting.lua)
 -- Linting: gerenciado pelo nvim-lint (configurado em plugins/markdown-tools.lua e python-tools.lua)
 -- Ambos sao inicializados automaticamente pelo LazyVim -- nao e necessario duplicar aqui.
+--
+-- LSP: instalacao automatica ao abrir arquivo sem servidor instalado (config/lsp_autoinstall.lua)
+require("config.lsp_autoinstall")
 
 -- Auto-reload: recarregar buffers quando arquivos sao modificados externamente
+local auto_reload_group = vim.api.nvim_create_augroup("auto_reload_files", { clear = true })
+
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "WinEnter", "CursorHold", "CursorHoldI" }, {
-  group = vim.api.nvim_create_augroup("auto_reload_files", { clear = true }),
+  group = auto_reload_group,
   callback = function()
     if vim.fn.getcmdwintype() == "" then
       vim.cmd("checktime")
     end
+  end,
+})
+
+-- CursorHold so dispara apos 'updatetime' sem nenhuma tecla pressionada -- se o
+-- usuario estiver digitando continuamente numa janela sem trocar de foco/buffer,
+-- o timer nunca dispara e o reload so acontece quando ele eventualmente sair do
+-- buffer. Um timer libuv independente garante o checktime periodico mesmo nesse caso.
+local checktime_timer = vim.uv.new_timer()
+checktime_timer:start(
+  1000,
+  1000,
+  vim.schedule_wrap(function()
+    if vim.fn.getcmdwintype() == "" then
+      vim.cmd("checktime")
+    end
+  end)
+)
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  group = auto_reload_group,
+  callback = function()
+    checktime_timer:stop()
+    checktime_timer:close()
   end,
 })
 
