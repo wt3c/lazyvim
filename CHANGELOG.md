@@ -4,6 +4,10 @@
 
 ### 🎛️ UI
 
+- Integrado o tema do Omarchy ao Neovim pelo link `lua/plugins/theme.lua` e pelo hot reload oficial
+  (`LazyReload`), preservando plugins e atalhos pessoais. O tema do sistema prevalece no boot e nas
+  trocas de tema do Omarchy; o Themery continua disponível para seleção manual durante a sessão.
+
 - Reintroduzido o **legendary.nvim** como paleta de comandos complementar (`<leader>sL`), agora coexistindo com o
   **which-key** padrão do LazyVim em vez de substituí-lo — `<leader>?` continua sendo o Which-key de buffer
 

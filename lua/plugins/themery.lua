@@ -5,6 +5,8 @@
 return {
   "zaldih/themery.nvim",
   lazy = false,
+  -- Restaura a seleção manual antes de o LazyVim aplicar o tema do sistema.
+  priority = 1100,
   keys = {
     -- uC maiusculo: <leader>uc minusculo ja e "Toggle Conceal Level" no LazyVim core (Snacks.toggle)
     { "<leader>uC", "<cmd>Themery<cr>", desc = "Themery: Switch colorscheme" },
