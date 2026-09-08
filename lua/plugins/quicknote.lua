@@ -3,7 +3,6 @@
 return {
   "RutaTang/quicknote.nvim",
   dependencies = { "nvim-lua/plenary.nvim" },
-  cmd = { "Telescope" },
   opts = {
     mode = "portable",
     sign = "📝",

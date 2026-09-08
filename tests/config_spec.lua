@@ -277,3 +277,18 @@ describe("plugins/git-modern (gitsigns com API atual)", function()
     assert.is_nil(src:find("gs%.prev_hunk"))
   end)
 end)
+
+describe("plugins/quicknote", function()
+  local quicknote = require("plugins.quicknote")
+
+  -- `cmd` registra o comando no handler do lazy; ao carregar o plugin por
+  -- qualquer outra via o handler roda nvim_del_user_command sobre o comando --
+  -- e :Telescope pertence ao telescope.nvim, nao ao quicknote (que so registra
+  -- uma extensao). Declarar `cmd = { "Telescope" }` aqui apagava o :Telescope
+  -- real e matava todo <leader>f* sempre que o quicknote carregava antes.
+  it("não sequestra o :Telescope como gatilho de lazy-load", function()
+    for _, cmd in ipairs(quicknote.cmd or {}) do
+      assert.are_not.equal("Telescope", cmd)
+    end
+  end)
+end)
