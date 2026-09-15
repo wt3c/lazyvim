@@ -102,7 +102,8 @@ pacotes acima estão nos repositórios oficiais (`core`/`extra`); nenhum exige A
 
 ## Instalação da configuração
 
-Se já existir uma configuração, mova-a para um backup antes de clonar:
+Se já existir uma configuração, mova-a para um backup antes de clonar (estratégias de backup e restauração em
+[BACKUP-GUIDE.md](BACKUP-GUIDE.md)):
 
 ```bash
 mv ~/.config/nvim ~/.config/nvim.backup
@@ -116,13 +117,20 @@ cd ~/.config/nvim
 ./install.sh
 ```
 
+Com chave SSH cadastrada no GitHub, prefira `git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim` para poder
+fazer push. O `quick-install.sh` existe só por compatibilidade e apenas executa o `install.sh`.
+
 O instalador:
 
-1. valida Neovim e dependências externas obrigatórias;
-2. informa quais integrações opcionais estão indisponíveis;
-3. copia `ruff-config/pyproject.toml` para `~/.config/ruff/pyproject.toml`;
-4. cria `~/.local/share/nvim/venvs/jupyter`;
-5. instala nesse ambiente `pynvim`, `jupyter-client`, `jupytext` e `ipykernel`;
+1. valida Neovim 0.12+ com LuaJIT e as dependências externas obrigatórias (aborta se faltar alguma, sem alterar
+   nada);
+2. informa quais integrações opcionais estão indisponíveis, incluindo clipboard (`wl-copy`/`xclip`) e Docker
+   Compose (`docker compose` ou `docker-compose`);
+3. copia `ruff-config/pyproject.toml` para `~/.config/ruff/pyproject.toml`, **sobrescrevendo** o arquivo existente
+   (se a fonte não existir, gera uma config padrão com line-length 120);
+4. cria ou reaproveita `~/.local/share/nvim/venvs/jupyter` (respeita `XDG_DATA_HOME`);
+5. instala ou atualiza nesse ambiente `pynvim`, `jupyter-client`, `jupytext`, `ipykernel`, `django-stubs` e
+   `djangorestframework-stubs`;
 6. ajusta a permissão de execução dos scripts do repositório.
 
 Abra o Neovim:
@@ -131,13 +139,19 @@ Abra o Neovim:
 nvim
 ```
 
-Na primeira execução, aguarde o Lazy instalar os plugins e o Mason instalar as ferramentas declaradas. Para forçar e
-inspecionar o processo:
+Na primeira execução, aguarde o Lazy instalar os plugins e o Mason instalar as ferramentas declaradas. O
+`lazy-lock.json` é versionado; para instalar exatamente as versões fixadas e inspecionar o processo:
 
 ```vim
-:Lazy sync
+:Lazy restore
 :Mason
 ```
+
+### Tema (Omarchy)
+
+`lua/plugins/theme.lua` é um **symlink** para `~/.local/state/omarchy/current/theme/neovim.lua`. Fora do Omarchy
+esse link fica quebrado: substitua-o por um arquivo normal com o colorscheme desejado (ver seção de temas no
+README) ou use `<Space>uC` (Themery) para trocar o tema.
 
 ## Ferramentas gerenciadas pelo Mason
 
@@ -152,7 +166,10 @@ Estas ferramentas não precisam de instalação global exclusiva para o Neovim:
 - Docker: dockerfile-language-server, docker-compose-language-service e Hadolint;
 - formatação geral: StyLua e Prettier.
 
-Extras do LazyVim também podem solicitar servidores das linguagens ativadas em `lazyvim.json`. O Mason usa `npm` e
+Extras do LazyVim também podem solicitar servidores das linguagens ativadas em `lazyvim.json`. Além disso,
+`lua/config/lsp_autoinstall.lua` instala automaticamente o servidor LSP ao abrir um arquivo cujo filetype tenha
+**um único** candidato no mason-lspconfig e nenhum instalado; com vários candidatos, apenas notifica e sugere
+`:LspInstall`. O Mason usa `npm` e
 outros gerenciadores externos conforme o pacote, por isso `node` e `npm` fazem parte dos requisitos obrigatórios desta
 configuração.
 
@@ -174,9 +191,10 @@ do projeto, inclua um kernel no próprio ambiente quando necessário:
 uv add --dev ipykernel
 ```
 
-`django-stubs` e `djangorestframework-stubs` já são instalados globalmente pelo `install.sh` no provider isolado.
-Como Pyright/Mypy resolvem tipos a partir do venv ativo do projeto (`:VenvSelect`), projetos Django que precisem dos
-stubs durante o type checking devem declará-los também como dependência de desenvolvimento:
+`django-stubs` e `djangorestframework-stubs` já são instalados pelo `install.sh`, mas apenas no provider isolado
+(`~/.local/share/nvim/venvs/jupyter`), não no ambiente do projeto. Como Pyright/Mypy resolvem tipos a partir do
+venv ativo do projeto (`:VenvSelect`), projetos Django que precisem dos stubs durante o type checking devem
+declará-los também como dependência de desenvolvimento:
 
 ```bash
 uv add --dev django-stubs djangorestframework-stubs
@@ -246,13 +264,21 @@ git pull
 nvim
 ```
 
-Depois execute `:Lazy sync` se o lockfile ou as especificações de plugins tiverem mudado.
+Depois execute `:Lazy restore` para alinhar os plugins ao `lazy-lock.json` recebido. Use `:Lazy sync` apenas para
+atualizar os plugins para versões mais novas — isso reescreve o lockfile, que deve ser commitado em seguida.
 
 ## Desinstalação
 
-O script solicita confirmação e oferece backup antes de remover a configuração:
+O script exige digitar `SIM` para confirmar e oferece backup antes de remover:
 
 ```bash
 cd ~/.config/nvim
 ./uninstall.sh
 ```
+
+São removidos `~/.config/nvim`, `~/.local/share/nvim` (plugins, Mason e o provider Python/Jupyter),
+`~/.local/state/nvim`, `~/.cache/nvim` e `~/.config/ruff`. O backup opcional é uma cópia desses diretórios em
+`~/nvim-backup-AAAAMMDD-HHMMSS/` — veja [BACKUP-GUIDE.md](BACKUP-GUIDE.md) para restaurá-lo.
+
+> A mensagem final do script sugere reinstalar a partir de `https://github.com/SEU-USUARIO/nvim-config`, que é um
+> placeholder; use o comando de clone da seção [Instalação da configuração](#instalação-da-configuração).
