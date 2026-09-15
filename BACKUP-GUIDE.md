@@ -16,14 +16,16 @@ Este diretório tem **3 sistemas de backup**:
 
 ## 📁 O Que Precisa de Backup?
 
-### 🟢 Arquivos FORA do diretório LazyVim (sobrevivem):
-```
+### 🟢 Arquivos FORA do diretório LazyVim (sobrevivem)
+
+```text
 ~/.config/ruff/
 └── pyproject.toml      ✅ Config global Ruff (line-length 120)
 ```
 
-### 🔴 Arquivos DENTRO do diretório LazyVim (perdidos se reinstalar):
-```
+### 🔴 Arquivos DENTRO do diretório LazyVim (perdidos se reinstalar)
+
+```text
 ~/.config/nvim/
 ├── README.md
 ├── KEYBINDINGS.md
@@ -55,17 +57,20 @@ Este diretório tem **3 sistemas de backup**:
 ## 🔄 Método 1: Git (RECOMENDADO)
 
 ### Fazer Backup
+
 ```bash
 cd ~/.config/nvim
 ./backup-config.sh
 ```
 
 O script irá:
+
 1. ✅ Fazer commit no Git (se houver mudanças)
 2. ✅ Perguntar se quer fazer push
 3. ✅ Criar backup em arquivo `.tar.gz` (redundância)
 
 ### Restaurar do Git
+
 ```bash
 cd ~/.config/nvim
 git pull
@@ -78,6 +83,7 @@ git reset --hard origin/main
 ## 📦 Método 2: Backup em Arquivo
 
 ### Fazer Backup
+
 ```bash
 cd ~/.config/nvim
 ./backup-config.sh
@@ -86,6 +92,7 @@ cd ~/.config/nvim
 Backup será salvo em: `~/.config/nvim-backup/nvim-backup-TIMESTAMP.tar.gz`
 
 ### Restaurar
+
 ```bash
 cd ~/.config/nvim
 ./restore-config.sh
@@ -93,6 +100,7 @@ cd ~/.config/nvim
 ```
 
 Ou especificar arquivo:
+
 ```bash
 ./restore-config.sh ~/.config/nvim-backup/nvim-backup-20260520_220000.tar.gz
 ```
@@ -104,6 +112,7 @@ Ou especificar arquivo:
 ### Cenário: Você deletou tudo e quer recomeçar
 
 #### Opção A: Restaurar de Backup
+
 ```bash
 # 1. Instalar LazyVim do zero
 mv ~/.config/nvim ~/.config/nvim.old  # Se existir
@@ -124,6 +133,7 @@ nvim
 ```
 
 #### Opção B: Clonar do Git
+
 ```bash
 # Se você versionou no Git (GitHub/GitLab)
 git clone https://github.com/seu-usuario/nvim-config ~/.config/nvim
@@ -135,6 +145,7 @@ nvim
 ```
 
 #### Opção C: Instalação Rápida (Sem Backup)
+
 ```bash
 # 1. Instalar LazyVim
 git clone https://github.com/LazyVim/starter ~/.config/nvim
@@ -182,6 +193,7 @@ cd ~/.config/nvim && ./check-ruff.sh
 ## 🔐 Estratégia de Backup Recomendada
 
 ### 1. Git (Diário/Semanal)
+
 ```bash
 # Commit após mudanças importantes
 cd ~/.config/nvim
@@ -191,12 +203,14 @@ git push
 ```
 
 ### 2. Backup em Arquivo (Antes de Mudanças Grandes)
+
 ```bash
 # Antes de testar algo novo ou atualizar LazyVim
 ./backup-config.sh
 ```
 
 ### 3. Remote Git (GitHub/GitLab)
+
 ```bash
 # Se ainda não configurou remote:
 cd ~/.config/nvim
@@ -209,6 +223,7 @@ git push -u origin main
 ## 📤 Versionando no GitHub/GitLab
 
 ### Criar Repositório
+
 ```bash
 # No GitHub/GitLab, crie um repositório privado: nvim-config
 
@@ -230,6 +245,7 @@ git push -u origin main
 ```
 
 ### Clonar em Outra Máquina
+
 ```bash
 # Backup do nvim existente (se houver)
 mv ~/.config/nvim ~/.config/nvim.bak
@@ -250,6 +266,7 @@ nvim
 ### Perdeu tudo e não tem backup?
 
 1. **Recriar configuração básica:**
+
    ```bash
    # Instalar LazyVim
    git clone https://github.com/LazyVim/starter ~/.config/nvim
@@ -271,14 +288,14 @@ nvim
 
 3. **Recriar plugins manualmente:**
    - Copie deste guia ou da documentação oficial
-   - LazyVim docs: https://www.lazyvim.org/
+   - LazyVim docs: <https://www.lazyvim.org/>
 
 ---
 
 ## 📊 Resumo dos Scripts
 
 | Script | Função | Quando Usar |
-|--------|--------|-------------|
+| --- | --- | --- |
 | `backup-config.sh` | Commit Git + backup .tar.gz | Antes de mudanças grandes |
 | `restore-config.sh` | Restaura de .tar.gz | Após reinstalar |
 | `quick-install.sh` | Recria config do zero | Sem backup disponível |
