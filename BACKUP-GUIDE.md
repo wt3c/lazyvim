@@ -2,61 +2,67 @@
 
 ## 🎯 Problema
 
-Quando você reinstala o LazyVim (remove `~/.config/nvim`), **TODA** a configuração customizada é perdida!
+Remover `~/.config/nvim` apaga toda a configuração customizada. Esta config é um repositório Git
+(`git@github.com:wt3c/lazyvim.git`), então o GitHub já é o backup principal — os scripts locais cobrem o que
+ainda não foi commitado e o que fica fora do repositório.
 
 ## ✅ Solução
 
-Este diretório tem **3 sistemas de backup**:
+Existem **2 formas de backup** e **1 de reinstalação**:
 
-1. **Git** (Recomendado) - Versionamento completo
-2. **Backup em arquivo** - Snapshot compactado
-3. **Instalação rápida** - Script para recriar do zero
+1. **Git** (Recomendado) — versionamento completo, com push para o GitHub
+2. **Backup em arquivo** — snapshot `.tar.gz` local via `backup-config.sh`
+3. **Reinstalação** — clonar o repositório e rodar `install.sh`
 
 ---
 
 ## 📁 O Que Precisa de Backup?
 
-### 🟢 Arquivos FORA do diretório LazyVim (sobrevivem)
-
-```text
-~/.config/ruff/
-└── pyproject.toml      ✅ Config global Ruff (line-length 120)
-```
-
-### 🔴 Arquivos DENTRO do diretório LazyVim (perdidos se reinstalar)
+### 🟢 Versionado no Git (recuperável com `git clone`)
 
 ```text
 ~/.config/nvim/
-├── README.md
-├── KEYBINDINGS.md
-├── CHANGELOG.md
-├── LINE-LENGTH-FIX.md
-├── BACKUP-GUIDE.md
-├── backup-config.sh    ⭐ Scripts de backup
-├── restore-config.sh   ⭐ Scripts de restauração
-├── quick-install.sh    ⭐ Instalação rápida
-├── check-ruff.sh
-├── lazyvim.json        ⭐ Extras habilitados
-└── lua/
-    ├── config/
-    │   ├── keymaps.lua    ⭐ Seus keybindings
-    │   ├── options.lua    ⭐ Suas opções
-    │   └── autocmds.lua   ⭐ Seus autocmds
-    └── plugins/
-        ├── python-tools.lua      ⭐ Config Python/Django
-        ├── docker-tools.lua      ⭐ Config Docker
-        ├── git-modern.lua        ⭐ Config Git
-        ├── test-runner.lua       ⭐ Testes/Tasks
-        ├── modern-ui.lua         ⭐ UI/UX
-        ├── sql-tools.lua         ⭐ SQL
-        └── mason-tools.lua       ⭐ Ferramentas
+├── init.lua, lazyvim.json, lazy-lock.json   ⭐ Entry point, extras e versões fixadas dos plugins
+├── lua/config/                              ⭐ options, keymaps, autocmds, lsp_autoinstall
+├── lua/nvim_config/health.lua               ⭐ :checkhealth nvim_config
+├── lua/plugins/                             ⭐ Todas as specs de plugins
+├── ruff-config/pyproject.toml               ⭐ Fonte do Ruff global (copiada pelo install.sh)
+├── snippets/, spell/*.add                   ⭐ Snippets e palavras customizadas do dicionário
+├── tests/, Makefile, .github/               Suíte de testes e CI
+├── install.sh, quick-install.sh, uninstall.sh
+├── backup-config.sh, restore-config.sh, check-ruff.sh
+└── *.md                                     Documentação
 ```
+
+> `lazy-lock.json` aparece no `.gitignore`, mas **está versionado** — como já é rastreado, a regra não se aplica
+> e as atualizações dele continuam sendo commitadas normalmente.
+
+### 🟡 Fora do Git (recriado ou apontado para fora)
+
+| Caminho | O que é | Como recuperar |
+| --- | --- | --- |
+| `~/.config/ruff/pyproject.toml` | Config global do Ruff (line-length 120) | `install.sh` recria a partir de `ruff-config/` |
+| `~/.local/share/nvim/venvs/jupyter` | Provider Python/Jupyter isolado + stubs Django | `install.sh` recria com `uv` |
+| `~/.local/share/nvim/` (lazy, mason) | Plugins e ferramentas baixados | `:Lazy restore` / `:Mason` baixam de novo |
+| `lua/plugins/theme.lua` | **Symlink** para o tema atual do Omarchy | Recriado pelo Omarchy; fora dele, vira arquivo normal |
+| `.quicknote/` | Notas do quicknote (vazio por padrão) | Só volta se tiver sido commitado ou estiver no `.tar.gz` |
 
 ---
 
 ## 🔄 Método 1: Git (RECOMENDADO)
 
 ### Fazer Backup
+
+Fluxo manual (commits pequenos e descritivos):
+
+```bash
+cd ~/.config/nvim
+git add <arquivos>
+git commit -m "feat(plugins): descrição da mudança"
+git push
+```
+
+Ou via script:
 
 ```bash
 cd ~/.config/nvim
@@ -65,18 +71,28 @@ cd ~/.config/nvim
 
 O script irá:
 
-1. ✅ Fazer commit no Git (se houver mudanças)
+1. ✅ Rodar `git add -A` e commitar **tudo** que estiver modificado ou não rastreado (pede a mensagem;
+   Enter usa `Update config - <data>`)
 2. ✅ Perguntar se quer fazer push
-3. ✅ Criar backup em arquivo `.tar.gz` (redundância)
+3. ✅ Criar também o backup em arquivo `.tar.gz` (Método 2)
+
+> ⚠️ Como o script usa `git add -A`, confira `git status` antes — arquivos temporários não ignorados entram no
+> commit.
 
 ### Restaurar do Git
 
 ```bash
 cd ~/.config/nvim
 git pull
-# ou
+```
+
+Para descartar mudanças locais e voltar ao estado do GitHub (irreversível para o que não foi commitado):
+
+```bash
 git reset --hard origin/main
 ```
+
+Depois, no Neovim, `:Lazy restore` volta os plugins para as versões do `lazy-lock.json`.
 
 ---
 
@@ -89,14 +105,17 @@ cd ~/.config/nvim
 ./backup-config.sh
 ```
 
-Backup será salvo em: `~/.config/nvim-backup/nvim-backup-TIMESTAMP.tar.gz`
+- Salvo em `~/.config/nvim-backup/nvim-backup-AAAAMMDD_HHMMSS.tar.gz`
+- Inclui `~/.config/nvim` **e** `~/.config/ruff`
+- **Exclui** `.git`, `.cache` e `lazy-lock.json` — o snapshot não guarda as versões fixadas dos plugins
+- Mantém só os **5** backups mais recentes (os antigos são apagados)
 
 ### Restaurar
 
 ```bash
 cd ~/.config/nvim
 ./restore-config.sh
-# Escolha o backup da lista
+# Escolha o backup da lista e confirme com "s"
 ```
 
 Ou especificar arquivo:
@@ -105,190 +124,125 @@ Ou especificar arquivo:
 ./restore-config.sh ~/.config/nvim-backup/nvim-backup-20260520_220000.tar.gz
 ```
 
+O que o restore faz:
+
+1. Salva a config atual em `~/.config/nvim-backup/nvim-before-restore-AAAAMMDD_HHMMSS.tar.gz`
+2. Extrai o backup **por cima** de `~/.config` — sobrescreve os arquivos do backup, mas **não remove** arquivos
+   que existam só na config atual
+
+> O snapshot `nvim-before-restore-*` não aparece no menu do `restore-config.sh` nem entra na limpeza dos 5
+> mais recentes. Para voltar a ele, passe o caminho explicitamente; para liberar espaço, apague manualmente.
+
+Como o `.tar.gz` não traz `lazy-lock.json`, após restaurar use `:Lazy sync` (versões mais recentes) ou
+recupere o lockfile do Git (`git checkout lazy-lock.json`) antes de `:Lazy restore`.
+
 ---
 
 ## 🚀 Método 3: Reinstalação do Zero
 
-### Cenário: Você deletou tudo e quer recomeçar
-
-#### Opção A: Restaurar de Backup
+### Opção A: Clonar do GitHub (padrão)
 
 ```bash
-# 1. Instalar LazyVim do zero
-mv ~/.config/nvim ~/.config/nvim.old  # Se existir
-git clone https://github.com/LazyVim/starter ~/.config/nvim
-rm -rf ~/.config/nvim/.git
+# 1. Guardar a config existente (se houver)
+mv ~/.config/nvim ~/.config/nvim.old
 
-# 2. Restaurar configuração
+# 2. Clonar e instalar
+git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim
 cd ~/.config/nvim
-./restore-config.sh  # Se tiver o script no backup
+./install.sh
 
-# OU extrair backup manual
-tar -xzf ~/path/to/nvim-backup-TIMESTAMP.tar.gz -C ~/.config
-
-# 3. Abrir Neovim e sincronizar
+# 3. Abrir o Neovim (Lazy e Mason instalam tudo na primeira abertura)
 nvim
-:Lazy sync
-:Mason
 ```
 
-#### Opção B: Clonar do Git
+O `install.sh` valida as dependências (Neovim 0.12+ etc.), recria `~/.config/ruff/pyproject.toml` e o
+provider Python/Jupyter. Detalhes em [INSTALL.md](INSTALL.md).
+
+> `quick-install.sh` existe só por compatibilidade: ele apenas executa o `install.sh`. **Não** é preciso clonar
+> o starter do LazyVim antes — o repositório já é a config completa.
+
+### Opção B: Restaurar de Backup em Arquivo
+
+Útil quando há mudanças que nunca foram para o Git:
 
 ```bash
-# Se você versionou no Git (GitHub/GitLab)
-git clone https://github.com/seu-usuario/nvim-config ~/.config/nvim
-
-# Abrir e sincronizar
-nvim
-:Lazy sync
-:Mason
-```
-
-#### Opção C: Instalação Rápida (Sem Backup)
-
-```bash
-# 1. Instalar LazyVim
-git clone https://github.com/LazyVim/starter ~/.config/nvim
-rm -rf ~/.config/nvim/.git
-
-# 2. Executar instalação rápida
+# 1. Clonar a base (traz scripts e lazy-lock.json)
+git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim
 cd ~/.config/nvim
-./quick-install.sh
-# Siga as instruções
+
+# 2. Aplicar o snapshot por cima
+./restore-config.sh ~/.config/nvim-backup/nvim-backup-AAAAMMDD_HHMMSS.tar.gz
+
+# 3. Recriar provider Python/Jupyter
+./install.sh
 ```
+
+### Opção C: Backup do `uninstall.sh`
+
+Se a config foi removida com `./uninstall.sh` e você aceitou o backup, ele está em
+`~/nvim-backup-AAAAMMDD-HHMMSS/` como **cópia de diretórios** (não `.tar.gz`, portanto fora do menu do
+`restore-config.sh`):
+
+```bash
+cp -r ~/nvim-backup-AAAAMMDD-HHMMSS/config-nvim ~/.config/nvim
+cp -r ~/nvim-backup-AAAAMMDD-HHMMSS/config-ruff ~/.config/ruff   # se existir
+```
+
+Esse backup também guarda `share-nvim`, `state-nvim` e `cache-nvim` (plugins, Mason, histórico), que podem ser
+copiados de volta para `~/.local/share/nvim`, `~/.local/state/nvim` e `~/.cache/nvim` para evitar novo download.
 
 ---
 
 ## 📋 Checklist Pós-Restauração
 
-Após restaurar, verifique:
-
 ```bash
-# 1. Verificar arquivos
+# 1. Arquivos de plugins presentes
 ls ~/.config/nvim/lua/plugins/
-# Deve mostrar todos os .lua customizados
 
-# 2. Verificar Ruff global
-cat ~/.config/ruff/pyproject.toml | grep line-length
-# Deve mostrar: line-length = 120
+# 2. Ruff global com line-length 120
+grep line-length ~/.config/ruff/pyproject.toml
 
-# 3. Abrir Neovim
-nvim
-
-# 4. Sincronizar plugins
-:Lazy sync
-
-# 5. Instalar ferramentas
-:Mason
-
-# 6. Verificar LSPs
-:LspInfo
-
-# 7. Verificar line-length
+# 3. Diagnóstico do Ruff
 cd ~/.config/nvim && ./check-ruff.sh
+
+# 4. Suíte de testes da config (sintaxe + specs)
+make test-unit
+```
+
+Dentro do Neovim:
+
+```vim
+:Lazy restore
+:Mason
+:checkhealth nvim_config vim.provider mason
+:LspInfo
 ```
 
 ---
 
 ## 🔐 Estratégia de Backup Recomendada
 
-### 1. Git (Diário/Semanal)
-
-```bash
-# Commit após mudanças importantes
-cd ~/.config/nvim
-git add -A
-git commit -m "Update: descrição da mudança"
-git push
-```
-
-### 2. Backup em Arquivo (Antes de Mudanças Grandes)
-
-```bash
-# Antes de testar algo novo ou atualizar LazyVim
-./backup-config.sh
-```
-
-### 3. Remote Git (GitHub/GitLab)
-
-```bash
-# Se ainda não configurou remote:
-cd ~/.config/nvim
-git remote add origin https://github.com/seu-usuario/nvim-config.git
-git push -u origin main
-```
+1. **Git + push a cada mudança relevante** — é o backup real e permite voltar a qualquer versão
+2. **`./backup-config.sh` antes de mudanças grandes** (atualizar LazyVim, testar plugins, reorganizar specs)
+3. **Copiar `~/.config/nvim-backup/` para fora da máquina** (nuvem/disco externo) se os snapshots importarem —
+   eles ficam no mesmo disco da config
 
 ---
 
-## 📤 Versionando no GitHub/GitLab
-
-### Criar Repositório
+## 🖥️ Usar em Outra Máquina
 
 ```bash
-# No GitHub/GitLab, crie um repositório privado: nvim-config
-
-# No seu terminal:
-cd ~/.config/nvim
-
-# Se já é repositório (verifica)
-git remote -v
-
-# Se NÃO tem remote, adicione:
-git remote add origin git@github.com:seu-usuario/nvim-config.git
-
-# Commit tudo
-git add -A
-git commit -m "Initial commit - LazyVim complete config"
-
-# Push
-git push -u origin main
-```
-
-### Clonar em Outra Máquina
-
-```bash
-# Backup do nvim existente (se houver)
+# Guardar config existente (se houver)
 mv ~/.config/nvim ~/.config/nvim.bak
 
-# Clonar seu config
-git clone git@github.com:seu-usuario/nvim-config.git ~/.config/nvim
-
-# Sincronizar
+git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim
+cd ~/.config/nvim
+./install.sh
 nvim
-:Lazy sync
-:Mason
 ```
 
----
-
-## 🆘 Recuperação de Emergência
-
-### Perdeu tudo e não tem backup?
-
-1. **Recriar configuração básica:**
-
-   ```bash
-   # Instalar LazyVim
-   git clone https://github.com/LazyVim/starter ~/.config/nvim
-   rm -rf ~/.config/nvim/.git
-   
-   # Config global Ruff (isso você lembra!)
-   mkdir -p ~/.config/ruff
-   cat > ~/.config/ruff/pyproject.toml << 'EOF'
-   [tool.ruff]
-   line-length = 120
-   target-version = "py310"
-   EOF
-   ```
-
-2. **Consultar documentação:**
-   - Este README.md (se tiver backup)
-   - KEYBINDINGS.md
-   - CHANGELOG.md
-
-3. **Recriar plugins manualmente:**
-   - Copie deste guia ou da documentação oficial
-   - LazyVim docs: <https://www.lazyvim.org/>
+Sem Omarchy, `lua/plugins/theme.lua` fica como symlink quebrado — substitua por um arquivo normal com o
+colorscheme desejado (ver README, seção de temas).
 
 ---
 
@@ -296,64 +250,30 @@ nvim
 
 | Script | Função | Quando Usar |
 | --- | --- | --- |
-| `backup-config.sh` | Commit Git + backup .tar.gz | Antes de mudanças grandes |
-| `restore-config.sh` | Restaura de .tar.gz | Após reinstalar |
-| `quick-install.sh` | Recria config do zero | Sem backup disponível |
-| `check-ruff.sh` | Verifica line-length 120 | Após restauração |
-
----
-
-## 💡 Dicas
-
-1. **Faça backup ANTES de:**
-   - Atualizar LazyVim
-   - Testar plugins novos
-   - Mudanças grandes na configuração
-   - Formatar o PC
-
-2. **Mantenha backups em:**
-   - Git (local)
-   - GitHub/GitLab (remote)
-   - Arquivo .tar.gz (local)
-   - Drive/Dropbox (cloud) ← backup do backup!
-
-3. **Automatize:**
-   - Crie um cron job para backup diário
-   - Use git hooks para auto-commit
-
-4. **Documente:**
-   - Anote mudanças importantes
-   - Mantenha README atualizado
+| `backup-config.sh` | `git add -A` + commit (+ push opcional) e snapshot `.tar.gz` | Antes de mudanças grandes |
+| `restore-config.sh` | Extrai um `.tar.gz` por cima de `~/.config` (salva o estado atual antes) | Voltar a um snapshot |
+| `install.sh` | Valida dependências, recria Ruff global e provider Python/Jupyter | Máquina nova / reinstalação |
+| `quick-install.sh` | Atalho de compatibilidade para `install.sh` | Mesmo que `install.sh` |
+| `uninstall.sh` | Remove config e dados do Neovim (backup opcional em `~/nvim-backup-*`) | Remoção completa |
+| `check-ruff.sh` | Mostra configs do Ruff e testa line-length 120 | Após instalar/restaurar |
 
 ---
 
 ## 🎯 Quick Reference
 
 ```bash
-# Fazer backup
+# Backup (commit + snapshot)
 ./backup-config.sh
 
-# Restaurar
+# Restaurar snapshot (menu)
 ./restore-config.sh
 
-# Reinstalar do zero (com backup)
-./restore-config.sh path/to/backup.tar.gz
+# Restaurar snapshot específico
+./restore-config.sh ~/.config/nvim-backup/nvim-backup-AAAAMMDD_HHMMSS.tar.gz
 
-# Reinstalar do zero (sem backup)
-./quick-install.sh
+# Reinstalar do zero
+git clone git@github.com:wt3c/lazyvim.git ~/.config/nvim && ~/.config/nvim/install.sh
 
-# Verificar config
-./check-ruff.sh
-
-# Commit manual
-git add -A && git commit -m "Update config" && git push
-
-# Ver backups
+# Ver snapshots
 ls -lh ~/.config/nvim-backup/
 ```
-
----
-
-**✅ Com estes 3 métodos, você NUNCA perderá sua configuração!**
-
-🔐 Git + 📦 Arquivo + 🚀 Quick Install = Segurança Total!
