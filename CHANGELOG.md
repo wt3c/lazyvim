@@ -22,7 +22,7 @@
 - Download do dicionário migrou de `jobstart()` para `vim.system()` e publica o arquivo somente após sucesso
 - Adicionado `:checkhealth nvim_config` para verificar versão, ferramentas externas, provider Python, Jupyter e debugpy
 - `install.sh` agora valida o Neovim 0.12 e cria um provider isolado com `uv`, instalando `django-stubs` e
-  `djangorestframework-stubs` globalmente nesse ambiente
+  `djangorestframework-stubs` nesse ambiente (não no venv de cada projeto)
 - Auditoria de instalação passou a tratar `fd`, `unzip`, `tar` e `gzip` como requisitos obrigatórios, documentar as
   dependências opcionais por funcionalidade e instalar `ipykernel` no ambiente Jupyter isolado
 - `quick-install.sh` agora delega ao instalador principal, eliminando o fluxo legado que orientava recriar plugins
@@ -46,6 +46,36 @@
 - O **legendary.nvim** deixou de substituir o which-key: ele sobrescrevia o comportamento padrão e não descobria
   automaticamente os atalhos declarados com `vim.keymap.set()` — agora é só uma paleta complementar em `<leader>sL`
   (ver seção UI), com esses atalhos registrados manualmente para exibição
+
+### 🗒️ Notas (Quicknote)
+
+- Adicionado o **quicknote.nvim** sob `<leader>N` (`<leader>n` já é o histórico de notificações): notas por projeto
+  (`Na`/`No`/`Nl`/`Np`/`Nd`) e por arquivo/linha (`Nfa`/`Nfo`/`Nfl`/`Nfd`), com listagem com preview no Telescope
+- Linhas com nota exibem o sinal 📝 na gutter, em vez de listar todas as notas ao abrir o Neovim
+- Corrigido o `cmd = { "Telescope" }` do quicknote, que podia apagar o comando `:Telescope` real e fazer
+  `<leader>ff`, `<leader>fr`, `<leader><space>` e `<leader>fg*` falharem com E492; uma spec guarda a invariante
+
+### 🧪 Testes e tarefas
+
+- **Overseer:** templates Django (`runserver`, `migrate`, `makemigrations`, `shell`) via `uv run`, visíveis em
+  `<leader>rr` apenas quando há `manage.py` no diretório atual
+- **Neotest:** pytest roda com `-n auto` — o projeto precisa ter **pytest-xdist** instalado — e a descoberta ignora
+  `.git`, `.venv`, `.pytest_cache` e `__pycache__`
+
+### 🔄 Buffers e LSP
+
+- Auto-reload de arquivos alterados fora do Neovim ganhou um timer de `checktime` a cada 1s, pois o `CursorHold`
+  não dispara enquanto se digita continuamente
+- `lua/config/lsp_autoinstall.lua` instala automaticamente o servidor LSP ao abrir um filetype com um único
+  candidato e nenhum instalado; com vários candidatos, apenas notifica e sugere `:LspInstall`
+
+### 📚 Documentação e repositório
+
+- `lazy-lock.json` voltou a ser versionado (saiu do `.gitignore`), permitindo `:Lazy restore` para as versões fixadas
+- README, KEYBINDINGS, INSTALL, BACKUP-GUIDE e CLAUDE.md revisados conforme a configuração e os scripts atuais;
+  INSTALL ganhou instruções para Arch/Garuda (`pacman`)
+- Documentação adota o ruleset recomendado do markdownlint (MD013 em 120 colunas, MD024 `siblings_only`), sem erros
+- `uninstall.sh` sugere reinstalar a partir da URL real do repositório, em vez de um placeholder
 
 ## 📦 Versão 2.3 - Claude Code, Jupyter, uv.nvim & Temas (09/08/2026)
 
