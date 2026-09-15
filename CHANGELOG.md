@@ -2,6 +2,39 @@
 
 ## Não lançado
 
+### 🧹 Plugins redundantes com o LazyVim/Snacks
+
+- Removidos **nvim-spectre** (substituído pelo grug-far do LazyVim em `<leader>sr`), **ToggleTerm** (terminais via
+  `Snacks.terminal`, mesmos atalhos `Ctrl+\` e `<leader>T*`), **vim-illuminate** (`]]`/`[[` via `Snacks.words`),
+  **nvim-notify** (`Snacks.notifier`), o override do **dressing.nvim** e o **mini.comment** (atalhos de comentário
+  mantidos sobre o `gc` nativo)
+- Removidos `docker-tools.lua` e `colorschemes.lua` (já cobertos pelo extra `lang.docker` e por
+  `omarchy-themes.lua`), o extra `typescript.vtsls` duplicado e ferramentas do Mason/parsers do Treesitter que os
+  extras já instalam
+- Float, horizontal e vertical passaram a ser terminais independentes; o Snacks não tem `shade_terminals` nem
+  `persist_size`/`persist_mode` do ToggleTerm
+
+### 🐍 Python e Docker
+
+- Novo resolvedor `lua/config/python.lua`: raiz do projeto e executáveis do venv (`VIRTUAL_ENV`, `.venv`, `venv`,
+  `env`, inclusive `Scripts/` no Windows) a partir do arquivo aberto, usado por keymaps, Ruff (conform), Neotest,
+  Overseer e terminais
+- Neotest não força mais `-n auto` (exigia pytest-xdist) nem `--log-level DEBUG -vv`
+- Docker Compose prefere `docker compose` (v2), cai no `docker-compose` legado e roda no diretório do compose file
+  mais próximo (atalhos `<leader>D*`, template do Overseer e `<leader>Tl`)
+- Indentação global de 2 espaços (padrão do LazyVim) e 4 em Python/htmldjango
+
+### 🛠️ Correções e ajustes
+
+- Hot reload de `autocmds.lua` não acumula mais timers de `checktime`
+- Hot reload do tema compara `syntax_on` com `1` e não dispara `ColorScheme`/`VimEnter` artificiais
+- Auto-instalação de LSP usa a API pública do mason-lspconfig, ignora pacote já em instalação e avisa em caso de
+  falha
+- `<leader>fR` usa `Snacks.rename` (avisa o LSP para atualizar imports); `<leader>fD` manda o arquivo para a lixeira
+  quando `gio`/`trash` existe
+- Themery, image.nvim e quicknote passaram a carregar sob demanda; o Themery não troca mais o tema em uso ao carregar
+- Verificação periódica de atualizações do lazy.nvim desligada; exemplo de conexão SQL sem credencial
+
 ### 🎛️ UI
 
 - Integrado o tema do Omarchy ao Neovim pelo link `lua/plugins/theme.lua` e pelo hot reload oficial

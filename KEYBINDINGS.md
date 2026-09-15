@@ -164,12 +164,15 @@
 
 ### Docker Compose
 
-- `<leader>Du` - `docker-compose up -d`
-- `<leader>Dd` - `docker-compose down`
-- `<leader>Dr` - `docker-compose restart`
-- `<leader>Dl` - `docker-compose logs -f` (terminal)
-- `<leader>Db` - `docker-compose build`
-- `<leader>DB` - `docker-compose build --no-cache`
+> Usa `docker compose` (v2) quando disponível, com `docker-compose` como fallback, e roda no diretório do
+> compose file mais próximo do arquivo aberto.
+
+- `<leader>Du` - `docker compose up -d`
+- `<leader>Dd` - `docker compose down`
+- `<leader>Dr` - `docker compose restart`
+- `<leader>Dl` - `docker compose logs -f` (terminal)
+- `<leader>Db` - `docker compose build`
+- `<leader>DB` - `docker compose build --no-cache`
 
 ### Docker Direto
 
@@ -229,8 +232,8 @@ Marque arquivos e salte entre eles instantaneamente.
 
 ## 🔁 SEARCH & REPLACE NO PROJETO (SPECTRE)
 
-- `<leader>sr` - Abrir Spectre (substituição no projeto, com preview/regex)
-- `<leader>sr` (Visual) - Substituir a palavra selecionada
+- `<leader>sr` - Abrir grug-far (substituição no projeto, com preview/regex)
+- `<leader>sr` (Visual) - Substituir a seleção no projeto
 
 ---
 
@@ -351,8 +354,8 @@ No modo Insert, enquanto o menu de sugestões está aberto:
 ### Operações Básicas
 
 - `<leader>fn` - Novo arquivo
-- `<leader>fR` - Renomear arquivo
-- `<leader>fD` - Deletar arquivo
+- `<leader>fR` - Renomear arquivo (avisa o LSP para atualizar imports)
+- `<leader>fD` - Deletar arquivo (vai para a lixeira quando `gio`/`trash` existe)
 
 ---
 

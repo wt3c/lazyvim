@@ -140,7 +140,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 
 > Prefixo dedicado **`<Space>T`** (maiúsculo) para não colidir com testes (`<Space>t`).
 
-- ToggleTerm (`Ctrl+\`)
+- Snacks.terminal (`Ctrl+\`)
 - Float / Horizontal / Vertical (`<Space>Tf` / `<Space>Th` / `<Space>Tv`)
 - Python REPL (`<Space>Tp`)
 - Docker logs (`<Space>Tl`)
@@ -177,7 +177,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 ### 🧭 Navegação e Edição
 
 - **Harpoon 2** — marcar arquivos e saltar entre eles (`<Space>h*`)
-- **nvim-spectre** — search & replace no projeto com preview (`<Space>sr`)
+- **grug-far** (LazyVim) — search & replace no projeto com preview (`<Space>sr`)
 - **oil.nvim** — editar diretórios como buffer (`-`)
 - **mini.surround** — adicionar/trocar/remover aspas, parênteses e tags
 
@@ -209,7 +209,9 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 │   │   ├── lazy.lua                 # Bootstrap do lazy.nvim + LazyVim
 │   │   ├── options.lua              # Vim options
 │   │   ├── keymaps.lua              # Keybindings ⭐
-│   │   ├── autocmds.lua             # Autocommands (hot-reload, auto-reload de buffers)
+│   │   ├── autocmds.lua             # Autocommands (hot-reload, auto-reload de buffers, indentação)
+│   │   ├── python.lua               # Raiz do projeto e executáveis do venv por buffer
+│   │   ├── docker.lua               # Comando Docker Compose (v2 primeiro) e cwd do compose file
 │   │   └── lsp_autoinstall.lua      # Instala LSP ausente por filetype
 │   ├── nvim_config/
 │   │   └── health.lua               # :checkhealth nvim_config
@@ -219,21 +221,18 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 │       ├── jupyter-tools.lua        # jupytext + molten + image.nvim
 │       ├── completion.lua           # Autocomplete (blink.cmp tuning)
 │       ├── formatting.lua           # Conform (formatação, line-length 120)
-│       ├── comments.lua             # Comentários (mini.comment + atalhos)
 │       ├── surround.lua             # mini.surround
-│       ├── editor-extras.lua        # Harpoon, Spectre, oil.nvim
-│       ├── docker-tools.lua         # Docker support
+│       ├── editor-extras.lua        # Harpoon, oil.nvim
 │       ├── sql-tools.lua            # SQL (dadbod)
 │       ├── markdown-tools.lua       # Markdown (Marksman, markdownlint)
 │       ├── lua-tools.lua            # lua_ls para o runtime do Neovim
 │       ├── git-modern.lua           # Git (Neogit, Diffview, GitSigns)
-│       ├── test-runner.lua          # Neotest, Overseer, ToggleTerm, Trouble
+│       ├── test-runner.lua          # Neotest, Overseer, terminais (Snacks), Trouble
 │       ├── modern-ui.lua            # UI (Noice, Telescope, Treesitter Context)
 │       ├── legendary.lua            # Paleta de comandos/keymaps
 │       ├── quicknote.lua            # Notas por projeto/arquivo
 │       ├── claude-code.lua          # claudecode.nvim
 │       ├── themery.lua              # Troca manual de colorscheme
-│       ├── colorschemes.lua         # Kanagawa, Gruvbox, Nightfox
 │       ├── theme.lua                # Symlink → tema atual do Omarchy
 │       ├── omarchy-themes.lua       # Colorschemes do Omarchy (lazy)
 │       ├── omarchy-theme-hotreload.lua  # Reaplica tema ao trocar no Omarchy
@@ -304,7 +303,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 | Overseer           | Task runner (templates Django)   |
 | Neogit             | Interface Git                    |
 | Diffview           | Visualizador de diffs            |
-| ToggleTerm         | Terminais                        |
+| Snacks.terminal    | Terminais                        |
 | Noice              | UI moderna                       |
 | Trouble            | Lista de diagnósticos            |
 | Legendary          | Paleta de comandos/keymaps       |
@@ -315,7 +314,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 | claudecode.nvim    | Bridge com o CLI Claude Code     |
 | quicknote.nvim     | Notas por projeto/arquivo        |
 | Harpoon 2          | Saltos rápidos entre arquivos    |
-| nvim-spectre       | Search & replace no projeto      |
+| grug-far           | Search & replace no projeto      |
 | oil.nvim           | Editar diretórios como buffer    |
 | mini.surround      | Surround (aspas, parênteses)     |
 
@@ -363,7 +362,7 @@ make syntax       # só validação de sintaxe Lua
 :Neotest summary       " Resumo de testes
 
 " Terminal
-:ToggleTerm            " Toggle terminal
+:lua Snacks.terminal()  " Toggle terminal
 
 " Diagnósticos
 :Trouble               " Lista de problemas

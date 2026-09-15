@@ -155,7 +155,8 @@ README) ou use `<Space>uC` (Themery) para trocar o tema.
 
 ## Ferramentas gerenciadas pelo Mason
 
-Estas ferramentas não precisam de instalação global exclusiva para o Neovim:
+Estas ferramentas não precisam de instalação global exclusiva para o Neovim. A maioria vem dos extras de
+`lazyvim.json`; `mason-tools.lua` e `python-tools.lua` declaram só o que os extras não trazem:
 
 - Python: Pyright, Ruff, Mypy e debugpy;
 - SQL: sqlfluff;

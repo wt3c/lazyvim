@@ -39,25 +39,27 @@ columns) — keep it at 0 issues when editing any `.md`.
   by `{ import = "plugins" }` (everything in `lua/plugins/*.lua`). Later specs in `lua/plugins/` override/extend
   LazyVim defaults — this is the main mechanism for customization, not editing LazyVim's own files.
 - `lazyvim.json` — declares which upstream LazyVim "extras" are enabled (`lang.python`, `lang.docker`, `lang.sql`,
-  `lang.markdown`, `lang.json`, `lang.toml`, `lang.typescript`+`vtsls`, `coding.yanky`, `dap.core`). Check this before
-  adding a plugin that an extra might already provide.
+  `lang.markdown`, `lang.json`, `lang.toml`, `lang.typescript` (vtsls by default), `coding.yanky`, `dap.core`).
+  Check this before adding a plugin that an extra might already provide.
 - `lua/config/` — `options.lua` (vim options, Python/Jupyter provider path), `keymaps.lua` (global custom
   keybindings; plugin-specific ones live in each spec's `keys` table — see KEYBINDINGS.md for the human-readable
-  map), `autocmds.lua` (also loads `lsp_autoinstall.lua`, which auto-installs an LSP server via Mason when a
-  filetype has exactly one candidate and none installed), `lazy.lua` (bootstrap, above).
+  map), `python.lua` (per-buffer project root and venv executables — used by keymaps, conform, Neotest, Overseer
+  and terminals), `docker.lua` (Compose command, v2 first, and the compose file's cwd), `autocmds.lua` (also
+  loads `lsp_autoinstall.lua`, which auto-installs an LSP server via Mason when a filetype has exactly one
+  candidate and none installed), `lazy.lua` (bootstrap, above).
 - `lua/nvim_config/health.lua` — backs `:checkhealth nvim_config` (external dependency checks).
 - `lua/plugins/*.lua` — one file per concern (not per plugin necessarily): `python-tools.lua` (Ruff/Pyright/Mypy/DAP),
   `jupyter-tools.lua` (jupytext + molten for `.ipynb`), `uv-tools.lua`, `formatting.lua` (conform.nvim,
-  line-length 120), `docker-tools.lua`, `sql-tools.lua`, `git-modern.lua` (Neogit/Diffview/GitSigns),
-  `test-runner.lua` (Neotest/Overseer/ToggleTerm/Trouble), `modern-ui.lua` (Noice/Telescope/Treesitter Context),
+  line-length 120), `sql-tools.lua`, `git-modern.lua` (Neogit/Diffview/GitSigns),
+  `test-runner.lua` (Neotest/Overseer/Snacks.terminal/Trouble), `modern-ui.lua` (Noice/Telescope/Treesitter Context),
   `legendary.lua` (command/keymap palette at `<leader>sL` — complements which-key, does not replace it),
-  `claude-code.lua` (claudecode.nvim bridge to the `claude` CLI), `mason-tools.lua` (global Mason tool list; Python
-  and Docker tools are declared in their own files), `editor-extras.lua` (Spectre/Harpoon/Oil), `quicknote.lua`
-  (notes under `<leader>N`), `comments.lua`, `completion.lua` (blink.cmp), `surround.lua` (mini.surround),
+  `claude-code.lua` (claudecode.nvim bridge to the `claude` CLI), `mason-tools.lua` (only tools the extras don't bring;
+  Python ones live in `python-tools.lua`), `editor-extras.lua` (Harpoon/Oil; search & replace is LazyVim's grug-far), `quicknote.lua`
+  (notes under `<leader>N`), `completion.lua` (blink.cmp), `surround.lua` (mini.surround),
   `lua-tools.lua` (lua_ls for editing this config), `markdown-tools.lua`.
 - Theming: `theme.lua` is a **symlink** to `~/.local/state/omarchy/current/theme/neovim.lua` managed by Omarchy —
   do not edit or replace it in the repo. `omarchy-theme-hotreload.lua` reloads it on `LazyReload`,
-  `omarchy-themes.lua` preloads the theme plugins, `colorschemes.lua` adds extra colorschemes (lazy) and
+  `omarchy-themes.lua` declares the theme plugins (lazy) and
   `themery.lua` provides manual switching (`<leader>uC`) and a light/dark toggle (`<leader>uB`).
 - `tests/` — `config_spec.lua` is a plenary/busted spec asserting invariants (Ruff wired into conform, Telescope as
   picker, no terminal × test keymap collision, expected plugins present, no deprecated Neovim 0.12 APIs, no shell
@@ -76,6 +78,8 @@ columns) — keep it at 0 issues when editing any `.md`.
   LazyVim core bindings to avoid shadowing them (e.g. `<leader>uc` conceal → Themery uses `<leader>uC`; `<leader>n`
   notification history → quicknote uses `<leader>N`; uv.nvim moved from `<leader>x` to `<leader>U` because of
   Trouble).
+- Prefer what LazyVim/Snacks already ship (notifier, words, terminal, rename, grug-far, native `gc`) over adding a
+  plugin for the same job; specs assert that notify/illuminate/dressing/toggleterm/spectre/mini.comment stay out.
 - `lazy-lock.json` is versioned (no longer in `.gitignore`): commit it after `:Lazy sync`/`:Lazy update`.
 - Docs are in pt-BR (with correct accents). KEYBINDINGS.md is the canonical human-facing keymap reference; keep it in
   sync with `lua/config/keymaps.lua` **and** plugin `keys` specs when adding/changing keymaps. README.md,
