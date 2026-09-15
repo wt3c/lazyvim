@@ -138,7 +138,7 @@ if [[ "$backup_choice" =~ ^[Ss]$ ]]; then
 fi
 
 echo "ℹ️  Para reinstalar:"
-echo "   git clone https://github.com/SEU-USUARIO/nvim-config ~/.config/nvim"
+echo "   git clone https://github.com/wt3c/lazyvim.git ~/.config/nvim"
 echo "   cd ~/.config/nvim"
 echo "   ./install.sh"
 echo ""

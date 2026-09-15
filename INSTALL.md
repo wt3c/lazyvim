@@ -279,6 +279,3 @@ cd ~/.config/nvim
 São removidos `~/.config/nvim`, `~/.local/share/nvim` (plugins, Mason e o provider Python/Jupyter),
 `~/.local/state/nvim`, `~/.cache/nvim` e `~/.config/ruff`. O backup opcional é uma cópia desses diretórios em
 `~/nvim-backup-AAAAMMDD-HHMMSS/` — veja [BACKUP-GUIDE.md](BACKUP-GUIDE.md) para restaurá-lo.
-
-> A mensagem final do script sugere reinstalar a partir de `https://github.com/SEU-USUARIO/nvim-config`, que é um
-> placeholder; use o comando de clone da seção [Instalação da configuração](#instalação-da-configuração).
