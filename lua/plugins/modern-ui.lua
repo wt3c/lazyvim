@@ -7,7 +7,6 @@ return {
     event = "VeryLazy",
     dependencies = {
       "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
     },
     keys = {
       { "<leader>sn", "<cmd>Noice telescope<cr>", desc = "Noice: Messages" },
@@ -40,86 +39,8 @@ return {
     },
   },
 
-  -- Notify: Beautiful notifications
-  {
-    "rcarriga/nvim-notify",
-    keys = {
-      {
-        "<leader>un",
-        function()
-          require("notify").dismiss({ silent = true, pending = true })
-        end,
-        desc = "Dismiss Notifications",
-      },
-    },
-    opts = {
-      timeout = 3000,
-      max_height = function()
-        return math.floor(vim.o.lines * 0.75)
-      end,
-      max_width = function()
-        return math.floor(vim.o.columns * 0.75)
-      end,
-      on_open = function(win)
-        vim.api.nvim_win_set_config(win, { zindex = 100 })
-      end,
-    },
-  },
-
-  -- Dressing: Better default vim.ui interfaces
-  {
-    "stevearc/dressing.nvim",
-    lazy = true,
-    init = function()
-      vim.ui.select = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.select(...)
-      end
-      vim.ui.input = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.input(...)
-      end
-    end,
-    opts = {
-      input = {
-        enabled = true,
-        default_prompt = "➤ ",
-        win_options = {
-          winblend = 0,
-        },
-      },
-      select = {
-        enabled = true,
-        backend = { "telescope", "builtin" },
-        get_config = function()
-          return { backend = "telescope", telescope = require("telescope.themes").get_dropdown() }
-        end,
-      },
-    },
-  },
-
-  -- Illuminate: Highlight same words under cursor
-  {
-    "RRethy/vim-illuminate",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      delay = 200,
-      large_file_cutoff = 2000,
-      large_file_overrides = {
-        providers = { "lsp" },
-      },
-    },
-    config = function(_, opts)
-      require("illuminate").configure(opts)
-
-      vim.keymap.set("n", "]]", function()
-        require("illuminate").goto_next_reference(false)
-      end, { desc = "Next Reference" })
-      vim.keymap.set("n", "[[", function()
-        require("illuminate").goto_prev_reference(false)
-      end, { desc = "Prev Reference" })
-    end,
-  },
+  -- NOTE: notificações (Snacks.notifier), vim.ui.select/input (dressing via extra
+  -- telescope) e destaque de referências com ]] / [[ (Snacks.words) vêm do LazyVim.
 
   -- NOTE: indent guides + scope sao fornecidos pelo snacks.indent (default do
   -- LazyVim). Nao adicionar mini.indentscope para evitar scope duplicado.

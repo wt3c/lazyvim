@@ -19,18 +19,18 @@ vim.api.nvim_create_autocmd("FileType", {
       return
     end
 
-    local ok_mappings, mappings = pcall(require, "mason-lspconfig.mappings")
+    local ok_lspconfig, mason_lspconfig = pcall(require, "mason-lspconfig")
     local ok_registry, registry = pcall(require, "mason-registry")
-    if not (ok_mappings and ok_registry) then
+    if not (ok_lspconfig and ok_registry) then
       return
     end
 
-    local candidates = mappings.get_filetype_map()[ft]
-    if not candidates or #candidates == 0 then
+    local candidates = mason_lspconfig.get_available_servers({ filetype = ft })
+    if #candidates == 0 then
       return
     end
 
-    local lspconfig_to_package = mappings.get_mason_map().lspconfig_to_package
+    local lspconfig_to_package = mason_lspconfig.get_mappings().lspconfig_to_package
     local not_installed = {}
     for _, server in ipairs(candidates) do
       local pkg = lspconfig_to_package[server]
@@ -42,8 +42,25 @@ vim.api.nvim_create_autocmd("FileType", {
     -- Ja tem pelo menos um candidato instalado (ex.: declarado manualmente) -> nada a fazer.
     if #not_installed == #candidates and #not_installed == 1 then
       local target = not_installed[1]
-      vim.notify(("LSP: instalando %s (%s) automaticamente..."):format(target.server, target.package), vim.log.levels.INFO)
-      registry.get_package(target.package):install()
+      local pkg = registry.get_package(target.package)
+      -- Outro buffer do mesmo filetype já disparou a instalação.
+      if pkg:is_installing() then
+        return
+      end
+      vim.notify(
+        ("LSP: instalando %s (%s) automaticamente..."):format(target.server, target.package),
+        vim.log.levels.INFO
+      )
+      pkg:install({}, function(success, err)
+        if not success then
+          vim.schedule(function()
+            vim.notify(
+              ("LSP: falha ao instalar %s: %s"):format(target.package, tostring(err)),
+              vim.log.levels.ERROR
+            )
+          end)
+        end
+      end)
     elseif #not_installed == #candidates and #not_installed > 1 and not notified_filetypes[ft] then
       notified_filetypes[ft] = true
       local names = vim.tbl_map(function(c)

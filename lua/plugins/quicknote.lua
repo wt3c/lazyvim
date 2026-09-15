@@ -82,9 +82,17 @@ return {
   init = function()
     -- Ao entrar em qualquer buffer, mostra na gutter o sinal (ver opts.sign)
     -- nas linhas que têm nota — sem notificação/lista, só o indicador inline.
+    -- Só em buffers de arquivo e em projetos com .quicknote/, para não carregar
+    -- o plugin (e o Telescope) em todo buffer.
     vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
       group = vim.api.nvim_create_augroup("quicknote_show_signs", { clear = true }),
-      callback = function()
+      callback = function(ev)
+        if vim.bo[ev.buf].buftype ~= "" or vim.api.nvim_buf_get_name(ev.buf) == "" then
+          return
+        end
+        if vim.fn.isdirectory(vim.uv.cwd() .. "/.quicknote") == 0 then
+          return
+        end
         require("quicknote").ShowNoteSigns()
       end,
     })

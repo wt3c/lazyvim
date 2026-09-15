@@ -46,9 +46,8 @@ return {
   {
     "mason-org/mason.nvim",
     opts = function(_, opts)
+      -- pyright e ruff já vêm do extra lang.python.
       vim.list_extend(opts.ensure_installed, {
-        "pyright",
-        "ruff",
         "mypy",
         "debugpy",
       })
@@ -117,15 +116,10 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
+      -- Os demais parsers (python, html, javascript, toml, rst, sql...) vêm do LazyVim e dos extras.
       vim.list_extend(opts.ensure_installed, {
-        "python",
-        "html",
         "htmldjango",
         "css",
-        "javascript",
-        "toml",
-        "rst",
-        "sql",
       })
     end,
     init = function()

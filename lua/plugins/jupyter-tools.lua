@@ -19,6 +19,7 @@ return {
 
   {
     "3rd/image.nvim",
+    lazy = true, -- carregado como dependência do Molten
     opts = {
       backend = "kitty",
       processor = "magick_cli",

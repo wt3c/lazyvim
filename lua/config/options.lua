@@ -47,12 +47,6 @@ opt.signcolumn = "yes"
 opt.cursorline = true
 opt.wrap = false
 
--- Indentacao (Python/Lua)
-opt.expandtab = true
-opt.shiftwidth = 4
-opt.tabstop = 4
-opt.softtabstop = 4
-
 -- Busca
 opt.ignorecase = true
 opt.smartcase = true

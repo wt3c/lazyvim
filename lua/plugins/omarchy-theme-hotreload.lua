@@ -30,7 +30,7 @@ return {
 
             -- Clear all highlight groups before applying new theme
             vim.cmd("highlight clear")
-            if vim.fn.exists("syntax_on") then
+            if vim.fn.exists("syntax_on") == 1 then
               vim.cmd("syntax reset")
             end
 
@@ -78,10 +78,6 @@ return {
                   if vim.fn.filereadable(transparency_file) == 1 then
                     vim.defer_fn(function()
                       vim.cmd.source(transparency_file)
-
-                      -- Trigger UI updates for various plugins
-                      vim.api.nvim_exec_autocmds("ColorScheme", { modeline = false })
-                      vim.api.nvim_exec_autocmds("VimEnter", { modeline = false })
 
                       -- Final redraw
                       vim.cmd("redraw!")

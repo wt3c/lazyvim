@@ -11,20 +11,6 @@ local function executable(names)
   end
 end
 
-local function python_executable()
-  local candidates = {}
-  if vim.env.VIRTUAL_ENV then
-    candidates[#candidates + 1] = vim.env.VIRTUAL_ENV .. "/bin/python"
-  end
-  candidates[#candidates + 1] = vim.uv.cwd() .. "/.venv/bin/python"
-  for _, candidate in ipairs(candidates) do
-    if vim.fn.executable(candidate) == 1 then
-      return candidate
-    end
-  end
-  return executable({ "python3", "python" })
-end
-
 local function terminal_job(command, opts)
   if not command or not command[1] or vim.fn.executable(command[1]) ~= 1 then
     vim.notify("Executável não encontrado: " .. tostring(command and command[1]), vim.log.levels.ERROR)
@@ -51,7 +37,7 @@ local function django_command(arguments)
     return
   end
 
-  local python = python_executable()
+  local python = require("config.python").python()
   if not python then
     vim.notify("Python não encontrado", vim.log.levels.ERROR)
     return
@@ -62,30 +48,31 @@ local function django_command(arguments)
 end
 
 local function compose_command(arguments)
-  local command
-  local legacy = executable({ "docker-compose" })
-  if legacy then
-    command = { legacy }
-  else
-    local docker = executable({ "docker" })
-    if not docker then
-      vim.notify("Docker Compose não encontrado", vim.log.levels.ERROR)
-      return
-    end
-    command = { docker, "compose" }
+  local command, cwd = require("config.docker").compose(arguments)
+  if not command then
+    vim.notify("Docker Compose não encontrado", vim.log.levels.ERROR)
+    return
   end
-  vim.list_extend(command, arguments)
-  terminal_job(command)
+  terminal_job(command, { cwd = cwd })
 end
 
 -- ============================================================================
 -- EDITOR BASICS
 -- ============================================================================
 
--- Better commenting with Ctrl+/ (using LazyVim's default "gc")
--- Configured in lua/plugins/comments.lua for all modes (Normal, Visual, Insert)
--- Multiple options: Ctrl+/, Ctrl+_, Alt+/, Space+/, gcc
--- Note: Ctrl+/ in most terminals is sent as Ctrl+_
+-- Comentários: atalhos extras sobre o `gc`/`gcc` nativo do Neovim (commentstring
+-- ajustado pelo ts-comments do LazyVim). Ctrl+/ chega como Ctrl+_ na maioria dos terminais.
+vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "Comment line", silent = true })
+vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "Comment line", silent = true })
+vim.keymap.set("n", "<A-/>", "gcc", { remap = true, desc = "Comment line", silent = true })
+vim.keymap.set("n", "<leader>/", "gcc", { remap = true, desc = "Comment line", silent = true })
+vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "Comment selection", silent = true })
+vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "Comment selection", silent = true })
+vim.keymap.set("v", "<A-/>", "gc", { remap = true, desc = "Comment selection", silent = true })
+vim.keymap.set("v", "<leader>/", "gc", { remap = true, desc = "Comment selection", silent = true })
+vim.keymap.set("i", "<C-_>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
+vim.keymap.set("i", "<C-/>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
+vim.keymap.set("i", "<A-/>", "<Esc>gcca", { remap = true, desc = "Comment line (insert)", silent = true })
 
 -- Save with Ctrl+S (very modern)
 vim.keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
@@ -160,11 +147,11 @@ vim.keymap.set("n", "<leader>bD", "<cmd>%bd|e#|bd#<cr>", { desc = "Delete all bu
 -- ============================================================================
 
 vim.keymap.set("n", "<leader>pr", function()
-  local python = python_executable()
+  local python = require("config.python").python()
   terminal_job(python and { python } or nil)
 end, { desc = "Python: REPL" })
 vim.keymap.set("n", "<leader>pf", function()
-  local python = python_executable()
+  local python = require("config.python").python()
   local file = vim.api.nvim_buf_get_name(0)
   if file == "" then
     vim.notify("O buffer atual ainda não tem arquivo", vim.log.levels.ERROR)
@@ -258,17 +245,9 @@ end, { desc = "Docker: Exec Into Container" })
 
 -- Quick file operations
 vim.keymap.set("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
+-- Snacks.rename avisa os servidores LSP (willRename/didRename) e atualiza imports.
 vim.keymap.set("n", "<leader>fR", function()
-  local old = vim.api.nvim_buf_get_name(0)
-  vim.ui.input({ prompt = "Rename to: ", default = old }, function(new)
-    if new and new ~= "" and new ~= old then
-      vim.api.nvim_cmd({ cmd = "saveas", args = { new }, magic = { file = false, bar = false } }, {})
-      if old ~= "" and vim.fn.delete(old) ~= 0 then
-        vim.notify("Novo arquivo salvo, mas não foi possível remover: " .. old, vim.log.levels.WARN)
-      end
-      vim.cmd.redraw({ bang = true })
-    end
-  end)
+  Snacks.rename.rename_file()
 end, { desc = "Rename File" })
 vim.keymap.set("n", "<leader>fD", function()
   local file = vim.api.nvim_buf_get_name(0)
@@ -278,7 +257,11 @@ vim.keymap.set("n", "<leader>fD", function()
   end
   vim.ui.input({ prompt = 'Delete "' .. file .. '"? (yes/no): ' }, function(answer)
     if answer == "yes" then
-      if vim.fn.delete(file) ~= 0 then
+      -- Prefere a lixeira do sistema (recuperável); sem ela, apaga definitivamente.
+      local trash = vim.fn.executable("gio") == 1 and { "gio", "trash", file }
+        or vim.fn.executable("trash") == 1 and { "trash", file }
+      local deleted = trash and vim.system(trash):wait().code == 0 or (not trash and vim.fn.delete(file) == 0)
+      if not deleted then
         vim.notify("Não foi possível excluir: " .. file, vim.log.levels.ERROR)
         return
       end
@@ -432,7 +415,7 @@ end, { desc = "Dicionário: escolher idioma" })
 --   <leader>ri - Run: Info
 --   <leader>ra - Run: Task Action
 --
--- TERMINAL (test-runner.lua) -- prefixo <leader>T para nao colidir com testes:
+-- TERMINAL (test-runner.lua, Snacks.terminal) -- prefixo <leader>T para nao colidir com testes:
 --   <C-\> - Terminal: Toggle
 --   <leader>Tf - Terminal: Float
 --   <leader>Th - Terminal: Horizontal

@@ -33,10 +33,7 @@ require("lazy").setup({
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
   install = { colorscheme = { "tokyonight", "habamax" } },
-  checker = {
-    enabled = true, -- check for plugin updates periodically
-    notify = false, -- notify on update
-  }, -- automatically check for plugin updates
+  checker = { enabled = false }, -- atualizações via :Lazy update, sem polling em segundo plano
   -- image.nvim usa o executável ImageMagick (`magick_cli`), portanto esta
   -- configuração não precisa gerenciar Lua rocks nem um runtime Lua 5.1.
   rocks = { enabled = false },

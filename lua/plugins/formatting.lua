@@ -1,21 +1,10 @@
 -- ~/.config/nvim/lua/plugins/formatting.lua
 -- Global formatting configuration with line-length = 120 for all languages
 
--- Prefere o ruff do venv ativo ou de .venv/ local; cai no Mason/PATH como fallback.
+-- Prefere o ruff do venv ativo ou do projeto do buffer; cai no Mason/PATH como fallback.
 -- Garante que a versão do ruff usada seja a mesma do projeto (pyproject.toml).
-local function find_ruff()
-  local venv = vim.env.VIRTUAL_ENV
-  if venv then
-    local bin = venv .. "/bin/ruff"
-    if vim.fn.executable(bin) == 1 then
-      return bin
-    end
-  end
-  local bin = vim.fn.getcwd() .. "/.venv/bin/ruff"
-  if vim.fn.executable(bin) == 1 then
-    return bin
-  end
-  return "ruff"
+local function find_ruff(_, ctx)
+  return require("config.python").executable("ruff", ctx.buf) or "ruff"
 end
 
 return {

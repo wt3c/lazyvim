@@ -4,31 +4,12 @@ return {
   {
     "mason-org/mason.nvim",
     opts = {
-      -- Ferramentas globais não gerenciadas por arquivos de feature específicos.
-      -- Python → python-tools.lua | Docker → docker-tools.lua
+      -- Só o que o LazyVim e os extras de lazyvim.json não instalam.
+      -- Python → python-tools.lua | Docker/SQL/Markdown/JSON/TOML → extras.
       ensure_installed = {
-        -- SQL
-        "sqlfluff",
-
-        -- Markdown
-        "marksman",
-        "markdownlint-cli2",
-        "markdown-toc",
-
-        -- JSON/YAML
-        "json-lsp",
         "yaml-language-server",
-
-        -- Shell
         "bash-language-server",
-        "shfmt",
         "shellcheck",
-
-        -- TOML
-        "taplo",
-
-        -- General
-        "stylua",
         "prettier",
       },
     },

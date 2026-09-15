@@ -1,14 +1,5 @@
 -- ~/.config/nvim/lua/plugins/test-runner.lua
 -- Modern test and script execution
-local function system_python()
-  for _, executable in ipairs({ "python3", "python" }) do
-    local path = vim.fn.exepath(executable)
-    if path ~= "" then
-      return path
-    end
-  end
-  return "python"
-end
 
 return {
   -- Neotest: Modern test runner with UI
@@ -139,17 +130,11 @@ return {
         adapters = {
           require("neotest-python")({
             dap = { justMyCode = false },
-            args = { "--log-level", "DEBUG", "-vv", "--tb=short", "-n", "auto" }, -- Verbose output + multiprocessing
+            -- Sem `-n auto` (exige pytest-xdist) nem log DEBUG: flags extras ficam no pyproject.
+            args = { "--tb=short" },
             runner = "pytest",
             python = function()
-              local cwd = vim.fn.getcwd()
-              for _, venv in ipairs({ ".venv", "venv", "env" }) do
-                local path = cwd .. "/" .. venv .. "/bin/python"
-                if vim.fn.filereadable(path) == 1 then
-                  return path
-                end
-              end
-              return system_python()
+              return require("config.python").python(0) or "python"
             end,
           }),
         },
@@ -301,7 +286,7 @@ return {
         builder = function()
           local file = vim.fn.expand("%:p")
           return {
-            cmd = { "python" },
+            cmd = { require("config.python").python(0) or "python" },
             args = { file },
             components = { { "on_output_quickfix", open = true }, "default" },
           }
@@ -314,9 +299,12 @@ return {
       require("overseer").register_template({
         name = "user.docker_compose",
         builder = function()
+          local command, cwd = require("config.docker").compose({ "up", "-d" })
+          command = command or { "docker", "compose", "up", "-d" }
           return {
-            cmd = { "docker-compose" },
-            args = { "up", "-d" },
+            cmd = { command[1] },
+            args = vim.list_slice(command, 2),
+            cwd = cwd,
             components = { "default" },
           }
         end,
@@ -350,61 +338,70 @@ return {
     end,
   },
 
-  -- ToggleTerm: Easy terminal management
+  -- Terminais via Snacks.terminal (já vem no LazyVim; substitui o ToggleTerm).
+  -- Cada posição usa um `count` próprio para ser um terminal independente.
   {
-    "akinsho/toggleterm.nvim",
-    version = "*",
+    "folke/snacks.nvim",
     -- NOTE: terminal usa o prefixo <leader>T (maiusculo) para nao colidir com
     -- os mapeamentos de teste em <leader>t (ex: <leader>tf = Test: Run File).
     keys = {
-      { "<C-\\>", "<cmd>ToggleTerm<cr>", desc = "Terminal: Toggle", mode = { "n", "t" } },
-      { "<leader>Tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Terminal: Float" },
-      { "<leader>Th", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Terminal: Horizontal" },
-      { "<leader>Tv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Terminal: Vertical" },
-    },
-    opts = {
-      size = function(term)
-        if term.direction == "horizontal" then
-          return 15
-        elseif term.direction == "vertical" then
-          return vim.o.columns * 0.4
-        end
-      end,
-      open_mapping = [[<c-\>]],
-      hide_numbers = true,
-      shade_terminals = true,
-      start_in_insert = true,
-      insert_mappings = true,
-      terminal_mappings = true,
-      persist_size = true,
-      persist_mode = true,
-      direction = "float",
-      close_on_exit = true,
-      shell = vim.o.shell,
-      float_opts = {
-        border = "curved",
-        winblend = 0,
+      {
+        "<C-\\>",
+        function()
+          Snacks.terminal.toggle(nil, { count = 1, win = { position = "float" } })
+        end,
+        desc = "Terminal: Toggle",
+        mode = { "n", "t" },
+      },
+      {
+        "<leader>Tf",
+        function()
+          Snacks.terminal.toggle(nil, { count = 1, win = { position = "float" } })
+        end,
+        desc = "Terminal: Float",
+      },
+      {
+        "<leader>Th",
+        function()
+          Snacks.terminal.toggle(nil, { count = 2, win = { position = "bottom" } })
+        end,
+        desc = "Terminal: Horizontal",
+      },
+      {
+        "<leader>Tv",
+        function()
+          Snacks.terminal.toggle(nil, { count = 3, win = { position = "right" } })
+        end,
+        desc = "Terminal: Vertical",
+      },
+      {
+        "<leader>Tp",
+        function()
+          local python = require("config.python")
+          Snacks.terminal.toggle({ python.python(0) or "python" }, { cwd = python.root(0) })
+        end,
+        desc = "Terminal: Python REPL",
+      },
+      {
+        "<leader>Tl",
+        function()
+          local command, cwd = require("config.docker").compose({ "logs", "-f" })
+          if not command then
+            vim.notify("Docker Compose não encontrado", vim.log.levels.ERROR)
+            return
+          end
+          Snacks.terminal.toggle(command, { cwd = cwd })
+        end,
+        desc = "Terminal: Docker Logs",
+      },
+      {
+        "<leader>Tg",
+        function()
+          Snacks.terminal.toggle({ "lazygit" })
+        end,
+        desc = "Terminal: Lazygit",
       },
     },
-    config = function(_, opts)
-      require("toggleterm").setup(opts)
-
-      local Terminal = require("toggleterm.terminal").Terminal
-
-      local python_repl = Terminal:new({ cmd = "python", hidden = true })
-      local docker_logs = Terminal:new({ cmd = "docker-compose logs -f", hidden = true })
-      local lazygit = Terminal:new({ cmd = "lazygit", hidden = true, direction = "float" })
-
-      vim.keymap.set("n", "<leader>Tp", function()
-        python_repl:toggle()
-      end, { desc = "Terminal: Python REPL" })
-      vim.keymap.set("n", "<leader>Tl", function()
-        docker_logs:toggle()
-      end, { desc = "Terminal: Docker Logs" })
-      vim.keymap.set("n", "<leader>Tg", function()
-        lazygit:toggle()
-      end, { desc = "Terminal: Lazygit" })
-    end,
   },
 
   -- Trouble: Better diagnostics and quickfix list

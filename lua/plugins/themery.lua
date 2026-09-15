@@ -1,22 +1,16 @@
 -- ~/.config/nvim/lua/plugins/themery.lua
 -- O tema do sistema prevalece na inicialização; a seleção manual vale na sessão.
+-- Carregado sob demanda: o setup do Themery reaplica o tema salvo, então o tema
+-- em uso é restaurado logo em seguida.
 return {
   "zaldih/themery.nvim",
-  lazy = false,
-  priority = 1100,
-  init = function()
-    -- O Themery pode restaurar um tema salvo depois do LazyVim durante o boot.
-    vim.api.nvim_create_autocmd("VimEnter", {
-      once = true,
-      callback = function()
-        local colorscheme = require("lazyvim.config").colorscheme
-        if type(colorscheme) == "function" then
-          colorscheme()
-        else
-          vim.cmd.colorscheme(colorscheme)
-        end
-      end,
-    })
+  cmd = { "Themery" },
+  config = function(_, opts)
+    local current = vim.g.colors_name
+    require("themery").setup(opts)
+    if current and vim.g.colors_name ~= current then
+      vim.cmd.colorscheme(current)
+    end
   end,
   keys = {
     -- uC maiusculo: <leader>uc minusculo ja e "Toggle Conceal Level" no LazyVim core (Snacks.toggle)

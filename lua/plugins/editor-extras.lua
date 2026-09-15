@@ -1,31 +1,7 @@
 -- ~/.config/nvim/lua/plugins/editor-extras.lua
 -- Plugins de navegacao/edicao adicionais.
+-- Search & replace no projeto: grug-far (<leader>sr), já incluso no LazyVim.
 return {
-  -- Spectre: search & replace no projeto inteiro (com preview e regex).
-  {
-    "nvim-pack/nvim-spectre",
-    cmd = "Spectre",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    opts = { open_cmd = "noswapfile vnew" },
-    keys = {
-      {
-        "<leader>sr",
-        function()
-          require("spectre").toggle()
-        end,
-        desc = "Replace in Files (Spectre)",
-      },
-      {
-        "<leader>sr",
-        function()
-          require("spectre").open_visual({ select_word = true })
-        end,
-        mode = "v",
-        desc = "Replace Word (Spectre)",
-      },
-    },
-  },
-
   -- Harpoon 2: marcar arquivos e saltar entre eles instantaneamente.
   {
     "ThePrimeagen/harpoon",

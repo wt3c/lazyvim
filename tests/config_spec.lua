@@ -41,6 +41,111 @@ describe("config/options", function()
     assert.is_nil(src:find("opt%.writebackup%s*=%s*false"))
     assert.is_nil(src:find("opt%.swapfile%s*=%s*false"))
   end)
+
+  it("não força indentação de 4 espaços em todos os filetypes", function()
+    assert.is_nil(src:find("opt%.shiftwidth%s*=%s*4"))
+    assert.is_nil(src:find("opt%.tabstop%s*=%s*4"))
+    local autocmds = read("lua/config/autocmds.lua")
+    assert.truthy(autocmds:find('pattern = { "python", "htmldjango" }', 1, true))
+    assert.truthy(autocmds:find("vim.opt_local.shiftwidth = 4", 1, true))
+  end)
+end)
+
+describe("config/autocmds", function()
+  it("recarregar autocmds.lua não acumula timers de checktime", function()
+    dofile("lua/config/autocmds.lua")
+    local first = _G.__nvim_config_checktime_timer
+    dofile("lua/config/autocmds.lua")
+    local second = _G.__nvim_config_checktime_timer
+
+    assert.is_not_nil(first)
+    assert.are_not.equal(first, second)
+    assert.is_true(first:is_closing())
+    assert.is_false(second:is_closing())
+    second:stop()
+    second:close()
+    _G.__nvim_config_checktime_timer = nil
+  end)
+end)
+
+describe("config/python (resolvedor por buffer)", function()
+  local python = require("config.python")
+
+  local function project()
+    local root = vim.fn.tempname()
+    local bin = root .. "/.venv/bin"
+    vim.fn.mkdir(bin, "p")
+    vim.fn.mkdir(root .. "/app/views", "p")
+    vim.fn.writefile({}, root .. "/pyproject.toml")
+    for _, name in ipairs({ "python", "ruff" }) do
+      vim.fn.writefile({ "#!/bin/sh" }, bin .. "/" .. name)
+      vim.fn.setfperm(bin .. "/" .. name, "rwxr-xr-x")
+    end
+    return root
+  end
+
+  it("resolve raiz e venv a partir do arquivo do buffer, não do cwd", function()
+    local root = project()
+    local previous_venv = vim.env.VIRTUAL_ENV
+    vim.env.VIRTUAL_ENV = nil
+    vim.cmd.edit(vim.fn.fnameescape(root .. "/app/views/home.py"))
+    local buf = vim.api.nvim_get_current_buf()
+
+    assert.equal(root, python.root(buf))
+    assert.equal(root .. "/.venv/bin/python", python.python(buf))
+    assert.equal(root .. "/.venv/bin/ruff", python.executable("ruff", buf))
+
+    vim.cmd("bwipeout!")
+    vim.env.VIRTUAL_ENV = previous_venv
+    vim.fn.delete(root, "rf")
+  end)
+
+  it("VIRTUAL_ENV ativo tem prioridade sobre o venv do projeto", function()
+    local root = project()
+    local active = project()
+    local previous_venv = vim.env.VIRTUAL_ENV
+    vim.env.VIRTUAL_ENV = active .. "/.venv"
+    vim.cmd.edit(vim.fn.fnameescape(root .. "/app/views/home.py"))
+
+    assert.equal(active .. "/.venv/bin/python", python.python(vim.api.nvim_get_current_buf()))
+
+    vim.cmd("bwipeout!")
+    vim.env.VIRTUAL_ENV = previous_venv
+    vim.fn.delete(root, "rf")
+    vim.fn.delete(active, "rf")
+  end)
+end)
+
+describe("config/docker (Compose)", function()
+  local docker = require("config.docker")
+
+  it("prefere docker compose v2 e roda no diretório do compose file", function()
+    local root = vim.fn.tempname()
+    vim.fn.mkdir(root .. "/services/api", "p")
+    vim.fn.writefile({ "services: {}" }, root .. "/compose.yaml")
+    vim.cmd.edit(vim.fn.fnameescape(root .. "/services/api/main.py"))
+
+    local exepath, system = vim.fn.exepath, vim.system
+    vim.fn.exepath = function(name)
+      return ({ docker = "/usr/bin/docker", ["docker-compose"] = "/usr/bin/docker-compose" })[name] or ""
+    end
+    vim.system = function()
+      return {
+        wait = function()
+          return { code = 0 }
+        end,
+      }
+    end
+    docker.reset()
+    local command, cwd = docker.compose({ "up", "-d" }, vim.api.nvim_get_current_buf())
+    vim.fn.exepath, vim.system = exepath, system
+    docker.reset()
+
+    assert.same({ "/usr/bin/docker", "compose", "up", "-d" }, command)
+    assert.equal(root, cwd)
+    vim.cmd("bwipeout!")
+    vim.fn.delete(root, "rf")
+  end)
 end)
 
 describe("config/keymaps", function()
@@ -52,6 +157,20 @@ describe("config/keymaps", function()
     assert.truthy(src:find("diagnostic%.jump"))
     assert.is_nil(src:find("float%s*=%s*true"))
     assert.truthy(src:find("on_jump%s*="))
+  end)
+
+  it("mantém os atalhos de comentário sem depender do mini.comment", function()
+    for _, lhs in ipairs({ "<C-_>", "<C-/>", "<A-/>", "<leader>/" }) do
+      assert.truthy(src:find('"' .. lhs .. '", "gcc", { remap = true', 1, true))
+      assert.truthy(src:find('"' .. lhs .. '", "gc", { remap = true', 1, true))
+    end
+    assert.truthy(src:find('"<C-_>", "<Esc>gcca", { remap = true', 1, true))
+  end)
+
+  it("renomeia via Snacks.rename e envia exclusões para a lixeira quando possível", function()
+    assert.truthy(src:find("Snacks.rename.rename_file()", 1, true))
+    assert.is_nil(src:find('cmd = "saveas"', 1, true))
+    assert.truthy(src:find('{ "gio", "trash"', 1, true))
   end)
 
   it("não regride os keymaps de LSP do LazyVim", function()
@@ -117,6 +236,15 @@ describe("compatibilidade com Neovim 0.12", function()
     assert.is_nil(content:find("vhyrro/luarocks.nvim", 1, true))
     assert.is_truthy(read("lua/config/lazy.lua"):find("rocks = { enabled = false }", 1, true))
   end)
+
+  it("image.nvim só carrega como dependência do Molten", function()
+    local image = find_plugin(require("plugins.jupyter-tools"), "3rd/image.nvim")
+    assert.is_true(image.lazy)
+  end)
+
+  it("lazy.nvim não verifica atualizações em segundo plano", function()
+    assert.truthy(read("lua/config/lazy.lua"):find("checker = { enabled = false }", 1, true))
+  end)
 end)
 
 describe("correcoes de robustez", function()
@@ -155,8 +283,28 @@ describe("correcoes de robustez", function()
     assert.is_truthy(content:find("return false", 1, true))
   end)
 
+  it("hot reload de tema compara syntax_on com 1 e não dispara eventos artificiais", function()
+    local content = read("lua/plugins/omarchy-theme-hotreload.lua")
+    assert.truthy(content:find('vim.fn.exists("syntax_on") == 1', 1, true))
+    assert.is_nil(content:find('nvim_exec_autocmds("VimEnter"', 1, true))
+    assert.is_nil(content:find('nvim_exec_autocmds("ColorScheme"', 1, true))
+  end)
+
+  it("auto-instalação de LSP usa a API pública e não reinstala pacote em andamento", function()
+    local content = read("lua/config/lsp_autoinstall.lua")
+    assert.is_nil(content:find("mason-lspconfig.mappings", 1, true))
+    assert.truthy(content:find("get_available_servers", 1, true))
+    assert.truthy(content:find("is_installing()", 1, true))
+  end)
+
+  it("exemplo de conexão SQL não traz credencial", function()
+    local content = read("lua/plugins/sql-tools.lua")
+    assert.is_nil(content:find("user:password", 1, true))
+    assert.truthy(content:find("vim.env.DATABASE_URL", 1, true))
+  end)
+
   it("fallbacks de Python não tratam string vazia como executável", function()
-    for _, file in ipairs({ "lua/plugins/python-tools.lua", "lua/plugins/test-runner.lua" }) do
+    for _, file in ipairs({ "lua/plugins/python-tools.lua", "lua/config/python.lua" }) do
       local content = read(file)
       assert.is_truthy(content:find('if path ~= "" then', 1, true))
       assert.is_nil(content:find('exepath("python3") or vim.fn.exepath', 1, true))
@@ -179,6 +327,16 @@ describe("plugins/python-tools", function()
 
   it("Ruff LSP não formata (conform é o dono da formatação)", function()
     assert.is_false(lsp.opts.servers.ruff.init_options.settings.format.enable)
+  end)
+
+  it("Mason e Treesitter só declaram o que o extra lang.python não traz", function()
+    local mason = { ensure_installed = {} }
+    find_plugin(specs, "mason-org/mason.nvim").opts(nil, mason)
+    assert.same({ "mypy", "debugpy" }, mason.ensure_installed)
+
+    local treesitter = { ensure_installed = {} }
+    find_plugin(specs, "nvim-treesitter/nvim-treesitter").opts(nil, treesitter)
+    assert.same({ "htmldjango", "css" }, treesitter.ensure_installed)
   end)
 
   it("delega o DAP base ao extra oficial e mantém apenas a extensão Python", function()
@@ -208,10 +366,23 @@ end)
 describe("plugins/editor-extras", function()
   local specs = require("plugins.editor-extras")
 
-  it("inclui Spectre, Harpoon e Oil", function()
-    assert.is_not_nil(find_plugin(specs, "nvim-pack/nvim-spectre"))
+  it("inclui Harpoon e Oil; substituição no projeto fica com o grug-far do LazyVim", function()
+    assert.is_nil(find_plugin(specs, "nvim-pack/nvim-spectre"))
     assert.is_not_nil(find_plugin(specs, "ThePrimeagen/harpoon"))
     assert.is_not_nil(find_plugin(specs, "stevearc/oil.nvim"))
+  end)
+end)
+
+describe("plugins redundantes com o LazyVim/Snacks", function()
+  it("não declara ferramentas já trazidas pelos extras", function()
+    assert.same(
+      { "yaml-language-server", "bash-language-server", "shellcheck", "prettier" },
+      find_plugin(require("plugins.mason-tools"), "mason-org/mason.nvim").opts.ensure_installed
+    )
+    assert.equal(0, vim.fn.filereadable("lua/plugins/docker-tools.lua"))
+    assert.equal(0, vim.fn.filereadable("lua/plugins/colorschemes.lua"))
+    assert.equal(0, vim.fn.filereadable("lua/plugins/comments.lua"))
+    assert.is_nil(read("lazyvim.json"):find("typescript.vtsls", 1, true))
   end)
 end)
 
@@ -230,6 +401,13 @@ describe("plugins/modern-ui", function()
     assert.is_nil(find_plugin(specs, "folke/which-key.nvim"))
   end)
 
+  it("usa Snacks para notificações e referências, sem notify/illuminate/dressing locais", function()
+    for _, name in ipairs({ "rcarriga/nvim-notify", "RRethy/vim-illuminate", "stevearc/dressing.nvim" }) do
+      assert.is_nil(find_plugin(specs, name))
+    end
+    assert.is_false(vim.tbl_contains(find_plugin(specs, "folke/noice.nvim").dependencies, "rcarriga/nvim-notify"))
+  end)
+
   it("telescope é aditivo (sem config/dependências redundantes)", function()
     local telescope = find_plugin(specs, "nvim-telescope/telescope.nvim")
     assert.is_nil(telescope.config)
@@ -240,10 +418,28 @@ end)
 describe("plugins/test-runner (sem colisão terminal × teste)", function()
   local specs = require("plugins.test-runner")
 
-  it("terminal usa <leader>T*, não <leader>tf", function()
-    local keys = lhs_set(find_plugin(specs, "akinsho/toggleterm.nvim"))
+  it("terminal usa Snacks.terminal com <leader>T*, não <leader>tf", function()
+    assert.is_nil(find_plugin(specs, "akinsho/toggleterm.nvim"))
+    local keys = lhs_set(find_plugin(specs, "folke/snacks.nvim"))
     assert.is_nil(keys["<leader>tf"])
-    assert.is_true(keys["<leader>Tf"])
+    local terminal_keys =
+      { "<C-\\>", "<leader>Tf", "<leader>Th", "<leader>Tv", "<leader>Tp", "<leader>Tl", "<leader>Tg" }
+    for _, lhs in ipairs(terminal_keys) do
+      assert.is_true(keys[lhs], lhs)
+    end
+  end)
+
+  it("pytest não força xdist nem log DEBUG por padrão", function()
+    local previous = package.loaded["neotest-python"]
+    package.loaded["neotest-python"] = function(opts)
+      return opts
+    end
+    local opts = find_plugin(specs, "nvim-neotest/neotest").opts()
+    package.loaded["neotest-python"] = previous
+
+    local args = table.concat(opts.adapters[1].args, " ")
+    assert.is_nil(args:find("-n auto", 1, true))
+    assert.is_nil(args:find("DEBUG", 1, true))
   end)
 
   it("neotest mantém <leader>tf (Test: Run File)", function()
@@ -290,5 +486,21 @@ describe("plugins/quicknote", function()
     for _, cmd in ipairs(quicknote.cmd or {}) do
       assert.are_not.equal("Telescope", cmd)
     end
+  end)
+
+  it("só carrega o plugin para exibir sinais em arquivos de projetos com .quicknote/", function()
+    local content = read("lua/plugins/quicknote.lua")
+    assert.truthy(content:find('vim.bo[ev.buf].buftype ~= ""', 1, true))
+    assert.truthy(content:find('"/.quicknote"', 1, true))
+  end)
+end)
+
+describe("plugins/themery", function()
+  local themery = require("plugins.themery")
+
+  it("carrega sob demanda sem reaplicar o tema no VimEnter", function()
+    assert.is_not_false(themery.lazy)
+    assert.is_nil(themery.init)
+    assert.truthy(vim.tbl_contains(themery.cmd, "Themery"))
   end)
 end)

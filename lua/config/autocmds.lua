@@ -24,7 +24,15 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "WinEnter", "CursorHold
 -- usuario estiver digitando continuamente numa janela sem trocar de foco/buffer,
 -- o timer nunca dispara e o reload so acontece quando ele eventualmente sair do
 -- buffer. Um timer libuv independente garante o checktime periodico mesmo nesse caso.
+-- O handle fica em _G para que o hot-reload deste arquivo feche o timer anterior
+-- em vez de acumular um timer novo a cada :w.
+local previous_timer = _G.__nvim_config_checktime_timer
+if previous_timer and not previous_timer:is_closing() then
+  previous_timer:stop()
+  previous_timer:close()
+end
 local checktime_timer = vim.uv.new_timer()
+_G.__nvim_config_checktime_timer = checktime_timer
 checktime_timer:start(
   1000,
   1000,
@@ -38,8 +46,21 @@ checktime_timer:start(
 vim.api.nvim_create_autocmd("VimLeavePre", {
   group = auto_reload_group,
   callback = function()
-    checktime_timer:stop()
-    checktime_timer:close()
+    if not checktime_timer:is_closing() then
+      checktime_timer:stop()
+      checktime_timer:close()
+    end
+  end,
+})
+
+-- Indentação: 2 espaços global (padrão do LazyVim); 4 em Python/Django templates (PEP 8).
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("user_indent", { clear = true }),
+  pattern = { "python", "htmldjango" },
+  callback = function()
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
   end,
 })
 

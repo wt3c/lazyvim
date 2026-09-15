@@ -29,7 +29,7 @@ return {
   -- Add this to your project's .lazy.lua (gitignored file) or here for global config
   -- Example:
   -- vim.g.dbs = {
-  --   dev = "postgresql://user:password@localhost:5432/dbname",
+  --   dev = vim.env.DATABASE_URL, -- credenciais fora do repositório (ex.: Infisical)
   --   local = "sqlite:///path/to/db.sqlite3",
   -- }
 }
