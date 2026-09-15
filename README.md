@@ -237,7 +237,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 │       ├── omarchy-themes.lua       # Colorschemes do Omarchy (lazy)
 │       ├── omarchy-theme-hotreload.lua  # Reaplica tema ao trocar no Omarchy
 │       └── mason-tools.lua          # Tool installation
-├── tests/                           # config_spec.lua, smoke.lua, check_syntax.lua, run.sh
+├── tests/                           # config_spec.lua, smoke.lua (+ smoke/), check_syntax.lua, run.sh
 ├── snippets/python.json             # Snippets Python
 ├── spell/                           # Dicionários PT-BR/EN
 └── ruff-config/pyproject.toml       # Config base do Ruff
@@ -333,7 +333,9 @@ make syntax       # só validação de sintaxe Lua
 
 - **Specs** (`tests/config_spec.lua`): invariantes — Ruff no conform, picker = Telescope, sem colisão de keymaps,
   plugins presentes, APIs não-deprecadas.
-- **Smoke** (`tests/smoke.lua`): boota a config real e valida o estado em runtime.
+- **Smoke** (`tests/smoke.lua`): boota a config real e valida o estado em runtime. Em `tests/smoke/`, pressiona os
+  atalhos de terminal num projeto temporário (posição, comando e cwd) e simula o hot reload do tema; o que depende
+  de ferramenta ausente (lazygit, Docker Compose, symlink do Omarchy) aparece como `[SKIP]`.
 - **CI**: `.github/workflows/test.yml` roda `make test-ci` (sintaxe + specs) e, em job separado, o smoke com a
   config instalada (`install.sh` + `:Lazy! restore`) a cada push na `main` e em todo PR.
 

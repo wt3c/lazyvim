@@ -11,6 +11,11 @@ local function check(name, ok)
   end
 end
 
+-- Verificação que depende de ferramenta externa ausente nesta máquina (ex.: lazygit no CI).
+local function skip(name)
+  print(("[SKIP] %s"):format(name))
+end
+
 local function desc(lhs)
   local m = vim.fn.maparg(lhs, "n", false, true)
   return m and m.desc or nil
@@ -61,6 +66,9 @@ vim.defer_fn(function()
     and table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n"):find("nvim%-jupytext%-ok") ~= nil
   check("Jupytext converte notebook real para Markdown", converted)
   check("Gitsigns não anexa ao buffer .ipynb", vim.b.gitsigns_status_dict == nil)
+
+  dofile("tests/smoke/terminals.lua")(check, skip)
+  dofile("tests/smoke/theme.lua")(check, skip)
 
   if #failures == 0 then
     print("\nSMOKE: TODOS OS TESTES PASSARAM")

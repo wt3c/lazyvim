@@ -63,8 +63,10 @@ columns) — keep it at 0 issues when editing any `.md`.
   `themery.lua` provides manual switching (`<leader>uC`) and a light/dark toggle (`<leader>uB`).
 - `tests/` — `config_spec.lua` is a plenary/busted spec asserting invariants (Ruff wired into conform, Telescope as
   picker, no terminal × test keymap collision, expected plugins present, no deprecated Neovim 0.12 APIs, no shell
-  interpolation of user input); `smoke.lua` boots the real
-  config headless and checks runtime state; `check_syntax.lua` just parses every Lua file.
+  interpolation of user input); `smoke.lua` boots the real config headless and checks runtime state, and runs
+  `tests/smoke/terminals.lua` (presses the `<leader>T*` keys in a temp venv/compose project) and
+  `tests/smoke/theme.lua` (fires `User LazyReload` with a stubbed `plugins.theme`) — checks needing a missing tool
+  print `[SKIP]`; `check_syntax.lua` just parses every Lua file.
 
 ## Key conventions
 

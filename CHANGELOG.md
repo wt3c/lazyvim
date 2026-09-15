@@ -34,6 +34,10 @@
   quando `gio`/`trash` existe
 - Themery, image.nvim e quicknote passaram a carregar sob demanda; o Themery não troca mais o tema em uso ao carregar
 - Verificação periódica de atualizações do lazy.nvim desligada; exemplo de conexão SQL sem credencial
+- `monokai-pro.nvim` passou a vir de `loctvl842/monokai-pro.nvim` (o fork `gthelding` saiu do GitHub e travava o
+  boot tentando cloná-lo)
+- Smoke tests dos terminais `<leader>T*`/`<C-\>` (posição, comando e cwd) e do hot reload do tema
+  (`tests/smoke/`)
 
 ### 🎛️ UI
 
