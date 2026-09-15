@@ -557,6 +557,6 @@ Data: 09/08/2026
 
 ---
 
-**Feito com ❤️ usando LazyVim**
+Feito com ❤️ usando **LazyVim**
 
 🚀 **Happy Coding!**

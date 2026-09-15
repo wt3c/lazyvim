@@ -728,7 +728,7 @@ Seu Neovim agora é um **IDE moderno completo** com:
 ✅ Interface linda  
 ✅ 150+ keybindings produtivos
 
-**Aproveite! 🚀**
+**Aproveite!** 🚀
 
 ---
 
