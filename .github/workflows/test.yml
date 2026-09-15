@@ -21,3 +21,46 @@ jobs:
       - name: Sintaxe + specs (unit)
         # Specs não precisam instalar todos os plugins; run.sh clona o plenary.
         run: make test-ci
+
+  smoke:
+    # Boota a config real: instala os plugins do lazy-lock.json e o provider Python/Jupyter.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Neovim (stable)
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Instalar dependências obrigatórias do install.sh
+        # git, curl, make, cc, node, npm, python3, unzip, tar e gzip já vêm no runner.
+        # No Ubuntu o fd se chama fdfind; o tree-sitter CLI vem do npm.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep fd-find
+          mkdir -p "$HOME/.local/bin"
+          ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          npm install -g tree-sitter-cli
+
+      - name: Apontar ~/.config/nvim para o checkout
+        # lua/plugins/theme.lua é symlink para o tema do Omarchy e fica quebrado fora dele.
+        run: |
+          [ -e lua/plugins/theme.lua ] || rm -f lua/plugins/theme.lua
+          mkdir -p "$HOME/.config"
+          ln -s "$GITHUB_WORKSPACE" "$HOME/.config/nvim"
+
+      - name: install.sh (Ruff global + provider Python/Jupyter)
+        run: ./install.sh
+
+      - name: Instalar plugins nas versões do lazy-lock.json
+        run: nvim --headless "+Lazy! restore" +qa
+
+      - name: Smoke (boot da config completa)
+        run: make test-smoke

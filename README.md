@@ -203,7 +203,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 ├── backup-config.sh / restore-config.sh  # Backup e restauração da config
 ├── check-ruff.sh                    # Diagnóstico do Ruff usado pelo Neovim
 ├── README.md / INSTALL.md / KEYBINDINGS.md ⭐ / CHANGELOG.md / BACKUP-GUIDE.md
-├── .github/workflows/test.yml       # CI: sintaxe + specs
+├── .github/workflows/test.yml       # CI: sintaxe + specs e smoke
 ├── lua/
 │   ├── config/
 │   │   ├── lazy.lua                 # Bootstrap do lazy.nvim + LazyVim
@@ -335,7 +335,8 @@ make syntax       # só validação de sintaxe Lua
 - **Specs** (`tests/config_spec.lua`): invariantes — Ruff no conform, picker = Telescope, sem colisão de keymaps,
   plugins presentes, APIs não-deprecadas.
 - **Smoke** (`tests/smoke.lua`): boota a config real e valida o estado em runtime.
-- **CI**: `.github/workflows/test.yml` roda `make test-ci` (sintaxe + specs) a cada push/PR.
+- **CI**: `.github/workflows/test.yml` roda `make test-ci` (sintaxe + specs) e, em job separado, o smoke com a
+  config instalada (`install.sh` + `:Lazy! restore`) a cada push na `main` e em todo PR.
 
 ---
 

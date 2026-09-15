@@ -12,7 +12,7 @@ and "the tests" verify the config's invariants and boot health rather than busin
 
 ```bash
 make test         # full suite: syntax + specs + smoke (boots the real config)
-make test-unit    # syntax + specs only (does not install all plugins) — same as CI
+make test-unit    # syntax + specs only (does not install all plugins) — CI job `test`
 make test-smoke   # boot smoke test only
 make syntax       # Lua syntax validation only (tests/check_syntax.lua)
 
@@ -22,7 +22,10 @@ nvim --headless -u tests/minimal_init.lua \
 ```
 
 `tests/run.sh` is the actual orchestrator behind the Makefile targets (`unit`/`smoke`/`all`). CI
-(`.github/workflows/test.yml`) runs `make test-ci` (= `test-unit`) on pushes to `main` and on every pull request.
+(`.github/workflows/test.yml`) runs on pushes to `main` and on every pull request, with two jobs: `test` runs
+`make test-ci` (= `test-unit`); `smoke` installs the required tools, runs `install.sh`, `:Lazy! restore` from
+`lazy-lock.json` and then `make test-smoke`. In CI the Omarchy `theme.lua` symlink is broken, so the job removes it
+and `~/.config/nvim` is symlinked to the checkout.
 
 Formatting/linting of the Lua config itself uses StyLua (`.stylua.toml`: 120 col, 2-space indent, double quotes).
 `check-ruff.sh` checks the Ruff install used *inside* Neovim for Python projects, not this repo's own code.
