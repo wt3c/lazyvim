@@ -504,3 +504,12 @@ describe("plugins/themery", function()
     assert.truthy(vim.tbl_contains(themery.cmd, "Themery"))
   end)
 end)
+
+describe("plugins/omarchy-themes", function()
+  local specs = require("plugins.omarchy-themes")
+
+  it("usa o monokai-pro upstream (gthelding/monokai-pro.nvim foi removido do GitHub)", function()
+    assert.is_nil(find_plugin(specs, "gthelding/monokai-pro.nvim"))
+    assert.is_true(find_plugin(specs, "loctvl842/monokai-pro.nvim").lazy)
+  end)
+end)

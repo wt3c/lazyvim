@@ -77,7 +77,8 @@ return {
     priority = 1000,
   },
   {
-    "gthelding/monokai-pro.nvim",
+    -- gthelding/monokai-pro.nvim foi removido do GitHub; o upstream segue ativo.
+    "loctvl842/monokai-pro.nvim",
     lazy = true,
     priority = 1000,
   },
