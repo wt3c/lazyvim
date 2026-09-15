@@ -34,9 +34,6 @@ Existem **2 formas de backup** e **1 de reinstalação**:
 └── *.md                                     Documentação
 ```
 
-> `lazy-lock.json` aparece no `.gitignore`, mas **está versionado** — como já é rastreado, a regra não se aplica
-> e as atualizações dele continuam sendo commitadas normalmente.
-
 ### 🟡 Fora do Git (recriado ou apontado para fora)
 
 | Caminho | O que é | Como recuperar |

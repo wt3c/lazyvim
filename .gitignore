@@ -11,9 +11,6 @@ foo.*
 *.log
 data
 
-# Lock file (muda frequentemente)
-lazy-lock.json
-
 # Cache
 .cache/
 .luarc.json
