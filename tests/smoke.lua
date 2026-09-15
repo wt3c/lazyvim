@@ -37,7 +37,9 @@ vim.defer_fn(function()
   check("<leader>? = atalhos locais do buffer (which-key)", desc(" ?") == "Buffer Keymaps (which-key)")
 
   local lazy_plugins = require("lazy.core.config").plugins
-  check("legendary não faz parte do spec", lazy_plugins["legendary.nvim"] == nil)
+  -- legendary é paleta complementar: coexiste com o which-key (checado acima), sem substituí-lo.
+  check("legendary faz parte do spec", lazy_plugins["legendary.nvim"] ~= nil)
+  check("<leader>sL = paleta Legendary", desc(" sL") == "Legendary: All keymaps/commands")
   check("checkhealth nvim_config disponível", pcall(require, "nvim_config.health"))
   check("provider Python configurado", vim.fn.executable(vim.g.python3_host_prog or "") == 1)
   check("Molten registrado como plugin remoto", vim.fn.exists(":MoltenInit") == 2)
