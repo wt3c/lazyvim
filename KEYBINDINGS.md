@@ -13,8 +13,10 @@
 
 ### Comentários
 
-- `Ctrl+/` - Comentar/descomentar linha (Normal/Visual)
+- `Ctrl+/` - Comentar/descomentar linha (Normal/Visual/Insert)
 - `Ctrl+_` - Alternativa (alguns terminais)
+- `Alt+/` - Alternativa (Normal/Visual/Insert)
+- `<leader>/` - Alternativa (Normal/Visual; substitui o grep do LazyVim nesse atalho)
 
 ### Salvar e Sair
 
@@ -30,6 +32,14 @@
 - `v` depois `p` - Colar sem sobrescrever register
 - `Ctrl+a` - Selecionar tudo
 - `<Esc>` - Limpar highlight de busca
+- `<leader>so` - Recarregar (`source`) o arquivo atual
+
+### Clipboard do Sistema
+
+- `Ctrl+c` - Copiar seleção (Visual) ou linha atual (Normal) para o clipboard
+- `Ctrl+v` - Colar do clipboard (Normal/Visual/Insert)
+
+> Como `Ctrl+v` virou colar, o Visual Block fica em `Ctrl+q`.
 
 ---
 
@@ -177,7 +187,10 @@
 - `<leader>tt` - Testar função/método sob cursor
 - `<leader>tf` - Testar arquivo atual
 - `<leader>tT` - Testar tudo (projeto)
+- `<leader>tr` - Testar sob cursor e abrir o output
+- `<leader>tF` - Testar arquivo e abrir o output
 - `<leader>td` - Debug teste sob cursor
+- `]t` / `[t` - Próximo/anterior teste com falha
 
 ### UI de Testes
 
@@ -195,6 +208,11 @@
 - `<leader>rt` - Toggle task list
 - `<leader>ri` - Info sobre tasks
 - `<leader>ra` - Ações de task
+- `<leader>rl` - Carregar bundle de tasks
+- `<leader>rs` - Salvar bundle de tasks
+
+> Em projetos Django (com `manage.py` no diretório atual), `<leader>rr` também lista os templates
+> `user.django_runserver`, `user.django_migrate`, `user.django_makemigrations` e `user.django_shell`.
 
 ---
 
@@ -263,8 +281,8 @@ Marque arquivos e salte entre eles instantaneamente.
 ### GitSigns (Hunks)
 
 - `]h` / `[h` - Próximo/anterior hunk
-- `<leader>gs` - Stage/unstage hunk (alterna)
-- `<leader>gr` - Reset hunk
+- `<leader>gs` - Stage/unstage hunk (alterna; no Visual, só as linhas selecionadas)
+- `<leader>gr` - Reset hunk (no Visual, só as linhas selecionadas)
 - `<leader>gS` - Stage buffer inteiro
 - `<leader>gR` - Reset buffer inteiro
 - `<leader>gv` - Preview hunk
@@ -362,6 +380,30 @@ No modo Insert, enquanto o menu de sugestões está aberto:
 Os atalhos usam a palavra sob o cursor ou o texto selecionado e abrem a definição
 no navegador padrão.
 
+---
+
+## 🗒️ NOTAS (QUICKNOTE)
+
+> Prefixo **`<leader>N`** (maiúsculo): `<leader>n` já é o histórico de notificações do LazyVim. Linhas com nota
+> exibem o sinal 📝 na gutter.
+
+### Projeto
+
+- `<leader>Na` - Adicionar nota
+- `<leader>No` - Abrir nota
+- `<leader>Nl` - Listar notas
+- `<leader>Np` - Listar notas com preview (Telescope)
+- `<leader>Nd` - Deletar nota
+
+### Arquivo/Linha
+
+- `<leader>Nfa` - Adicionar nota na linha
+- `<leader>Nfo` - Abrir nota da linha
+- `<leader>Nfl` - Listar notas do arquivo
+- `<leader>Nfd` - Deletar nota da linha
+
+---
+
 ## 🎨 INTERFACE
 
 ### Noice (Messages)
@@ -435,7 +477,7 @@ Ativo apenas em buffers `python`.
 - `i` - Insert mode
 - `v` - Visual mode
 - `V` - Visual line mode
-- `Ctrl+v` - Visual block mode
+- `Ctrl+q` - Visual block mode (`Ctrl+v` está mapeado para colar)
 - `:` - Command mode
 
 ### Movimentação Rápida
