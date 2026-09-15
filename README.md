@@ -9,6 +9,7 @@
 - **[INSTALL.md](./INSTALL.md)** - 🚀 Instalação completa (pré-requisitos + troubleshooting)
 - **[KEYBINDINGS.md](./KEYBINDINGS.md)** - 📖 Guia completo de atalhos (LEIA PRIMEIRO!)
 - **[CHANGELOG.md](./CHANGELOG.md)** - 📋 Todas mudanças e funcionalidades
+- **[BACKUP-GUIDE.md](./BACKUP-GUIDE.md)** - 📦 Backup e restauração (`backup-config.sh` / `restore-config.sh`)
 
 ---
 
@@ -91,6 +92,16 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 - Django management commands (`<Space>p`)
 - Virtual environment selector (`<Space>cv`, fornecido pelo extra do LazyVim)
 - **uv.nvim** — roda/gerencia projeto uv sem sair do editor (`<Space>U`, ver [KEYBINDINGS.md](KEYBINDINGS.md))
+- **Overseer** — task runner (`<Space>r*`) com templates Django prontos: `runserver`, `migrate`,
+  `makemigrations` e `shell` (via `uv run python manage.py ...`, visíveis só quando há `manage.py` no CWD)
+
+### 🧩 LSP
+
+- Servidores declarados nos extras do LazyVim e em `mason-tools.lua`
+- **Auto-instalação por filetype** (`lua/config/lsp_autoinstall.lua`): ao abrir um arquivo cujo filetype tem
+  servidor disponível no Mason e nenhum instalado, instala sozinho; com vários candidatos, apenas notifica e
+  sugere `:LspInstall`
+- `lua_ls` apontado para o runtime do Neovim, para editar esta própria config com autocomplete de `vim.*`
 
 ### 📓 Jupyter (.ipynb)
 
@@ -148,38 +159,89 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 - Telescope (busca fuzzy)
 - Trouble (diagnósticos)
 - Which-key (descoberta contextual de atalhos; `<Space>?` mostra os atalhos locais do buffer)
+- Legendary (paleta de comandos/keymaps pesquisável — `<Space>sL`, complementa o which-key)
 - Treesitter Context (cabeçalho fixo da classe/função — `<Space>ut` alterna)
+
+### 🖌️ Temas (Omarchy + Themery)
+
+- `lua/plugins/theme.lua` é um **symlink** para `~/.local/state/omarchy/current/theme/neovim.lua`: o tema do
+  Omarchy prevalece no boot
+- `omarchy-theme-hotreload.lua` reaplica o tema quando o Omarchy troca de tema (evento `LazyReload`), sem
+  reiniciar o Neovim; `omarchy-themes.lua` deixa os colorschemes do Omarchy disponíveis (lazy)
+- Themery (`<Space>uC`) continua disponível para troca manual durante a sessão, com Kanagawa, Gruvbox e
+  Nightfox além de Tokyo Night/Catppuccin
+
+> Fora do Omarchy o symlink fica quebrado — recrie `lua/plugins/theme.lua` como arquivo normal com o
+> colorscheme desejado.
+
+### 🧭 Navegação e Edição
+
+- **Harpoon 2** — marcar arquivos e saltar entre eles (`<Space>h*`)
+- **nvim-spectre** — search & replace no projeto com preview (`<Space>sr`)
+- **oil.nvim** — editar diretórios como buffer (`-`)
+- **mini.surround** — adicionar/trocar/remover aspas, parênteses e tags
+
+### 📝 Notas (Quicknote)
+
+- Notas por **projeto** gravadas em `.quicknote/` na raiz do repositório (versionáveis): `<Space>Na` / `No` /
+  `Nl` / `Nd`, e `<Space>Np` lista com preview no Telescope
+- Notas por **arquivo/linha**: `<Space>Nfa` / `Nfo` / `Nfl` / `Nfd`
+- Linhas com nota ganham o sinal 📝 na gutter automaticamente
 
 ---
 
 ## 🗂️ Estrutura
 
-```
+```text
 ~/.config/nvim/
-├── init.lua                  # Entry point
-├── lazy-lock.json            # Plugin versions lock
-├── lazyvim.json              # LazyVim extras config
-├── README.md                 # Este arquivo
-├── KEYBINDINGS.md            # Guia completo de atalhos ⭐
-├── CHANGELOG.md              # Log de mudanças
+├── init.lua                         # Entry point (delega para lua/config/lazy.lua)
+├── lazy-lock.json                   # Plugin versions lock
+├── lazyvim.json                     # LazyVim extras habilitados
+├── Makefile                         # Alvos de teste (test, test-unit, test-smoke, syntax)
+├── install.sh / quick-install.sh    # Instalação (valida dependências, provider Python/Jupyter)
+├── uninstall.sh                     # Remoção completa (com opção de backup)
+├── backup-config.sh / restore-config.sh  # Backup e restauração da config
+├── check-ruff.sh                    # Diagnóstico do Ruff usado pelo Neovim
+├── README.md / INSTALL.md / KEYBINDINGS.md ⭐ / CHANGELOG.md / BACKUP-GUIDE.md
+├── .github/workflows/test.yml       # CI: sintaxe + specs
 ├── lua/
 │   ├── config/
-│   │   ├── lazy.lua          # Plugin manager setup
-│   │   ├── options.lua       # Vim options
-│   │   ├── keymaps.lua       # Keybindings ⭐
-│   │   └── autocmds.lua      # Autocommands
+│   │   ├── lazy.lua                 # Bootstrap do lazy.nvim + LazyVim
+│   │   ├── options.lua              # Vim options
+│   │   ├── keymaps.lua              # Keybindings ⭐
+│   │   ├── autocmds.lua             # Autocommands (hot-reload, auto-reload de buffers)
+│   │   └── lsp_autoinstall.lua      # Instala LSP ausente por filetype
+│   ├── nvim_config/
+│   │   └── health.lua               # :checkhealth nvim_config
 │   └── plugins/
-│       ├── python-tools.lua  # Python/Django (Ruff, Pyright, Mypy, DAP)
-│       ├── completion.lua    # Autocomplete (blink.cmp tuning)
-│       ├── formatting.lua    # Conform (formatação, line-length 120)
-│       ├── comments.lua      # Comentários (mini.comment + atalhos)
-│       ├── docker-tools.lua  # Docker support
-│       ├── git-modern.lua    # Git (Neogit, Diffview, GitSigns)
-│       ├── test-runner.lua   # Neotest, Overseer, ToggleTerm, Trouble
-│       ├── modern-ui.lua     # UI (Noice, Telescope, Treesitter Context)
-│       ├── markdown-tools.lua# Markdown (Marksman, markdownlint)
-│       ├── sql-tools.lua     # SQL support
-│       └── mason-tools.lua   # Tool installation
+│       ├── python-tools.lua         # Python/Django (Ruff, Pyright, Mypy, DAP)
+│       ├── uv-tools.lua             # uv.nvim
+│       ├── jupyter-tools.lua        # jupytext + molten + image.nvim
+│       ├── completion.lua           # Autocomplete (blink.cmp tuning)
+│       ├── formatting.lua           # Conform (formatação, line-length 120)
+│       ├── comments.lua             # Comentários (mini.comment + atalhos)
+│       ├── surround.lua             # mini.surround
+│       ├── editor-extras.lua        # Harpoon, Spectre, oil.nvim
+│       ├── docker-tools.lua         # Docker support
+│       ├── sql-tools.lua            # SQL (dadbod)
+│       ├── markdown-tools.lua       # Markdown (Marksman, markdownlint)
+│       ├── lua-tools.lua            # lua_ls para o runtime do Neovim
+│       ├── git-modern.lua           # Git (Neogit, Diffview, GitSigns)
+│       ├── test-runner.lua          # Neotest, Overseer, ToggleTerm, Trouble
+│       ├── modern-ui.lua            # UI (Noice, Telescope, Treesitter Context)
+│       ├── legendary.lua            # Paleta de comandos/keymaps
+│       ├── quicknote.lua            # Notas por projeto/arquivo
+│       ├── claude-code.lua          # claudecode.nvim
+│       ├── themery.lua              # Troca manual de colorscheme
+│       ├── colorschemes.lua         # Kanagawa, Gruvbox, Nightfox
+│       ├── theme.lua                # Symlink → tema atual do Omarchy
+│       ├── omarchy-themes.lua       # Colorschemes do Omarchy (lazy)
+│       ├── omarchy-theme-hotreload.lua  # Reaplica tema ao trocar no Omarchy
+│       └── mason-tools.lua          # Tool installation
+├── tests/                           # config_spec.lua, smoke.lua, check_syntax.lua, run.sh
+├── snippets/python.json             # Snippets Python
+├── spell/                           # Dicionários PT-BR/EN
+└── ruff-config/pyproject.toml       # Config base do Ruff
 ```
 
 ---
@@ -239,6 +301,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 | LSP                | Language servers (Pyright, etc.) |
 | Mason              | Gerenciador de ferramentas       |
 | Neotest            | Framework de testes              |
+| Overseer           | Task runner (templates Django)   |
 | Neogit             | Interface Git                    |
 | Diffview           | Visualizador de diffs            |
 | ToggleTerm         | Terminais                        |
@@ -250,6 +313,11 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 | jupytext.nvim      | Conversão .ipynb ↔ markdown      |
 | Themery            | Troca de colorscheme com preview |
 | claudecode.nvim    | Bridge com o CLI Claude Code     |
+| quicknote.nvim     | Notas por projeto/arquivo        |
+| Harpoon 2          | Saltos rápidos entre arquivos    |
+| nvim-spectre       | Search & replace no projeto      |
+| oil.nvim           | Editar diretórios como buffer    |
+| mini.surround      | Surround (aspas, parênteses)     |
 
 ---
 
@@ -394,7 +462,7 @@ Remove tudo (com opção de backup). Veja [INSTALL.md](./INSTALL.md) para detalh
 
 ## 💡 Dicas
 
-1. **Use Legendary:** Aperte `<Space>?` para ver todos os comandos/keymaps
+1. **Use which-key e Legendary:** `<Space>` abre o menu de atalhos; `<Space>sL` busca todos os comandos/keymaps
 2. **Explore Telescope:** `<Space>fk` mostra todos keybindings
 3. **Aprenda aos poucos:** Não precisa decorar tudo de uma vez
 4. **Use :help:** `:help <termo>` é seu melhor amigo
@@ -465,7 +533,7 @@ Se encontrar problemas:
 
 ## 📊 Estatísticas
 
-- **Plugins:** ~65
+- **Plugins:** ~90 (conforme `lazy-lock.json`)
 - **Keybindings:** 160+
 - **LSPs:** Python, Docker, SQL, JSON, YAML, Bash, Markdown, Lua
 - **Linguagens:** Python, Lua, Docker, SQL, Markdown, Shell
@@ -478,10 +546,14 @@ Se encontrar problemas:
 **2.3 - Claude Code, Jupyter & Temas**  
 Data: 09/08/2026
 
-> Destaques 2.3: claudecode.nvim integrado (`<Space>a*`), which-key trocado por legendary.nvim,
-> suporte a Jupyter notebooks (jupytext + molten, `<Space>m*`), uv.nvim para projetos Python
-> (`<Space>U`), themery.nvim com novos colorschemes (Kanagawa, Gruvbox, Nightfox) e correção de
-> colisões de keymap em `<Space>u*`. Ver [CHANGELOG.md](./CHANGELOG.md) para detalhes.
+> Destaques 2.3: claudecode.nvim integrado (`<Space>a*`), suporte a Jupyter notebooks (jupytext + molten,
+> `<Space>m*`), uv.nvim para projetos Python (`<Space>U`), themery.nvim com novos colorschemes (Kanagawa,
+> Gruvbox, Nightfox) e correção de colisões de keymap em `<Space>u*`.
+>
+> **Não lançado:** integração com o tema do Omarchy (hot reload), compatibilidade com Neovim 0.12 e
+> `:checkhealth nvim_config`, extra oficial de DAP do LazyVim, which-key restaurado com Legendary como paleta
+> complementar (`<Space>sL`), quicknote (`<Space>N*`), LSP auto-instalado por filetype e templates Django no
+> Overseer. Ver [CHANGELOG.md](./CHANGELOG.md) para detalhes.
 
 ---
 
