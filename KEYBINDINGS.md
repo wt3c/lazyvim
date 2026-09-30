@@ -72,8 +72,8 @@
 
 ### Navegar
 
-- `Shift+h` ou `[b` - Buffer anterior
-- `Shift+l` ou `]b` - Próximo buffer
+- `Shift+h`, `Alt+←` ou `[b` - Buffer anterior
+- `Shift+l`, `Alt+→` ou `]b` - Próximo buffer
 - `<leader><space>` - Listar buffers (Telescope)
 
 ### Fechar

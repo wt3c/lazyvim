@@ -78,6 +78,7 @@
 
 ### ⌨️ Atalhos
 
+- `Alt+←` / `Alt+→` alternam entre as abas (buffers) do bufferline, como `Shift+h` / `Shift+l`
 - Restaurado o **which-key.nvim** fornecido pelo LazyVim: `<Space>` volta a abrir o menu contextual de atalhos,
   `<leader>?` mostra os atalhos locais do buffer e `<C-w><Space>` ativa o modo contínuo de janelas
 - O **legendary.nvim** deixou de substituir o which-key: ele sobrescrevia o comportamento padrão e não descobria

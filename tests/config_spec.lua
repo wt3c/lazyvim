@@ -184,6 +184,11 @@ describe("config/keymaps", function()
     assert.truthy(src:find('"<leader>ze"', 1, true))
     assert.truthy(src:find('"<leader>zd"', 1, true))
   end)
+
+  it("alterna entre as abas (buffers) com Alt+setas", function()
+    assert.truthy(src:find('"<A-Left>", "<cmd>bprevious<cr>"', 1, true))
+    assert.truthy(src:find('"<A-Right>", "<cmd>bnext<cr>"', 1, true))
+  end)
 end)
 
 describe("compatibilidade com Neovim 0.12", function()
