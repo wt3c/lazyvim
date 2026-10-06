@@ -185,6 +185,10 @@ describe("config/keymaps", function()
     assert.truthy(src:find('"<leader>zd"', 1, true))
   end)
 
+  it("duplica <leader>cf (formatação do LazyVim) em Ctrl+Alt+L", function()
+    assert.truthy(src:find('{ "n", "i", "x", "s" }, "<C-M-l>", function()\n  LazyVim.format({ force = true })', 1, true))
+  end)
+
   it("alterna entre as abas (buffers) com Alt+setas", function()
     assert.truthy(src:find('"<A-Left>", "<cmd>bprevious<cr>"', 1, true))
     assert.truthy(src:find('"<A-Right>", "<cmd>bnext<cr>"', 1, true))

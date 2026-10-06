@@ -313,6 +313,7 @@ Marque arquivos e salte entre eles instantaneamente.
 - `<leader>ca` - Code action
 - `<leader>cr` - Rename symbol
 - `<leader>cf` - Format file (conform → Ruff em Python)
+- `<C-A-l>` - Format file (mesmo que `<leader>cf`, padrão JetBrains — funciona também no Insert)
 - `<leader>fm` - Format file (atalho alternativo)
 
 ---

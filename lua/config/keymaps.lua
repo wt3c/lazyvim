@@ -277,6 +277,12 @@ vim.keymap.set("n", "<leader>fm", function()
   require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "Format File" })
 
+-- Ctrl+Alt+L: mesmo comportamento do <leader>cf do LazyVim (atalho de formatação das IDEs JetBrains),
+-- também no Insert/Select — o callback roda sem sair do modo atual
+vim.keymap.set({ "n", "i", "x", "s" }, "<C-M-l>", function()
+  LazyVim.format({ force = true })
+end, { desc = "Format" })
+
 -- ============================================================================
 -- LSP KEYMAPS
 -- ============================================================================
