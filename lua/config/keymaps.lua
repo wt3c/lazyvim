@@ -278,10 +278,13 @@ vim.keymap.set("n", "<leader>fm", function()
 end, { desc = "Format File" })
 
 -- Ctrl+Alt+L: mesmo comportamento do <leader>cf do LazyVim (atalho de formatação das IDEs JetBrains),
--- também no Insert/Select — o callback roda sem sair do modo atual
-vim.keymap.set({ "n", "i", "x", "s" }, "<C-M-l>", function()
-  LazyVim.format({ force = true })
-end, { desc = "Format" })
+-- também no Insert/Select — o callback roda sem sair do modo atual. Ctrl+Alt+/ faz o mesmo; chega como
+-- <C-M-/> ou <C-M-_> conforme o terminal (mesmo caso do Ctrl+/ nos atalhos de comentário).
+for _, lhs in ipairs({ "<C-M-l>", "<C-M-/>", "<C-M-_>" }) do
+  vim.keymap.set({ "n", "i", "x", "s" }, lhs, function()
+    LazyVim.format({ force = true })
+  end, { desc = "Format" })
+end
 
 -- ============================================================================
 -- LSP KEYMAPS
