@@ -34,3 +34,6 @@ Thumbs.db
 # Spell: ignorar binários compilados, commitar apenas palavras customizadas (.add)
 spell/*.spl
 spell/*.sug
+
+# Plano de trabalho pessoal do agente (workflow local, não versionado)
+tasks/
