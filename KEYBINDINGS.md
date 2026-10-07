@@ -164,8 +164,8 @@
 
 ### Docker Compose
 
-> Usa `docker compose` (v2) quando disponível, com `docker-compose` como fallback, e roda no diretório do
-> compose file mais próximo do arquivo aberto.
+> Usa `docker compose` (v2) quando disponível, com `docker-compose` como fallback, e roda no diretório do compose file
+> mais próximo do arquivo aberto.
 
 - `<leader>Du` - `docker compose up -d`
 - `<leader>Dd` - `docker compose down`
@@ -382,15 +382,14 @@ No modo Insert, enquanto o menu de sugestões está aberto:
 - `<leader>zp` — consultar no Wikcionário em português
 - `<leader>ze` — consultar no Wiktionary em inglês
 
-Os atalhos usam a palavra sob o cursor ou o texto selecionado e abrem a definição
-no navegador padrão.
+Os atalhos usam a palavra sob o cursor ou o texto selecionado e abrem a definição no navegador padrão.
 
 ---
 
 ## 🗒️ NOTAS (QUICKNOTE)
 
-> Prefixo **`<leader>N`** (maiúsculo): `<leader>n` já é o histórico de notificações do LazyVim. Linhas com nota
-> exibem o sinal 📝 na gutter.
+> Prefixo **`<leader>N`** (maiúsculo): `<leader>n` já é o histórico de notificações do LazyVim. Linhas com nota exibem o
+> sinal 📝 na gutter.
 
 ### Projeto
 
@@ -440,8 +439,7 @@ Bridge com o CLI `claude` já autenticado.
 
 ## 🐍 PYTHON (uv.nvim)
 
-Prefixo `<leader>U` (o default `<leader>x` colide com Trouble e o core do LazyVim).
-Ativo apenas em buffers `python`.
+Prefixo `<leader>U` (o default `<leader>x` colide com Trouble e o core do LazyVim). Ativo apenas em buffers `python`.
 
 - `<leader>U` - Menu de comandos UV (picker)
 - `<leader>Ur` - UV Run Current File
@@ -458,9 +456,9 @@ Ativo apenas em buffers `python`.
 
 ## 📓 JUPYTER (.ipynb)
 
-`jupytext.nvim` converte `.ipynb` ↔ markdown automaticamente ao abrir/salvar.
-`molten-nvim` executa células contra um kernel Jupyter real. Ativo em `python`,
-`markdown` e `quarto`. Renderização de imagem (plots) só funciona no terminal Kitty.
+`jupytext.nvim` converte `.ipynb` ↔ markdown automaticamente ao abrir/salvar. `molten-nvim` executa células contra um
+kernel Jupyter real. Ativo em `python`, `markdown` e `quarto`. Renderização de imagem (plots) só funciona no terminal
+Kitty.
 
 - `<leader>mi` - Molten: Init Kernel
 - `<leader>me` - Molten: Evaluate Operator
