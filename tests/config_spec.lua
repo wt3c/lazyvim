@@ -240,6 +240,45 @@ describe("compatibilidade com Neovim 0.12", function()
     assert.is_function(require("nvim_config.health").check)
   end)
 
+  it("checkhealth reconhece python e win32yank no Windows", function()
+    local available = { python = true, win32yank = true }
+    local saved = {
+      has = vim.fn.has,
+      executable = vim.fn.executable,
+      exepath = vim.fn.exepath,
+      host = vim.g.python3_host_prog,
+      health = vim.health,
+    }
+    local messages = {}
+    local function record(level)
+      return function(msg)
+        table.insert(messages, level .. ": " .. msg)
+      end
+    end
+    vim.fn.has = function(feature)
+      return feature == "win32" and 1 or saved.has(feature)
+    end
+    vim.fn.executable = function(name)
+      return available[name] and 1 or 0
+    end
+    vim.fn.exepath = function(name)
+      return available[name] and name or ""
+    end
+    vim.g.python3_host_prog = nil
+    vim.health = { start = function() end, ok = record("ok"), warn = record("warn"), error = record("error") }
+
+    local ok, err = pcall(require("nvim_config.health").check)
+
+    vim.fn.has, vim.fn.executable, vim.fn.exepath = saved.has, saved.executable, saved.exepath
+    vim.g.python3_host_prog = saved.host
+    vim.health = saved.health
+    assert(ok, err)
+    local output = table.concat(messages, "\n")
+    assert.is_truthy(output:find("ok: python encontrado", 1, true), output)
+    assert.is_nil(output:find("python3 não encontrado", 1, true), output)
+    assert.is_truthy(output:find("ok: Clipboard Windows disponível (win32yank)", 1, true), output)
+  end)
+
   it("verifica dependências essenciais do venv-selector e do Mason", function()
     local health = read("lua/nvim_config/health.lua")
     local install = read("install.sh")

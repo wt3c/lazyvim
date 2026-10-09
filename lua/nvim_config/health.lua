@@ -30,6 +30,10 @@ local function command_succeeds(command)
 end
 
 function M.check()
+  local windows = vim.fn.has("win32") == 1
+  -- No Windows o interpretador é `python`; `python3` só existe no Unix.
+  local python = windows and "python" or "python3"
+
   vim.health.start("Configuração pessoal do Neovim")
 
   if vim.fn.has("nvim-0.12") == 1 then
@@ -54,7 +58,7 @@ function M.check()
     { "tree-sitter", "geração de parsers" },
     { "node", "servidores de linguagem instalados pelo Mason" },
     { "npm", "ferramentas JavaScript instaladas pelo Mason" },
-    { "python3", "desenvolvimento Python e plugins remotos" },
+    { python, "desenvolvimento Python e plugins remotos" },
     { "uv", "provider Python/Jupyter isolado e projetos Python" },
     { "unzip", "extração de ferramentas instaladas pelo Mason" },
     { "tar", "extração de ferramentas instaladas pelo Mason" },
@@ -90,16 +94,18 @@ function M.check()
     vim.health.ok("Clipboard Wayland disponível (wl-copy)")
   elseif executable("xclip") then
     vim.health.ok("Clipboard X11 disponível (xclip)")
+  elseif windows and executable("win32yank") then
+    vim.health.ok("Clipboard Windows disponível (win32yank)")
   else
     vim.health.warn("Clipboard externo indisponível", {
-      "Instale wl-clipboard no Wayland ou xclip no X11.",
+      "Instale wl-clipboard no Wayland, xclip no X11 ou win32yank no Windows.",
     })
   end
 
   vim.health.start("Provider Python e Jupyter")
   local configured = vim.g.python3_host_prog
   local pynvim_python = vim.fn.exepath("pynvim-python")
-  local candidate = configured or (pynvim_python ~= "" and pynvim_python or vim.fn.exepath("python3"))
+  local candidate = configured or (pynvim_python ~= "" and pynvim_python or vim.fn.exepath(python))
   if can_import(candidate, { "pynvim" }) then
     vim.health.ok("Provider Python consegue importar pynvim: " .. candidate)
   else
