@@ -77,11 +77,16 @@ return function(check, skip)
 
   local compose = require("config.docker").compose({ "logs", "-f" })
   if compose then
+    -- Com `services: {}` o `logs -f` pode sair com código 0 antes da checagem, e o
+    -- auto_close do Snacks fecha a janela; por isso confere o que o atalho pede ao toggle.
+    local toggle, called = Snacks.terminal.toggle, nil
+    Snacks.terminal.toggle = function(cmd, opts)
+      called = { cmd = cmd, cwd = opts and opts.cwd }
+    end
     press("<Space>Tl")
-    open = terminals()
-    check("<leader>Tl roda docker compose logs -f", open[1] and vim.deep_equal(open[1].cmd, compose))
-    check("<leader>Tl roda no diretório do compose file", open[1] and open[1].cwd == project)
-    reset()
+    Snacks.terminal.toggle = toggle
+    check("<leader>Tl roda docker compose logs -f", called and vim.deep_equal(called.cmd, compose))
+    check("<leader>Tl roda no diretório do compose file", called and called.cwd == project)
   else
     skip("<leader>Tl (Docker Compose ausente)")
   end
