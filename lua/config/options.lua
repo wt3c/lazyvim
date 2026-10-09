@@ -15,7 +15,8 @@ opt.clipboard = "unnamedplus"
 -- Python provider: fixa o host somente quando o venv dedicado realmente existe.
 -- Sem isso, o Neovim pode procurar um provider válido (por exemplo, pynvim via uv/pipx)
 -- em vez de falhar por causa de um caminho inexistente.
-local python_host = vim.fn.stdpath("data") .. "/venvs/jupyter/bin/python"
+local python = require("config.python")
+local python_host = python.jupyter_executable("python")
 if vim.fn.executable(python_host) == 1 then
   vim.g.python3_host_prog = python_host
 end
@@ -23,8 +24,8 @@ end
 -- O jupytext.nvim recebe o caminho absoluto, mas seu healthcheck procura o
 -- comando no PATH. Anexar (em vez de prefixar) evita trocar o Python padrão
 -- usado por terminais e ferramentas de projeto.
-local jupyter_bin = vim.fn.stdpath("data") .. "/venvs/jupyter/bin"
-local jupytext = jupyter_bin .. "/jupytext"
+local jupyter_bin = python.jupyter_bin()
+local jupytext = python.jupyter_executable("jupytext")
 if vim.fn.executable(jupytext) == 1 and not (vim.env.PATH or ""):find(jupyter_bin, 1, true) then
   local separator = vim.fn.has("win32") == 1 and ";" or ":"
   vim.env.PATH = (vim.env.PATH or "") .. separator .. jupyter_bin

@@ -116,6 +116,27 @@ describe("config/python (resolvedor por buffer)", function()
   end)
 end)
 
+describe("config/python (venv dedicado do Jupyter)", function()
+  local python = require("config.python")
+  local venv = vim.fn.stdpath("data") .. "/venvs/jupyter"
+
+  it("usa Scripts/*.exe no Windows e bin/ no Unix", function()
+    if vim.fn.has("win32") == 1 then
+      assert.equal(venv .. "/Scripts", python.jupyter_bin())
+      assert.equal(venv .. "/Scripts/python.exe", python.jupyter_executable("python"))
+    else
+      assert.equal(venv .. "/bin", python.jupyter_bin())
+      assert.equal(venv .. "/bin/python", python.jupyter_executable("python"))
+    end
+  end)
+
+  it("options, jupyter-tools e health não fixam o layout Unix do venv", function()
+    for _, file in ipairs({ "lua/config/options.lua", "lua/plugins/jupyter-tools.lua", "lua/nvim_config/health.lua" }) do
+      assert.is_nil(read(file):find("venvs/jupyter/bin", 1, true), file)
+    end
+  end)
+end)
+
 describe("config/docker (Compose)", function()
   local docker = require("config.docker")
 
@@ -236,7 +257,7 @@ describe("compatibilidade com Neovim 0.12", function()
   it("usa a implementação atual do jupytext com executável isolado", function()
     local content = read("lua/plugins/jupyter-tools.lua")
     assert.is_truthy(content:find('"goerz/jupytext.nvim"', 1, true))
-    assert.is_truthy(content:find('jupyter_venv .. "/jupytext"', 1, true))
+    assert.is_truthy(content:find('python.jupyter_executable("jupytext")', 1, true))
     assert.is_nil(content:find('"GCBallesteros/jupytext.nvim"', 1, true))
   end)
 

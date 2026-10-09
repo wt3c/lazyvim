@@ -22,6 +22,19 @@ local function venv_executable(venv, name)
   end
 end
 
+--- Diretório de executáveis do venv dedicado do Jupyter/provider do Neovim.
+---@return string
+function M.jupyter_bin()
+  return vim.fn.stdpath("data") .. "/venvs/jupyter/" .. (windows and "Scripts" or "bin")
+end
+
+--- Caminho de um executável do venv dedicado do Jupyter (com .exe no Windows).
+---@param name string
+---@return string
+function M.jupyter_executable(name)
+  return M.jupyter_bin() .. "/" .. name .. (windows and ".exe" or "")
+end
+
 --- Executável do venv ativo ou do projeto do buffer; nil quando não houver.
 ---@param name string
 ---@param bufnr? integer

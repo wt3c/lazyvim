@@ -4,14 +4,14 @@
 --   molten-nvim   -> executa celulas contra um kernel Jupyter real, output inline
 --   image.nvim    -> renderiza imagens/plots em terminais compatíveis com o
 --                    protocolo gráfico Kitty; fora deles, Molten continua funcional.
-local jupyter_venv = vim.fn.stdpath("data") .. "/venvs/jupyter/bin"
+local python = require("config.python")
 
 return {
   {
     "goerz/jupytext.nvim",
     version = "0.2.0",
     opts = {
-      jupytext = jupyter_venv .. "/jupytext",
+      jupytext = python.jupyter_executable("jupytext"),
       format = "markdown",
       update = true,
     },

@@ -109,7 +109,7 @@ function M.check()
     })
   end
 
-  local dedicated = vim.fn.stdpath("data") .. "/venvs/jupyter/bin/python"
+  local dedicated = require("config.python").jupyter_executable("python")
   if vim.fn.executable(dedicated) == 1 then
     vim.health.ok("Venv dedicado do Jupyter encontrado: " .. dedicated)
     if can_import(dedicated, { "pynvim", "jupyter_client", "jupytext", "ipykernel" }) then
@@ -125,7 +125,7 @@ function M.check()
     })
   end
 
-  local jupytext = vim.fn.stdpath("data") .. "/venvs/jupyter/bin/jupytext"
+  local jupytext = require("config.python").jupyter_executable("jupytext")
   if vim.fn.executable(jupytext) == 1 then
     vim.health.ok("Jupytext isolado encontrado: " .. jupytext)
   else
