@@ -4,16 +4,39 @@
 
 ---
 
-## 📚 Documentação
+## Documentação
 
 - **[INSTALL.md](./INSTALL.md)** - 🚀 Instalação completa (pré-requisitos + troubleshooting)
 - **[KEYBINDINGS.md](./KEYBINDINGS.md)** - 📖 Guia completo de atalhos (LEIA PRIMEIRO!)
 - **[CHANGELOG.md](./CHANGELOG.md)** - 📋 Todas mudanças e funcionalidades
 - **[BACKUP-GUIDE.md](./BACKUP-GUIDE.md)** - 📦 Backup e restauração (`backup-config.sh` / `restore-config.sh`)
 
+## Sumário
+
+- [Início rápido](#início-rápido)
+- [Funcionalidades](#funcionalidades-principais)
+- [Estrutura](#estrutura)
+- [Aprendendo Neovim](#aprendendo-neovim)
+- [Plugins e ferramentas](#plugins-e-ferramentas-principais)
+- [Testes da configuração](#testes-da-configuração)
+- [Comandos úteis](#comandos-úteis)
+- [Customização](#customização)
+- [Resolução de problemas](#resolução-de-problemas)
+- [Recursos externos](#recursos-externos)
+- [Fluxo de trabalho](#fluxo-de-trabalho)
+- [Suporte](#suporte)
+- [Versão](#versão)
+
 ---
 
-## ⚡ Quick Start
+## Início rápido
+
+O fluxo abaixo pressupõe que `~/.config/nvim` ainda não existe. Se já houver uma configuração, preserve-a antes de
+clonar; veja as opções em [BACKUP-GUIDE.md](BACKUP-GUIDE.md). Em uma cópia existente deste repositório, consulte
+[INSTALL.md](INSTALL.md) para reinstalar as dependências.
+
+O `install.sh` sobrescreve `~/.config/ruff/pyproject.toml` com a configuração deste repositório e instala ou atualiza o
+provider Python/Jupyter isolado. Guarde também sua configuração global do Ruff, caso já tenha personalizações.
 
 ```bash
 git clone https://github.com/wt3c/lazyvim.git ~/.config/nvim
@@ -28,8 +51,8 @@ Na primeira abertura, aguarde o Lazy e o Mason instalarem plugins e ferramentas.
 ### Dependências obrigatórias do sistema
 
 | Executável                  | Uso                                                           |
-|-----------------------------|---------------------------------------------------------------|
-| `nvim` 0.12+                | Runtime da configuração e APIs utilizadas                     |
+| --------------------------- | ------------------------------------------------------------- |
+| `nvim` 0.12+ com LuaJIT     | Runtime da configuração e APIs utilizadas                     |
 | `git`, `curl`               | Bootstrap de plugins e downloads                              |
 | `rg`, `fd`                  | Telescope e descoberta de ambientes pelo `venv-selector.nvim` |
 | `make`, `cc`, `tree-sitter` | Extensões nativas e parsers do Treesitter                     |
@@ -42,26 +65,28 @@ O `install.sh` valida esses executáveis e cria o ambiente Jupyter com `pynvim`,
 
 ### Dependências por funcionalidade
 
-| Recurso                   | Dependência externa                                                                           |
-|---------------------------|-----------------------------------------------------------------------------------------------|
-| Desenvolvimento Go        | `go` disponível no `PATH`; instalação descrita em [INSTALL.md](INSTALL.md#desenvolvimento-go) |
-| Clipboard do sistema      | `wl-copy` (`wl-clipboard`) no Wayland ou `xclip` no X11                                       |
-| Busca fuzzy no terminal   | `fzf`                                                                                         |
-| Interface Git em terminal | `lazygit`                                                                                     |
-| Atalhos Docker            | Docker com `docker compose` ou o legado `docker-compose`                                      |
-| Plots e imagens inline    | ImageMagick (`magick`) e Kitty ou terminal compatível com o protocolo gráfico Kitty           |
-| Claude Code               | CLI `claude` instalado e autenticado                                                          |
-| Bancos via Dadbod         | Cliente do banco usado: `psql`, `sqlite3` ou `mysql`                                          |
-| Ícones completos          | Nerd Font v3 configurada no terminal                                                          |
+| Recurso                   | Dependência externa                                                                                                  |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Desenvolvimento Go        | `go` disponível no `PATH`; instalação descrita em [INSTALL.md](INSTALL.md#desenvolvimento-go)                        |
+| Desenvolvimento Rust      | Toolchain rustup com Cargo, rustfmt, Clippy, rust-analyzer e rust-src; [instalação](INSTALL.md#desenvolvimento-rust) |
+| Clipboard do sistema      | `wl-copy` (`wl-clipboard`) no Wayland ou `xclip` no X11                                                              |
+| Busca fuzzy no terminal   | `fzf`                                                                                                                |
+| Interface Git em terminal | `lazygit`                                                                                                            |
+| Atalhos Docker            | Docker com `docker compose` ou o legado `docker-compose`                                                             |
+| Plots e imagens inline    | ImageMagick (`magick`) e Kitty ou terminal compatível com o protocolo gráfico Kitty                                  |
+| Claude Code               | CLI `claude` instalado e autenticado                                                                                 |
+| Bancos via Dadbod         | Cliente do banco usado: `psql`, `sqlite3` ou `mysql`                                                                 |
+| Ícones completos          | Nerd Font v3 configurada no terminal                                                                                 |
 
 Pyright, Ruff, Mypy, debugpy, sqlfluff, Marksman, markdownlint, formatadores e servidores de linguagem são declarados
 pela configuração e gerenciados pelo Mason; não devem ser instalados globalmente só para o Neovim. Para Go, isso inclui
-`gopls`, `goimports`, `gofumpt`, `delve` e `golangci-lint`; o compilador Go é instalado separadamente.
+`gopls`, `goimports`, `gofumpt`, `delve` e `golangci-lint`; o compilador Go é instalado separadamente. Para Rust,
+rustup gerencia os componentes da toolchain e o Mason instala o CodeLLDB.
 
 ### Atalhos Mais Usados
 
 | Atalho      | Ação                       |
-|-------------|----------------------------|
+| ----------- | -------------------------- |
 | `<Space>?`  | Atalhos locais (which-key) |
 | `<Space>ff` | Buscar arquivo             |
 | `<Space>fg` | Buscar texto (grep)        |
@@ -81,7 +106,7 @@ pela configuração e gerenciados pelo Mason; não devem ser instalados globalme
 
 ---
 
-## 🎯 Funcionalidades Principais
+## Funcionalidades Principais
 
 ### Desenvolvimento Go
 
@@ -97,7 +122,7 @@ Abra um projeto com `go.mod` ou `go.work` e um arquivo `.go`. Confira `:LspInfo`
 servidor e os formatadores disponíveis.
 
 | Atalho      | Ação em arquivos Go                 |
-|-------------|-------------------------------------|
+| ----------- | ----------------------------------- |
 | `<Space>cf` | Formatar o arquivo                  |
 | `<Space>tt` | Executar o teste próximo ao cursor  |
 | `<Space>tf` | Executar os testes do arquivo       |
@@ -130,6 +155,8 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 - **Ruff como ferramenta central** — lint + format + organize imports (line-length 120)
   - Formatação/imports no save via conform (`ruff_format` + `ruff_organize_imports`)
   - Code actions sob demanda: `<Space>cR` (Fix All) e `<Space>co` (Organize Imports)
+  - O LSP fornece diagnósticos e ações de código; a formatação fica com o Conform
+  - O Ruff usa a configuração do projeto quando presente; 120 é o padrão global instalado por `install.sh`
 - Pyright (type checking + hover/completion) + Mypy (checagem profunda via nvim-lint)
 - Debug (DAP) pelo extra oficial do LazyVim, com config Django pronta (`<Space>dPr` sobe o runserver)
 - Neotest (testes com UI, runner pytest)
@@ -162,7 +189,7 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 ### 🐳 Docker
 
 - LSP para Dockerfile e docker-compose
-- Atalhos para todas operações (`<Space>D`)
+- Atalhos para Compose, logs, imagens, contêineres e execução interativa (`<Space>D`)
 - Terminal para logs
 
 ### 🌿 Git
@@ -174,7 +201,7 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 
 ### 🧪 Testes
 
-- Neotest (UI linda)
+- Neotest com resumo, resultados e saída dos testes
 - Run/Debug testes
 - Watch mode
 - Atalhos: `<Space>t`
@@ -213,9 +240,10 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
   Neovim; `omarchy-themes.lua` deixa os colorschemes do Omarchy disponíveis (lazy)
 - Themery (`<Space>uC`) continua disponível para troca manual durante a sessão, com Kanagawa, Gruvbox e Nightfox além de
   Tokyo Night/Catppuccin
+- `<Space>uB` alterna entre Catppuccin Latte e Tokyo Night Moon durante a sessão
 
-> Fora do Omarchy o symlink fica quebrado — recrie `lua/plugins/theme.lua` como arquivo normal com o colorscheme
-> desejado.
+> Fora do Omarchy, remova o symlink quebrado antes de criar um arquivo normal em `lua/plugins/theme.lua` com o
+> colorscheme desejado. Dentro do Omarchy, o symlink é gerenciado pelo sistema.
 
 ### 🧭 Navegação e Edição
 
@@ -226,21 +254,22 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 
 ### 📝 Notas (Quicknote)
 
-- Notas por **projeto** gravadas em `.quicknote/` na raiz do repositório (versionáveis): `<Space>Na` / `No` / `Nl` /
-  `Nd`, e `<Space>Np` lista com preview no Telescope
+- Notas gravadas em `.quicknote/` no **diretório atual do Neovim** (versionáveis): `<Space>Na` / `No` / `Nl` /
+  `Nd`, e `<Space>Np` lista com preview no Telescope. Para manter as notas na raiz do projeto, abra o Neovim nessa raiz;
+  confira o diretório atual com `:pwd`
 - Notas por **arquivo/linha**: `<Space>Nfa` / `Nfo` / `Nfl` / `Nfd`
 - Linhas com nota ganham o sinal 📝 na gutter automaticamente
 
 ---
 
-## 🗂️ Estrutura
+## Estrutura
 
 ```text
 ~/.config/nvim/
 ├── init.lua                         # Entry point (delega para lua/config/lazy.lua)
 ├── lazy-lock.json                   # Plugin versions lock
 ├── lazyvim.json                     # LazyVim extras habilitados
-├── Makefile                         # Alvos de teste (test, test-unit, test-smoke, syntax)
+├── Makefile                         # Testes gerais, integrações Go/Rust e sintaxe
 ├── install.sh / quick-install.sh    # Instalação (valida dependências, provider Python/Jupyter)
 ├── uninstall.sh                     # Remoção completa (com opção de backup)
 ├── backup-config.sh / restore-config.sh  # Backup e restauração da config
@@ -280,7 +309,7 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 │       ├── omarchy-themes.lua       # Colorschemes do Omarchy (lazy)
 │       ├── omarchy-theme-hotreload.lua  # Reaplica tema ao trocar no Omarchy
 │       └── mason-tools.lua          # Tool installation
-├── tests/                           # Specs, smoke de boot, go_smoke.lua, sintaxe e run.sh
+├── tests/                           # Specs, scripts, smoke, integrações Go/Rust, sintaxe e run.sh
 ├── snippets/python.json             # Snippets Python
 ├── spell/                           # Dicionários PT-BR/EN
 └── ruff-config/pyproject.toml       # Config base do Ruff
@@ -288,7 +317,7 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 
 ---
 
-## 🎓 Aprendendo Neovim
+## Aprendendo Neovim
 
 ### Modos Vim
 
@@ -320,7 +349,7 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 - `n` - Próximo resultado
 - `*` - Buscar palavra sob cursor
 
-### Comandos Úteis
+### Comandos básicos
 
 - `:w` - Salvar
 - `:q` - Sair
@@ -330,13 +359,13 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 
 ---
 
-## 📦 Plugins Principais
+## Plugins e ferramentas principais
 
 | Plugin             | Função                           |
-|--------------------|----------------------------------|
+| ------------------ | -------------------------------- |
 | LazyVim            | Base do setup                    |
 | blink.cmp          | Autocomplete                     |
-| Ruff (LSP)         | Lint + format + organize imports |
+| Ruff (LSP)         | Diagnósticos e ações de código   |
 | Telescope          | Busca fuzzy                      |
 | Treesitter         | Syntax highlighting              |
 | Treesitter Context | Cabeçalho fixo de classe/função  |
@@ -347,6 +376,11 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 | Neotest            | Framework de testes              |
 | neotest-golang     | Adaptador de testes Go           |
 | nvim-dap-go        | Integração com o depurador Delve |
+| rustaceanvim       | Rust LSP, testes e depuração     |
+| rust-analyzer      | Servidor de linguagem Rust       |
+| crates.nvim        | Dependências no Cargo.toml       |
+| rustfmt / Clippy   | Formatação e diagnósticos Rust   |
+| CodeLLDB           | Adaptador de depuração Rust      |
 | Overseer           | Task runner (templates Django)   |
 | Neogit             | Interface Git                    |
 | Diffview           | Visualizador de diffs            |
@@ -368,7 +402,7 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 
 ---
 
-## 🧪 Testes
+## Testes da configuração
 
 A config tem uma suíte de testes em `tests/` (specs com plenary/busted + smoke de boot):
 
@@ -376,14 +410,20 @@ A config tem uma suíte de testes em `tests/` (specs com plenary/busted + smoke 
 make test         # sintaxe + specs + smoke (boot da config completa)
 make test-unit    # só sintaxe + specs (não instala todos os plugins)
 make test-smoke   # só o smoke de boot
+make test-go      # integração real Go (toolchain e ferramentas instaladas)
+make test-rust    # integração real Rust (toolchain e ferramentas instaladas)
 make syntax       # só validação de sintaxe Lua
 ```
 
 - **Specs** (`tests/config_spec.lua`): invariantes — Ruff no conform, picker = Telescope, sem colisão de keymaps,
   plugins presentes, APIs não-deprecadas.
+- **Scripts** (`tests/scripts_spec.lua` e `tests/scripts.sh`): backup/restauração em diretórios temporários,
+  preservação do lockfile, caminhos com espaços e propagação de falhas do runner e do Ruff.
 - **Smoke** (`tests/smoke.lua`): boota a config real e valida o estado em runtime. Em `tests/smoke/`, pressiona os
   atalhos de terminal num projeto temporário (posição, comando e cwd) e simula o hot reload do tema; o que depende de
-  ferramenta ausente (lazygit, Docker Compose, symlink do Omarchy) aparece como `[SKIP]`.
+  ferramenta ausente (lazygit, Docker Compose, symlink do Omarchy) aparece como `[SKIP]`. Verifica também alternância
+  claro/escuro, preservação de splits/buffers, exclusão com confirmação e diagnóstico com Ruff real.
+  O runner isola cache/estado em diretórios temporários, soma todas as suítes e limita o tempo das integrações.
 - **CI**: `.github/workflows/test.yml` roda `make test-ci` (sintaxe + specs) e, em job separado, o smoke com a config
   instalada (`install.sh` + `:Lazy! restore`) a cada push na `main` e em todo PR.
 
@@ -393,7 +433,7 @@ O teste `tests/go_smoke.lua` não faz parte de `make test` nem dos jobs atuais d
 parser Go já instalados, execute da raiz desta configuração:
 
 ```bash
-nvim --headless +"luafile tests/go_smoke.lua"
+make test-go
 ```
 
 Ele cria um módulo temporário e verifica o vínculo do `gopls` com o buffer e uma resposta de hover, formatação com
@@ -405,7 +445,7 @@ exige suporte ao detector de condições de corrida e à depuração no ambiente
 Com os componentes Rust, plugins, parser Rust e CodeLLDB instalados, execute da raiz desta configuração:
 
 ```bash
-nvim --headless +"luafile tests/rust_smoke.lua"
+make test-rust
 ```
 
 O teste usa um projeto Cargo temporário sem dependências externas e verifica um único rust-analyzer, hover, rustfmt,
@@ -414,7 +454,7 @@ removido ao terminar. Esse teste é independente de `make test` e dos jobs atuai
 
 ---
 
-## 🛠️ Comandos Úteis
+## Comandos Úteis
 
 ```vim
 " Gerenciamento
@@ -446,7 +486,7 @@ removido ao terminar. Esse teste é independente de `make test` e dos jobs atuai
 
 ---
 
-## ⚙️ Customização
+## Customização
 
 ### Mudar Keybindings
 
@@ -460,21 +500,29 @@ Edite: `~/.config/nvim/lua/config/options.lua`
 
 Crie: `~/.config/nvim/lua/plugins/meu-plugin.lua`
 
-### Configurar Databases (SQL)
+### Configurar conexões SQL
 
-Edite: `~/.config/nvim/lua/plugins/sql-tools.lua`
+`lua/plugins/sql-tools.lua` configura o dialeto do formatador e a interface Dadbod. Declare as conexões do projeto a
+partir de variáveis carregadas pelo Infisical, conforme o exemplo comentado no arquivo; mantenha credenciais fora do
+repositório.
 
 ---
 
-## 🐛 Troubleshooting
+## Resolução de problemas
 
 ### Plugins não carregam
 
-```vim
-:Lazy restore
-:Lazy clean
-:Lazy sync
-```
+Abra `:Lazy` e confira qual plugin falhou. Escolha a ação conforme o objetivo:
+
+| Comando         | Uso                                                                 |
+| --------------- | ------------------------------------------------------------------- |
+| `:Lazy install` | Instalar plugins declarados que ainda estejam ausentes              |
+| `:Lazy restore` | Restaurar plugins para os commits registrados em `lazy-lock.json`   |
+| `:Lazy clean`   | Remover plugins instalados que já não fazem parte da configuração   |
+| `:Lazy sync`    | Instalar, limpar e atualizar plugins; pode alterar `lazy-lock.json` |
+
+Para recuperar as versões fixadas, prefira `:Lazy restore`. Use `:Lazy sync` quando quiser atualizar a configuração,
+guardando suas alterações e revisando o novo lockfile após a atualização.
 
 ### LSP não funciona
 
@@ -484,7 +532,8 @@ Edite: `~/.config/nvim/lua/plugins/sql-tools.lua`
 :Mason
 ```
 
-Reinstale as ferramentas necessárias.
+Confira se o servidor esperado aparece em `:LspInfo` e se a instalação terminou no Mason. Para Go e Rust, confirme
+também a toolchain no PATH e os requisitos dos respectivos perfis em [INSTALL.md](INSTALL.md).
 
 ### Ctrl+/ não funciona
 
@@ -513,7 +562,7 @@ Remove tudo (com opção de backup). Veja [INSTALL.md](./INSTALL.md) para detalh
 
 ---
 
-## 📖 Recursos Externos
+## Recursos Externos
 
 ### Documentação Oficial
 
@@ -523,7 +572,8 @@ Remove tudo (com opção de backup). Veja [INSTALL.md](./INSTALL.md) para detalh
 
 ### Aprender Vim
 
-- `:Tutor` (dentro do Neovim)
+- Tutorial integrado em uma sessão limpa: `nvim --clean`, seguido de `:Tutor`. Nesta configuração, o plugin `tutor`
+  está desabilitado para reduzir o carregamento inicial
 - [OpenVim Tutorial](https://www.openvim.com/)
 - [Vim Adventures](https://vim-adventures.com/)
 
@@ -536,17 +586,7 @@ Remove tudo (com opção de backup). Veja [INSTALL.md](./INSTALL.md) para detalh
 
 ---
 
-## 💡 Dicas
-
-1. **Use which-key e Legendary:** `<Space>` abre o menu de atalhos; `<Space>sL` busca todos os comandos/keymaps
-2. **Explore Telescope:** `<Space>fk` mostra todos keybindings
-3. **Aprenda aos poucos:** Não precisa decorar tudo de uma vez
-4. **Use :help:** `:help <termo>` é seu melhor amigo
-5. **Pratique:** Use Neovim para tudo, a memória muscular vem com o tempo
-
----
-
-## 🎯 Fluxo de Trabalho Recomendado
+## Fluxo de trabalho
 
 ### 1. Abrir Projeto
 
@@ -555,47 +595,18 @@ cd ~/workspace/meu-projeto
 nvim .
 ```
 
-### 2. Buscar Arquivos
+### 2. Editar e validar
 
-- `<Space>ff` - Buscar por nome
-- `<Space>fg` - Buscar por conteúdo
-- `<Space>fr` - Arquivos recentes
+Busque arquivos e texto com Telescope, confira os diagnósticos e salve para aplicar a formatação. Execute os testes
+pelo Neotest e revise o diff no Neogit ou Diffview antes do commit. Os atalhos completos, incluindo Docker e terminais,
+estão em [KEYBINDINGS.md](KEYBINDINGS.md).
 
-### 3. Editar
-
-- Navegar: `h j k l` ou `Ctrl+h/j/k/l` (entre splits)
-- Comentar: `Ctrl+/`
-- Mover linhas: `Alt+j/k`
-- Salvar: `Ctrl+s`
-
-### 4. Git
-
-- Status: `<Space>gg`
-- Diff: `<Space>gd`
-- Stage: `<Space>gs`
-- Commit: `<Space>gc`
-
-### 5. Testar
-
-- Teste atual: `<Space>tt`
-- Todos testes: `<Space>tT`
-- Watch: `<Space>tw`
-
-### 6. Docker
-
-- Up: `<Space>Du`
-- Logs: `<Space>Dl`
-- Down: `<Space>Dd`
-
-### 7. Terminal
-
-- Toggle: `Ctrl+\`
-- Python REPL: `<Space>Tp`
-- Lazygit: `<Space>Tg`
+Para descobrir comandos durante o trabalho, use `<Space>` (which-key), `<Space>sL` (Legendary), `<Space>fk`
+(mapeamentos no Telescope) e `:help <termo>`.
 
 ---
 
-## 📞 Suporte
+## Suporte
 
 Se encontrar problemas:
 
@@ -607,17 +618,7 @@ Se encontrar problemas:
 
 ---
 
-## 📊 Estatísticas
-
-- **Plugins:** ~90 (conforme `lazy-lock.json`)
-- **Keybindings:** 160+
-- **LSPs:** Python, Go, Rust, Docker, SQL, JSON, YAML, Bash, Markdown, Lua e TypeScript
-- **Linguagens:** Python, Go, Rust, Lua, Docker, SQL, Markdown, Shell, JavaScript/TypeScript, JSON, YAML e TOML
-- **Frameworks:** Django (suporte nativo)
-
----
-
-## 🎉 Versão
+## Versão
 
 **2.3 - Claude Code, Jupyter & Temas**  
 Data: 09/08/2026
@@ -629,7 +630,8 @@ Data: 09/08/2026
 > **Não lançado:** integração com o tema do Omarchy (hot reload), compatibilidade com Neovim 0.12 e
 > `:checkhealth nvim_config`, extra oficial de DAP do LazyVim, which-key restaurado com Legendary como paleta
 > complementar (`<Space>sL`), quicknote (`<Space>N*`), LSP auto-instalado por filetype, templates Django no Overseer e
-> perfil Go com gopls, formatação, Neotest e Delve. Ver [CHANGELOG.md](./CHANGELOG.md) para detalhes.
+> perfis Go e Rust com LSP, formatação, Neotest e depuração; melhorias em buffers, temas, backups e validação da
+> configuração. Ver [CHANGELOG.md](./CHANGELOG.md) para detalhes.
 
 ---
 

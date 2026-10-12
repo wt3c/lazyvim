@@ -2,6 +2,11 @@
 
 ## Não lançado
 
+### Documentação do README
+
+- Adicionado sumário e corrigidas as orientações de instalação, recuperação de plugins, Ruff, Quicknote e Tutor.
+- Atualizado o suporte Rust e a descrição dos testes; reduzida a repetição de atalhos e instruções.
+
 ### Revisão geral da configuração
 
 - Fechamento de buffers usa Snacks e preserva os splits; fechar os demais mantém o buffer atual.
