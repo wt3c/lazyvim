@@ -78,8 +78,8 @@
 
 ### Fechar
 
-- `<leader>bd` - Deletar buffer atual
-- `<leader>bD` - Deletar todos exceto atual
+- `<leader>bd` - Fechar o buffer atual preservando os splits (Snacks)
+- `<leader>bD` - Fechar os outros buffers preservando o atual (confirma alterações não salvas)
 
 ---
 
@@ -184,6 +184,8 @@
 ---
 
 ## 🧪 TESTES (NEOTEST)
+
+Os atalhos abaixo atendem Python, Go e Rust. Em Rust, aguarde a indexação do projeto pelo rust-analyzer.
 
 ### Executar Testes
 
@@ -370,7 +372,7 @@ No modo Insert, enquanto o menu de sugestões está aberto:
 - `<leader>uc` - Toggle conceal level (LazyVim core)
 - `<leader>uv` - Toggle list chars (view whitespace)
 - `<leader>uC` - Themery: trocar colorscheme (live preview)
-- `<leader>uB` - Alternar tema claro/escuro (catppuccin-latte / tokyonight-moon)
+- `<leader>uB` - Alternar tema claro/escuro na sessão (catppuccin-latte / tokyonight-moon)
 - `<leader>ut` - Toggle Treesitter Context (cabeçalho fixo de classe/função)
 - `<leader>un` - Dismiss notifications
 

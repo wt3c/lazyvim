@@ -3,6 +3,7 @@
 -- Sai com código != 0 (via :cq) se alguma verificação falhar.
 
 local failures = {}
+vim.v.errmsg = ""
 
 local function check(name, ok)
   print(("[%s] %s"):format(ok and "PASS" or "FAIL", name))
@@ -69,6 +70,25 @@ vim.defer_fn(function()
 
   dofile("tests/smoke/terminals.lua")(check, skip)
   dofile("tests/smoke/theme.lua")(check, skip)
+  local ruff = vim.system({ "bash", "check-ruff.sh" }, { text = true }):wait(15000)
+  check("diagnóstico e formatação com Ruff real", ruff.code == 0)
+  if ruff.code ~= 0 then
+    print(ruff.stderr or ruff.stdout)
+  end
+  local regression_ok, regression_err = xpcall(function()
+    dofile("tests/smoke/regressions.lua")(check)
+  end, debug.traceback)
+  check("regressões terminam sem erros", regression_ok)
+  if not regression_ok then
+    print(regression_err)
+  end
+  -- lazy.nvim remove handlers com pcall(vim.keymap.del): uma ausência já tratada
+  -- pode deixar E31 em v:errmsg. Os demais erros continuam reprovando o smoke.
+  local runtime_ok = vim.v.errmsg == "" or vim.v.errmsg == "E31: No such mapping"
+  check("smoke sem erros inesperados do runtime", runtime_ok)
+  if not runtime_ok then
+    print(vim.v.errmsg)
+  end
 
   if #failures == 0 then
     print("\nSMOKE: TODOS OS TESTES PASSARAM")

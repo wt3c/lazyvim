@@ -141,8 +141,12 @@ vim.keymap.set("n", "<A-Left>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
 vim.keymap.set("n", "<A-Right>", "<cmd>bnext<cr>", { desc = "Next buffer" })
 
 -- Close buffers
-vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
-vim.keymap.set("n", "<leader>bD", "<cmd>%bd|e#|bd#<cr>", { desc = "Delete all buffers except current" })
+vim.keymap.set("n", "<leader>bd", function()
+  Snacks.bufdelete()
+end, { desc = "Delete buffer" })
+vim.keymap.set("n", "<leader>bD", function()
+  Snacks.bufdelete.other()
+end, { desc = "Delete all buffers except current" })
 
 -- ============================================================================
 -- PYTHON / DJANGO
@@ -252,7 +256,8 @@ vim.keymap.set("n", "<leader>fR", function()
   Snacks.rename.rename_file()
 end, { desc = "Rename File" })
 vim.keymap.set("n", "<leader>fD", function()
-  local file = vim.api.nvim_buf_get_name(0)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local file = vim.api.nvim_buf_get_name(bufnr)
   if file == "" then
     vim.notify("O buffer atual ainda não tem arquivo", vim.log.levels.ERROR)
     return
@@ -267,7 +272,9 @@ vim.keymap.set("n", "<leader>fD", function()
         vim.notify("Não foi possível excluir: " .. file, vim.log.levels.ERROR)
         return
       end
-      vim.api.nvim_buf_delete(0, { force = true })
+      if vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_buf_get_name(bufnr) == file then
+        Snacks.bufdelete({ buf = bufnr, force = true })
+      end
     end
   end)
 end, { desc = "Delete File" })

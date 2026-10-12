@@ -124,6 +124,7 @@ return {
         [".pytest_cache"] = true,
         [".venv"] = true,
         ["__pycache__"] = true,
+        ["target"] = true,
       }
 
       local options = {
@@ -215,6 +216,10 @@ return {
       local golang = inherited and inherited.adapters and inherited.adapters["neotest-golang"]
       if golang then
         table.insert(options.adapters, require("neotest-golang")(golang))
+      end
+      -- O adaptador Rust já é uma tabela pronta, fornecida pelo extra lang.rust.
+      if inherited and inherited.adapters and inherited.adapters["rustaceanvim.neotest"] then
+        table.insert(options.adapters, require("rustaceanvim.neotest"))
       end
       return options
     end,

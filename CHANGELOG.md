@@ -2,6 +2,27 @@
 
 ## Não lançado
 
+### Revisão geral da configuração
+
+- Fechamento de buffers usa Snacks e preserva os splits; fechar os demais mantém o buffer atual.
+- Exclusão de arquivo fecha o buffer que originou a confirmação, mesmo após trocar de buffer.
+- Alternância claro/escuro define o background antes do colorscheme e vale apenas na sessão.
+- Verificação do dicionário português é agendada após carregar os autocmds, sem depender de VimEnter.
+- Backups preservam `lazy-lock.json`, aceitam ausência de Ruff e respeitam `XDG_CONFIG_HOME`.
+- Restauração aceita caminhos com espaços, salva Neovim/Ruff e aborta se o snapshot de segurança falhar.
+- Diagnóstico do Ruff resolve venv/PATH/Mason, mostra a configuração efetiva e propaga falhas.
+- Desinstalação deixa de oferecer a remoção de pacotes Python globais de outros ambientes.
+- Runner isola cache/estado, soma todas as suítes e reprova saída não zero ou ausência de testes.
+- Adicionados testes reais dos scripts e regressões do editor; `make test-go` e `make test-rust` integram
+  os perfis opcionais ao runner com limite de tempo.
+
+### Desenvolvimento Rust
+
+- Habilitado o extra oficial Rust do LazyVim: rustaceanvim, crates.nvim, Treesitter e CodeLLDB.
+- Formatação Rust com rustfmt via Conform; rust-analyzer usa Clippy para diagnósticos.
+- Neotest incorpora o adaptador Rust junto de Python e Go e ignora o diretório de compilação `target`.
+- Adicionado teste real com projeto Cargo temporário para LSP, formatação, Clippy, testes e depuração.
+
 ### Desenvolvimento Go
 
 - Habilitado o extra Go do LazyVim: gopls, goimports/gofumpt, Treesitter e Delve.

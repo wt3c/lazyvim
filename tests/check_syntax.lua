@@ -4,6 +4,7 @@
 local files = vim.fn.globpath("lua", "**/*.lua", false, true)
 table.insert(files, "init.lua")
 vim.list_extend(files, vim.fn.globpath("tests", "*.lua", false, true))
+vim.list_extend(files, vim.fn.globpath("tests/smoke", "*.lua", false, true))
 
 local ok = true
 for _, file in ipairs(files) do

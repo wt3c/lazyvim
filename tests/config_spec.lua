@@ -52,11 +52,32 @@ describe("config/options", function()
 end)
 
 describe("config/autocmds", function()
+  it("agenda a verificação do dicionário ao carregar a configuração", function()
+    local schedule = vim.schedule
+    local callbacks = {}
+    vim.schedule = function(callback)
+      callbacks[#callbacks + 1] = callback
+    end
+    local ok, err = pcall(dofile, "lua/config/autocmds.lua")
+    vim.schedule = schedule
+    local timer = _G.__nvim_config_checktime_timer
+    if timer and not timer:is_closing() then
+      timer:stop()
+      timer:close()
+    end
+    _G.__nvim_config_checktime_timer = nil
+    assert.is_true(ok, tostring(err))
+    assert.equals(1, #callbacks, "VeryLazy ocorre após VimEnter; a verificação não pode depender desse evento")
+  end)
+
   it("recarregar autocmds.lua não acumula timers de checktime", function()
+    local schedule = vim.schedule
+    vim.schedule = function() end
     dofile("lua/config/autocmds.lua")
     local first = _G.__nvim_config_checktime_timer
     dofile("lua/config/autocmds.lua")
     local second = _G.__nvim_config_checktime_timer
+    vim.schedule = schedule
 
     assert.is_not_nil(first)
     assert.are_not.equal(first, second)
@@ -65,6 +86,12 @@ describe("config/autocmds", function()
     second:stop()
     second:close()
     _G.__nvim_config_checktime_timer = nil
+  end)
+end)
+
+describe("instalação e remoção", function()
+  it("a remoção não altera pacotes Python externos ao Neovim", function()
+    assert.is_nil(read("uninstall.sh"):find("pip3 uninstall", 1, true))
   end)
 end)
 
@@ -391,6 +418,10 @@ describe("plugins/formatting (conform)", function()
     assert.is_not_nil(conform)
     assert.same({ "ruff_format", "ruff_organize_imports" }, conform.opts.formatters_by_ft.python)
   end)
+
+  it("Rust usa rustfmt da toolchain ativa", function()
+    assert.same({ "rustfmt" }, conform.opts.formatters_by_ft.rust)
+  end)
 end)
 
 describe("plugins/python-tools", function()
@@ -489,6 +520,50 @@ end)
 
 describe("plugins/test-runner (sem colisão terminal × teste)", function()
   local specs = require("plugins.test-runner")
+
+  it("habilita o extra Rust do LazyVim", function()
+    local config = vim.json.decode(read("lazyvim.json"))
+    assert.is_true(vim.tbl_contains(config.extras, "lazyvim.plugins.extras.lang.rust"))
+  end)
+
+  it("preserva os adaptadores Python e Go ao incorporar Rust", function()
+    local saved = {
+      python = package.loaded["neotest-python"],
+      golang = package.loaded["neotest-golang"],
+      rust = package.loaded["rustaceanvim.neotest"],
+    }
+    package.loaded["neotest-python"] = function(opts)
+      return opts
+    end
+    package.loaded["neotest-golang"] = function(opts)
+      return { name = "neotest-golang", options = opts }
+    end
+    local rust = { name = "rustaceanvim" }
+    package.loaded["rustaceanvim.neotest"] = rust
+    local ok, opts = pcall(find_plugin(specs, "nvim-neotest/neotest").opts, nil, {
+      adapters = { ["neotest-golang"] = { dap_go_enabled = true }, ["rustaceanvim.neotest"] = {} },
+    })
+    package.loaded["neotest-python"] = saved.python
+    package.loaded["neotest-golang"] = saved.golang
+    package.loaded["rustaceanvim.neotest"] = saved.rust
+    assert.is_true(ok, tostring(opts))
+    assert.equal(3, #opts.adapters)
+    assert.equals("pytest", opts.adapters[1].runner)
+    assert.equals("neotest-golang", opts.adapters[2].name)
+    assert.same(rust, opts.adapters[3])
+  end)
+
+  it("não descobre testes nos artefatos de compilação do Cargo", function()
+    local previous = package.loaded["neotest-python"]
+    package.loaded["neotest-python"] = function(opts)
+      return opts
+    end
+    local ok, opts = pcall(find_plugin(specs, "nvim-neotest/neotest").opts)
+    package.loaded["neotest-python"] = previous
+    assert.is_true(ok, tostring(opts))
+    assert.is_false(opts.discovery.filter_dir("target"))
+    assert.is_true(opts.discovery.filter_dir("src"))
+  end)
 
   it("habilita o extra Go do LazyVim", function()
     local config = vim.json.decode(read("lazyvim.json"))

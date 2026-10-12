@@ -131,7 +131,7 @@ uv venv --allow-existing "$JUPYTER_VENV"
 uv pip install --python "$JUPYTER_VENV/bin/python" --upgrade pynvim jupyter-client jupytext ipykernel \
   django-stubs djangorestframework-stubs
 echo "   ✅ Provider criado em $JUPYTER_VENV"
-echo "   ✅ Type stubs Django/DRF instalados globalmente (django-stubs, djangorestframework-stubs)"
+echo "   ✅ Stubs Django/DRF instalados no provider isolado (django-stubs, djangorestframework-stubs)"
 
 echo ""
 

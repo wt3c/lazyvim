@@ -13,6 +13,7 @@ return {
     opts = {
       formatters_by_ft = {
         python = { "ruff_format", "ruff_organize_imports" },
+        rust = { "rustfmt" },
         lua = { "stylua" },
         toml = { "taplo" },
         sh = { "shfmt" },

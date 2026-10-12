@@ -1,78 +1,56 @@
-#!/bin/bash
-# Script para verificar configuração do Ruff
+#!/usr/bin/env bash
+# Diagnóstico do Ruff do projeto ou do Mason, sem instalar pacotes globais.
+set -euo pipefail
 
-echo "════════════════════════════════════════════════════════"
-echo "🔍 Verificando Configuração do Ruff"
-echo "════════════════════════════════════════════════════════"
-echo ""
-
-# Verificar se Ruff está instalado
-if command -v ruff &> /dev/null; then
-    echo "✅ Ruff instalado: $(ruff --version)"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
+RUFF=""
+if [[ -n "${VIRTUAL_ENV:-}" && -x "$VIRTUAL_ENV/bin/ruff" ]]; then
+  RUFF="$VIRTUAL_ENV/bin/ruff"
 else
-    echo "❌ Ruff não encontrado"
-    echo "   Instale com: pip install ruff"
-    exit 1
-fi
-
-echo ""
-echo "📁 Arquivos de configuração encontrados:"
-echo "────────────────────────────────────────────────────────"
-
-# Verificar configuração global
-if [ -f ~/.config/ruff/pyproject.toml ]; then
-    echo "✅ ~/.config/ruff/pyproject.toml"
-    echo "   line-length: $(grep -A1 '\[tool.ruff\]' ~/.config/ruff/pyproject.toml | grep line-length | cut -d'=' -f2 | tr -d ' ')"
-else
-    echo "❌ ~/.config/ruff/pyproject.toml não encontrado"
-fi
-
-# Verificar configuração do projeto atual
-if [ -f pyproject.toml ]; then
-    echo "✅ ./pyproject.toml (projeto)"
-    if grep -q '\[tool.ruff\]' pyproject.toml; then
-        line_length=$(grep -A5 '\[tool.ruff\]' pyproject.toml | grep line-length | cut -d'=' -f2 | tr -d ' ')
-        if [ -n "$line_length" ]; then
-            echo "   line-length: $line_length"
-        else
-            echo "   ⚠️  line-length não especificado (usando padrão)"
-        fi
-    else
-        echo "   ⚠️  [tool.ruff] não configurado"
+  for venv in .venv venv env; do
+    if [[ -x "$PWD/$venv/bin/ruff" ]]; then
+      RUFF="$PWD/$venv/bin/ruff"
+      break
     fi
-elif [ -f ruff.toml ]; then
-    echo "✅ ./ruff.toml (projeto)"
-    line_length=$(grep line-length ruff.toml | cut -d'=' -f2 | tr -d ' ')
-    echo "   line-length: $line_length"
-else
-    echo "ℹ️  Nenhuma configuração no projeto atual"
-    echo "   (usando configuração global)"
+  done
+fi
+if [[ -z "$RUFF" ]]; then
+  RUFF="$(command -v ruff || true)"
+fi
+if [[ -z "$RUFF" && -x "$DATA_DIR/nvim/mason/bin/ruff" ]]; then
+  RUFF="$DATA_DIR/nvim/mason/bin/ruff"
+fi
+if [[ -z "$RUFF" ]]; then
+  echo "❌ Ruff não encontrado no venv, PATH ou Mason. Abra :Mason e instale ruff."
+  exit 1
 fi
 
-echo ""
-echo "🧪 Teste rápido:"
-echo "────────────────────────────────────────────────────────"
+echo "🔍 Ruff: $RUFF"
+"$RUFF" --version
+echo "📁 Configurações globais disponíveis:"
+for name in .ruff.toml ruff.toml pyproject.toml; do
+  if [[ -f "$CONFIG_DIR/ruff/$name" ]]; then
+    echo "   $CONFIG_DIR/ruff/$name"
+  fi
+done
 
-# Criar arquivo de teste
-cat > /tmp/test_ruff.py << 'PYTHON'
+runtime_dir="$(mktemp -d "${TMPDIR:-/tmp}/nvim-ruff-check.XXXXXX")"
+filename=""
+trap 'rm -rf -- "$runtime_dir"; if [[ -n "$filename" ]]; then rm -f -- "$filename"; fi' EXIT
+# Um arquivo real no cwd permite ao Ruff descobrir a configuração do projeto.
+# mktemp evita colidir com arquivos existentes, e o trap remove a amostra.
+filename="$(mktemp "$PWD/.nvim-ruff-check.XXXXXX.py")"
+cat > "$filename" <<'PYTHON'
 def very_long_function_name_that_exceeds_eighty_characters_but_should_be_ok_with_one_hundred_twenty(param1, param2, param3):
     pass
 PYTHON
+echo "📋 Configuração efetiva para o diretório atual:"
+"$RUFF" check --show-settings "$filename" > "$runtime_dir/settings"
+awk '/^Settings path:|^linter.line_length =|^formatter.line_width =/' "$runtime_dir/settings"
 
-# Testar formatação
-echo "Testando linha com ~130 caracteres..."
-ruff format /tmp/test_ruff.py --line-length=120 --diff 2>&1 | head -10
-
-rm -f /tmp/test_ruff.py
-
-echo ""
-echo "════════════════════════════════════════════════════════"
-echo "✅ Verificação Completa!"
-echo "════════════════════════════════════════════════════════"
-echo ""
-echo "💡 Dica: Se ainda houver problemas:"
-echo "   1. Reinicie o Neovim: :qa + nvim"
-echo "   2. Restart LSP: :LspRestart"
-echo "   3. Verifique LSP: :LspInfo"
-echo "   4. Format manual: <leader>fm"
-echo ""
+echo "🧪 Formatação com a configuração efetiva (sem forçar line-length):"
+# --stdin-filename só informa a descoberta da configuração; não grava no arquivo.
+# shellcheck disable=SC2094
+"$RUFF" format --stdin-filename "$filename" - < "$filename"
+echo "✅ Ruff respondeu ao diagnóstico e à formatação."

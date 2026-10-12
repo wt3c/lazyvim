@@ -54,10 +54,7 @@ vim.api.nvim_create_autocmd("FileType", {
       pkg:install({}, function(success, err)
         if not success then
           vim.schedule(function()
-            vim.notify(
-              ("LSP: falha ao instalar %s: %s"):format(target.package, tostring(err)),
-              vim.log.levels.ERROR
-            )
+            vim.notify(("LSP: falha ao instalar %s: %s"):format(target.package, tostring(err)), vim.log.levels.ERROR)
           end)
         end
       end)

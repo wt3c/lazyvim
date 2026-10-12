@@ -96,40 +96,40 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Spell: download automatico do dicionario portugues na primeira sessao
-vim.api.nvim_create_autocmd("VimEnter", {
-  group = vim.api.nvim_create_augroup("spell_download", { clear = true }),
-  once = true,
-  callback = function()
-    local spell_dir = vim.fn.stdpath("data") .. "/site/spell"
-    vim.fn.mkdir(spell_dir, "p")
-    local pt_spl = spell_dir .. "/pt.utf-8.spl"
-    if vim.fn.filereadable(pt_spl) == 0 then
-      vim.notify("Baixando dicionário pt (português)...", vim.log.levels.INFO)
-      local temporary = ("%s.%d.tmp"):format(pt_spl, vim.uv.os_getpid())
-      local ok, err = pcall(vim.system, {
-        "curl",
-        "-fLso",
-        temporary,
-        "https://ftp.nluug.nl/pub/vim/runtime/spell/pt.utf-8.spl",
-      }, { text = true }, function(result)
-        vim.schedule(function()
-          if result.code == 0 then
-            local renamed = vim.uv.fs_rename(temporary, pt_spl)
-            if renamed then
-              vim.notify("Dicionário pt instalado com sucesso!", vim.log.levels.INFO)
-              return
-            end
+-- Spell: VeryLazy já ocorre após VimEnter; agenda a verificação diretamente.
+vim.schedule(function()
+  local spell_dir = vim.fn.stdpath("data") .. "/site/spell"
+  vim.fn.mkdir(spell_dir, "p")
+  local pt_spl = spell_dir .. "/pt.utf-8.spl"
+  if vim.fn.filereadable(pt_spl) == 0 then
+    vim.notify("Baixando dicionário pt (português)...", vim.log.levels.INFO)
+    local temporary = ("%s.%d.tmp"):format(pt_spl, vim.uv.os_getpid())
+    local ok, err = pcall(vim.system, {
+      "curl",
+      "--connect-timeout",
+      "10",
+      "--max-time",
+      "60",
+      "-fLso",
+      temporary,
+      "https://ftp.nluug.nl/pub/vim/runtime/spell/pt.utf-8.spl",
+    }, { text = true }, function(result)
+      vim.schedule(function()
+        if result.code == 0 then
+          local renamed = vim.uv.fs_rename(temporary, pt_spl)
+          if renamed then
+            vim.notify("Dicionário pt instalado com sucesso!", vim.log.levels.INFO)
+            return
           end
-          vim.uv.fs_unlink(temporary)
-          vim.notify("Falha ao baixar dicionário. Rode :spell pt manualmente.", vim.log.levels.WARN)
-        end)
+        end
+        vim.uv.fs_unlink(temporary)
+        vim.notify("Falha ao baixar dicionário. Rode :spell pt manualmente.", vim.log.levels.WARN)
       end)
-      if not ok then
-        vim.schedule(function()
-          vim.notify("Não foi possível iniciar o download do dicionário: " .. tostring(err), vim.log.levels.WARN)
-        end)
-      end
+    end)
+    if not ok then
+      vim.schedule(function()
+        vim.notify("Não foi possível iniciar o download do dicionário: " .. tostring(err), vim.log.levels.WARN)
+      end)
     end
-  end,
-})
+  end
+end)

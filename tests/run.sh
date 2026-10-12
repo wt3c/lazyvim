@@ -6,7 +6,7 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
+cd "$ROOT" || exit 1
 
 MODE="${1:-all}"
 GREEN='\033[0;32m'
@@ -14,6 +14,12 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 fail=0
+runtime_dir="$(mktemp -d "${TMPDIR:-/tmp}/nvim-config-tests.XXXXXX")" || exit 1
+trap 'rm -rf -- "$runtime_dir"' EXIT
+# Mantém swap, logs, cache e histórico de testes fora do perfil real.
+export XDG_CACHE_HOME="$runtime_dir/cache"
+export XDG_STATE_HOME="$runtime_dir/state"
+export JUPYTER_DATA_DIR="$runtime_dir/jupyter"
 
 step() { echo -e "\n${BLUE}==> $1${NC}"; }
 pass() { echo -e "${GREEN}✓ $1${NC}"; }
@@ -35,22 +41,27 @@ ensure_plenary() {
 }
 
 run_unit() {
-  ensure_plenary
+  if ! ensure_plenary; then
+    err "não foi possível preparar plenary.nvim"
+    return
+  fi
   step "Specs (plenary/busted)"
-  local out
+  local out status=0
   out="$(nvim --headless -u tests/minimal_init.lua \
     -c "PlenaryBustedDirectory tests/ {minimal_init='tests/minimal_init.lua', sequential=true}" \
-    +qa 2>&1)"
+    +qa 2>&1)" || status=$?
   echo "$out"
   # A saída do plenary separa rótulo e número por TAB e usa cores ANSI;
   # normaliza antes de extrair os contadores.
   local clean failed errors success
   clean="$(echo "$out" | sed -E 's/\x1b\[[0-9;]*m//g' | tr '\t' ' ' | tr -s ' ')"
-  failed="$(echo "$clean" | grep -oE 'Failed : [0-9]+' | grep -oE '[0-9]+$' | tail -1)"
-  errors="$(echo "$clean" | grep -oE 'Errors : [0-9]+' | grep -oE '[0-9]+$' | tail -1)"
-  success="$(echo "$clean" | grep -oE 'Success: [0-9]+' | grep -oE '[0-9]+$' | tail -1)"
+  failed="$(echo "$clean" | awk '/Failed : [0-9]+/ { total += $3 } END { print total+0 }')"
+  errors="$(echo "$clean" | awk '/Errors : [0-9]+/ { total += $3 } END { print total+0 }')"
+  success="$(echo "$clean" | awk '/Success: [0-9]+/ { total += $2 } END { print total+0 }')"
 
-  if [ -z "${success:-}" ]; then
+  if [ "$status" -ne 0 ]; then
+    err "specs (Neovim encerrou com código $status; $failed falhas, $errors erros)"
+  elif [ "$success" -eq 0 ]; then
     err "specs (nenhum teste executado)"
   elif [ "${failed:-0}" -ne 0 ] || [ "${errors:-0}" -ne 0 ]; then
     err "specs (${failed:-0} falhas, ${errors:-0} erros)"
@@ -60,17 +71,13 @@ run_unit() {
 }
 
 run_smoke() {
-  step "Smoke (boot da config completa)"
-  local runtime_dir
-  runtime_dir="$(mktemp -d "${TMPDIR:-/tmp}/nvim-config-smoke.XXXXXX")"
-  if XDG_CACHE_HOME="$runtime_dir/cache" XDG_STATE_HOME="$runtime_dir/state" \
-    JUPYTER_DATA_DIR="$runtime_dir/jupyter" \
-    nvim --headless +"luafile tests/smoke.lua"; then
+  local script="${1:-smoke}" limit="${2:-120}"
+  step "Smoke: $script (config completa)"
+  if timeout "$limit" nvim --headless +"luafile tests/$script.lua"; then
     pass "smoke"
   else
     err "smoke"
   fi
-  rm -rf -- "$runtime_dir"
 }
 
 case "$MODE" in
@@ -81,13 +88,19 @@ case "$MODE" in
   smoke)
     run_smoke
     ;;
+  go)
+    run_smoke go_smoke 300
+    ;;
+  rust)
+    run_smoke rust_smoke 300
+    ;;
   all)
     run_syntax
     run_unit
     run_smoke
     ;;
   *)
-    echo "uso: tests/run.sh [unit|smoke|all]" >&2
+    echo "uso: tests/run.sh [unit|smoke|go|rust|all]" >&2
     exit 2
     ;;
 esac

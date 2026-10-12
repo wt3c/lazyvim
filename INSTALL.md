@@ -36,7 +36,7 @@ O Mason gerencia `gopls`, `goimports`, `gofumpt`, `delve` e `golangci-lint`. O p
 diagnósticos, formatação ao salvar, testes pelo Neotest e depuração pelo DAP. Os atalhos existentes `<Space>tt`
 (teste próximo), `<Space>tf` (arquivo) e `<Space>td` (depurar teste) também funcionam com Go.
 
-Execute `nvim --headless +"luafile tests/go_smoke.lua"` para verificar o perfil com um módulo temporário real.
+Execute `make test-go` para verificar o perfil com um módulo temporário real.
 Esse teste exige Go, as ferramentas do Mason e o parser Go instalados.
 
 Referências: [instalação oficial do Go](https://go.dev/doc/install),
@@ -58,6 +58,30 @@ Referências: [instalação oficial do Go](https://go.dev/doc/install),
 
 O backend de imagens está configurado como `kitty` com processador `magick_cli`. Sem esses requisitos, células do
 Molten ainda podem executar, mas imagens e plots inline não serão renderizados.
+
+### Desenvolvimento Rust
+
+O Omarchy instala Rust via rustup com `omarchy install dev-env rust`. O ambiente fica em `~/.cargo/bin`; abra um novo
+terminal após a instalação para carregar o PATH atualizado. Confira `rustup show`, `rustc --version` e
+`cargo --version`: a toolchain deve corresponder ao rustup, inclusive quando há Rust instalado pelo sistema.
+
+Além de Cargo, rustfmt e Clippy, instale os componentes usados pelo editor:
+
+```bash
+rustup component add rust-analyzer rust-src
+```
+
+O extra `lang.rust` está habilitado em `lazyvim.json`. Ele fornece rustaceanvim, crates.nvim, parsers Rust/RON,
+diagnósticos do Clippy e depuração com CodeLLDB. O Mason instala o CodeLLDB; rustup gerencia o rust-analyzer, rust-src,
+rustfmt e Clippy. Aguarde o término das instalações antes de fechar o Neovim.
+
+O Neotest usa `rustaceanvim.neotest`, que depende da indexação pelo rust-analyzer para descobrir testes. Execute
+`nvim --headless +"luafile tests/rust_smoke.lua"` para validar o perfil com um projeto temporário real. O teste exige os
+componentes, plugins, parser e adaptador de depuração instalados.
+
+Referências: [componentes rustup](https://rust-lang.github.io/rustup/concepts/components.html),
+[extra Rust do LazyVim](https://www.lazyvim.org/extras/lang/rust) e
+[rustaceanvim](https://github.com/mrcjkb/rustaceanvim).
 
 ## Instalação no openSUSE Tumbleweed
 

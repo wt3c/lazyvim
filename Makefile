@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-smoke test-ci syntax
+.PHONY: test test-unit test-smoke test-go test-rust test-ci syntax
 
 # Suíte completa: sintaxe + specs + smoke de boot.
 test:
@@ -13,6 +13,13 @@ test-unit:
 # Apenas o smoke de boot da config completa.
 test-smoke:
 	@bash tests/run.sh smoke
+
+# Integrações opcionais: exigem as toolchains e ferramentas dos respectivos extras.
+test-go:
+	@bash tests/run.sh go
+
+test-rust:
+	@bash tests/run.sh rust
 
 # Validação de sintaxe Lua isolada.
 syntax:

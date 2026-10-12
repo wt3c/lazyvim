@@ -1,6 +1,6 @@
 # 🚀 LazyVim - Configuração Moderna e Completa
 
-**Configuração do Neovim para Python/Django, Go, Docker, SQL, Git e Jupyter.**
+**Configuração do Neovim para Python/Django, Go, Rust, Docker, SQL, Git e Jupyter.**
 
 ---
 
@@ -28,7 +28,7 @@ Na primeira abertura, aguarde o Lazy e o Mason instalarem plugins e ferramentas.
 ### Dependências obrigatórias do sistema
 
 | Executável                  | Uso                                                           |
-| --------------------------- | ------------------------------------------------------------- |
+|-----------------------------|---------------------------------------------------------------|
 | `nvim` 0.12+                | Runtime da configuração e APIs utilizadas                     |
 | `git`, `curl`               | Bootstrap de plugins e downloads                              |
 | `rg`, `fd`                  | Telescope e descoberta de ambientes pelo `venv-selector.nvim` |
@@ -43,7 +43,7 @@ O `install.sh` valida esses executáveis e cria o ambiente Jupyter com `pynvim`,
 ### Dependências por funcionalidade
 
 | Recurso                   | Dependência externa                                                                           |
-| ------------------------- | --------------------------------------------------------------------------------------------- |
+|---------------------------|-----------------------------------------------------------------------------------------------|
 | Desenvolvimento Go        | `go` disponível no `PATH`; instalação descrita em [INSTALL.md](INSTALL.md#desenvolvimento-go) |
 | Clipboard do sistema      | `wl-copy` (`wl-clipboard`) no Wayland ou `xclip` no X11                                       |
 | Busca fuzzy no terminal   | `fzf`                                                                                         |
@@ -61,7 +61,7 @@ pela configuração e gerenciados pelo Mason; não devem ser instalados globalme
 ### Atalhos Mais Usados
 
 | Atalho      | Ação                       |
-| ----------- | -------------------------- |
+|-------------|----------------------------|
 | `<Space>?`  | Atalhos locais (which-key) |
 | `<Space>ff` | Buscar arquivo             |
 | `<Space>fg` | Buscar texto (grep)        |
@@ -97,7 +97,7 @@ Abra um projeto com `go.mod` ou `go.work` e um arquivo `.go`. Confira `:LspInfo`
 servidor e os formatadores disponíveis.
 
 | Atalho      | Ação em arquivos Go                 |
-| ----------- | ----------------------------------- |
+|-------------|-------------------------------------|
 | `<Space>cf` | Formatar o arquivo                  |
 | `<Space>tt` | Executar o teste próximo ao cursor  |
 | `<Space>tf` | Executar os testes do arquivo       |
@@ -107,6 +107,23 @@ servidor e os formatadores disponíveis.
 
 Pré-requisitos e instalação: [perfil Go em INSTALL.md](INSTALL.md#desenvolvimento-go). Referências oficiais:
 [extra Go do LazyVim](https://www.lazyvim.org/extras/lang/go) e [gopls](https://go.dev/gopls/).
+
+### Desenvolvimento Rust
+
+- Extra oficial `lazyvim.plugins.extras.lang.rust` habilitado em `lazyvim.json`
+- **rustaceanvim + rust-analyzer** — autocomplete, navegação, ações de código e diagnósticos do Clippy
+- **Conform + rustfmt** — formatação ao salvar com a toolchain ativa
+- **crates.nvim** — suporte a dependências em `Cargo.toml`
+- **Treesitter** — parsers Rust e RON
+- **Neotest** — adaptador `rustaceanvim.neotest`, preservando os adaptadores Python e Go
+- **DAP + CodeLLDB** — depuração pelo extra oficial, com o adaptador instalado pelo Mason
+
+Abra um projeto com `Cargo.toml` e um arquivo `.rs`. `<Space>cf` formata; `<Space>tt`, `<Space>tf` e `<Space>tT`
+executam testes; `<Space>td` depura o teste próximo ao cursor. `<Space>cR` abre ações Rust e `<Space>dr` lista os alvos
+disponíveis para depuração. A descoberta de testes aguarda a indexação do projeto pelo rust-analyzer.
+
+Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento-rust). Referência:
+[extra Rust do LazyVim](https://www.lazyvim.org/extras/lang/rust).
 
 ### 🐍 Python/Django
 
@@ -316,7 +333,7 @@ Pré-requisitos e instalação: [perfil Go em INSTALL.md](INSTALL.md#desenvolvim
 ## 📦 Plugins Principais
 
 | Plugin             | Função                           |
-| ------------------ | -------------------------------- |
+|--------------------|----------------------------------|
 | LazyVim            | Base do setup                    |
 | blink.cmp          | Autocomplete                     |
 | Ruff (LSP)         | Lint + format + organize imports |
@@ -382,6 +399,18 @@ nvim --headless +"luafile tests/go_smoke.lua"
 Ele cria um módulo temporário e verifica o vínculo do `gopls` com o buffer e uma resposta de hover, formatação com
 `goimports`/`gofumpt`, execução de testes pelo Neotest, `go test -race` e uma sessão real de Delve via DAP. O teste
 exige suporte ao detector de condições de corrida e à depuração no ambiente onde for executado.
+
+### Integração Rust (execução separada)
+
+Com os componentes Rust, plugins, parser Rust e CodeLLDB instalados, execute da raiz desta configuração:
+
+```bash
+nvim --headless +"luafile tests/rust_smoke.lua"
+```
+
+O teste usa um projeto Cargo temporário sem dependências externas e verifica um único rust-analyzer, hover, rustfmt,
+`cargo clippy`, `cargo test`, execução pelo Neotest e uma sessão real do CodeLLDB via DAP. O projeto temporário é
+removido ao terminar. Esse teste é independente de `make test` e dos jobs atuais de CI.
 
 ---
 
@@ -582,8 +611,8 @@ Se encontrar problemas:
 
 - **Plugins:** ~90 (conforme `lazy-lock.json`)
 - **Keybindings:** 160+
-- **LSPs:** Python, Docker, SQL, JSON, YAML, Bash, Markdown, Lua
-- **Linguagens:** Python, Go, Lua, Docker, SQL, Markdown, Shell, JavaScript/TypeScript, JSON, YAML e TOML
+- **LSPs:** Python, Go, Rust, Docker, SQL, JSON, YAML, Bash, Markdown, Lua e TypeScript
+- **Linguagens:** Python, Go, Rust, Lua, Docker, SQL, Markdown, Shell, JavaScript/TypeScript, JSON, YAML e TOML
 - **Frameworks:** Django (suporte nativo)
 
 ---

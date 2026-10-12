@@ -18,8 +18,9 @@ return {
     {
       "<leader>uB",
       function()
-        local light, dark = "catppuccin-latte", "tokyonight-moon"
-        require("themery").setThemeByName(vim.g.colors_name == light and dark or light, true)
+        local light, dark = "Catppuccin Latte", "Tokyo Night (Moon)"
+        local target = vim.o.background == "light" and dark or light
+        require("themery").setThemeByName(target, false)
       end,
       desc = "Toggle light/dark theme",
     },
@@ -28,9 +29,9 @@ return {
     themes = {
       { name = "Tokyo Night (Night)", colorscheme = "tokyonight-night" },
       { name = "Tokyo Night (Storm)", colorscheme = "tokyonight-storm" },
-      { name = "Tokyo Night (Moon)", colorscheme = "tokyonight-moon" },
+      { name = "Tokyo Night (Moon)", colorscheme = "tokyonight-moon", before = [[vim.o.background = "dark"]] },
       { name = "Tokyo Night (Day)", colorscheme = "tokyonight-day" },
-      { name = "Catppuccin Latte", colorscheme = "catppuccin-latte" },
+      { name = "Catppuccin Latte", colorscheme = "catppuccin-latte", before = [[vim.o.background = "light"]] },
       { name = "Catppuccin Frappe", colorscheme = "catppuccin-frappe" },
       { name = "Catppuccin Macchiato", colorscheme = "catppuccin-macchiato" },
       { name = "Catppuccin Mocha", colorscheme = "catppuccin-mocha" },

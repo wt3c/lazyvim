@@ -1,11 +1,11 @@
 #!/bin/bash
 # Script para fazer backup da configuração do Neovim
 
-set -e
+set -euo pipefail
 
-NVIM_DIR="$HOME/.config/nvim"
-RUFF_DIR="$HOME/.config/ruff"
-BACKUP_DIR="$HOME/.config/nvim-backup"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+NVIM_DIR="$CONFIG_DIR/nvim"
+BACKUP_DIR="$CONFIG_DIR/nvim-backup"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 echo "════════════════════════════════════════════════════════"
@@ -22,30 +22,34 @@ if [ -d "$NVIM_DIR/.git" ]; then
 
     # Verificar mudanças
     if [[ -n $(git status -s) ]]; then
-        echo "✅ Mudanças detectadas. Fazendo commit..."
-
-        git add -A
         git status --short
+        read -r -p "💬 Criar um commit com todas as mudanças antes do snapshot? (s/N): " do_commit
+        if [[ "$do_commit" =~ ^[Ss]$ ]]; then
+            echo "✅ Mudanças detectadas. Fazendo commit..."
 
-        echo ""
-        read -p "💬 Mensagem do commit (Enter para padrão): " commit_msg
+            git add -A
+            git status --short
 
-        if [ -z "$commit_msg" ]; then
-            commit_msg="Update config - $(date '+%Y-%m-%d %H:%M:%S')"
-        fi
+            echo ""
+            read -r -p "💬 Mensagem do commit (Enter para padrão): " commit_msg
 
-        git commit -m "$commit_msg"
+            if [ -z "$commit_msg" ]; then
+                commit_msg="Update config - $(date '+%Y-%m-%d %H:%M:%S')"
+            fi
 
-        echo ""
-        echo "✅ Commit realizado!"
-        echo ""
-        read -p "📤 Fazer push para o remote? (s/N): " do_push
+            git commit -m "$commit_msg"
 
-        if [[ "$do_push" =~ ^[Ss]$ ]]; then
-            git push
-            echo "✅ Push realizado!"
-        else
-            echo "ℹ️  Push não realizado. Execute 'git push' manualmente."
+            echo ""
+            echo "✅ Commit realizado!"
+            echo ""
+            read -r -p "📤 Fazer push para o remote? (s/N): " do_push
+
+            if [[ "$do_push" =~ ^[Ss]$ ]]; then
+                git push
+                echo "✅ Push realizado!"
+            else
+                echo "ℹ️  Push não realizado. Execute 'git push' manualmente."
+            fi
         fi
     else
         echo "ℹ️  Nenhuma mudança detectada."
@@ -60,29 +64,38 @@ echo "────────────────────────�
 
 mkdir -p "$BACKUP_DIR"
 
-BACKUP_FILE="$BACKUP_DIR/nvim-backup-$TIMESTAMP.tar.gz"
+BACKUP_FILE="$(mktemp "$BACKUP_DIR/nvim-backup-$TIMESTAMP-XXXXXX.tar.gz")"
+complete=0
+trap 'if [ "$complete" -eq 0 ]; then rm -f -- "$BACKUP_FILE"; fi' EXIT
+entries=(nvim)
+if [ -d "$CONFIG_DIR/ruff" ]; then
+    entries+=(ruff)
+fi
 
 # Criar backup
 tar -czf "$BACKUP_FILE" \
-    -C "$HOME/.config" \
+    -C "$CONFIG_DIR" \
     --exclude='.git' \
-    --exclude='lazy-lock.json' \
     --exclude='.cache' \
-    nvim \
-    ruff
+    --exclude='tests/.deps' \
+    "${entries[@]}"
+complete=1
 
 echo "✅ Backup criado: $BACKUP_FILE"
 
 # Listar backups existentes
 echo ""
 echo "📂 Backups existentes:"
-ls -lh "$BACKUP_DIR" | tail -5
+find "$BACKUP_DIR" -maxdepth 1 -name 'nvim-backup-*.tar.gz' -type f -printf '%f\n'
 
 # Manter apenas os 5 backups mais recentes
 echo ""
 echo "🧹 Limpando backups antigos (mantendo 5 mais recentes)..."
-cd "$BACKUP_DIR"
-ls -t nvim-backup-*.tar.gz | tail -n +6 | xargs -r rm -f
+mapfile -d '' backups < <(find "$BACKUP_DIR" -maxdepth 1 -name 'nvim-backup-*.tar.gz' -type f \
+    -printf '%T@ %p\0' | sort -znr | cut -z -d ' ' -f 2-)
+for ((i=5; i<${#backups[@]}; i++)); do
+    rm -f -- "${backups[$i]}"
+done
 echo "✅ Limpeza concluída!"
 
 echo ""

@@ -68,7 +68,8 @@ cd ~/.config/nvim
 
 O script irá:
 
-1. ✅ Rodar `git add -A` e commitar **tudo** que estiver modificado ou não rastreado (pede a mensagem;
+1. ✅ Perguntar se deseja criar um commit; se confirmar, rodar `git add -A` e commitar **tudo** que estiver
+   modificado ou não rastreado (pede a mensagem;
    Enter usa `Update config - <data>`)
 2. ✅ Perguntar se quer fazer push
 3. ✅ Criar também o backup em arquivo `.tar.gz` (Método 2)
@@ -102,10 +103,14 @@ cd ~/.config/nvim
 ./backup-config.sh
 ```
 
-- Salvo em `~/.config/nvim-backup/nvim-backup-AAAAMMDD_HHMMSS.tar.gz`
-- Inclui `~/.config/nvim` **e** `~/.config/ruff`
-- **Exclui** `.git`, `.cache` e `lazy-lock.json` — o snapshot não guarda as versões fixadas dos plugins
+- Salvo em `~/.config/nvim-backup/nvim-backup-AAAAMMDD_HHMMSS-XXXXXX.tar.gz` (sufixo evita colisões)
+- Inclui `~/.config/nvim` **e** `~/.config/ruff` quando este existir
+- Preserva `lazy-lock.json`, permitindo recuperar as versões fixadas com `:Lazy restore`
+- **Exclui** `.git`, `.cache` e `tests/.deps`
 - Mantém só os **5** backups mais recentes (os antigos são apagados)
+
+Backup e restauração respeitam `XDG_CONFIG_HOME` quando definido; os exemplos usam o padrão `~/.config`.
+O snapshot é criado mesmo quando você recusa o commit. Uma falha de criação remove o arquivo incompleto.
 
 ### Restaurar
 
@@ -123,15 +128,17 @@ Ou especificar arquivo:
 
 O que o restore faz:
 
-1. Salva a config atual em `~/.config/nvim-backup/nvim-before-restore-AAAAMMDD_HHMMSS.tar.gz`
-2. Extrai o backup **por cima** de `~/.config` — sobrescreve os arquivos do backup, mas **não remove** arquivos
+1. Valida se o arquivo pode ser lido pelo `tar`, antes de pedir confirmação.
+2. Salva Neovim e Ruff atuais em `~/.config/nvim-backup/nvim-before-restore-AAAAMMDD_HHMMSS-XXXXXX.tar.gz`;
+   se falhar, cancela a restauração.
+3. Extrai o backup **por cima** de `~/.config` — sobrescreve os arquivos do backup, mas **não remove** arquivos
    que existam só na config atual
 
 > O snapshot `nvim-before-restore-*` não aparece no menu do `restore-config.sh` nem entra na limpeza dos 5
 > mais recentes. Para voltar a ele, passe o caminho explicitamente; para liberar espaço, apague manualmente.
 
-Como o `.tar.gz` não traz `lazy-lock.json`, após restaurar use `:Lazy sync` (versões mais recentes) ou
-recupere o lockfile do Git (`git checkout lazy-lock.json`) antes de `:Lazy restore`.
+Snapshots novos incluem `lazy-lock.json`: após restaurar, use `:Lazy restore`. Snapshots antigos podem não
+incluí-lo; nesse caso, recupere o lockfile do Git antes de restaurar os plugins ou use `:Lazy sync`.
 
 ---
 
@@ -247,19 +254,19 @@ colorscheme desejado (ver README, seção de temas).
 
 | Script | Função | Quando Usar |
 | --- | --- | --- |
-| `backup-config.sh` | `git add -A` + commit (+ push opcional) e snapshot `.tar.gz` | Antes de mudanças grandes |
+| `backup-config.sh` | Snapshot `.tar.gz`, com commit e push opcionais | Antes de mudanças grandes |
 | `restore-config.sh` | Extrai um `.tar.gz` por cima de `~/.config` (salva o estado atual antes) | Voltar a um snapshot |
 | `install.sh` | Valida dependências, recria Ruff global e provider Python/Jupyter | Máquina nova / reinstalação |
 | `quick-install.sh` | Atalho de compatibilidade para `install.sh` | Mesmo que `install.sh` |
 | `uninstall.sh` | Remove config e dados do Neovim (backup opcional em `~/nvim-backup-*`) | Remoção completa |
-| `check-ruff.sh` | Mostra configs do Ruff e testa line-length 120 | Após instalar/restaurar |
+| `check-ruff.sh` | Resolve Ruff do venv/PATH/Mason e verifica a configuração efetiva | Após instalar/restaurar |
 
 ---
 
 ## 🎯 Quick Reference
 
 ```bash
-# Backup (commit + snapshot)
+# Backup (snapshot, com commit opcional)
 ./backup-config.sh
 
 # Restaurar snapshot (menu)

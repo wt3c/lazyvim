@@ -22,7 +22,7 @@ echo "════════════════════════�
 echo ""
 
 # Confirmação obrigatória
-read -p "⚠️  Tem CERTEZA que deseja continuar? (digite 'SIM' para confirmar): " confirm
+read -r -p "⚠️  Tem CERTEZA que deseja continuar? (digite 'SIM' para confirmar): " confirm
 
 if [ "$confirm" != "SIM" ]; then
     echo ""
@@ -36,7 +36,7 @@ echo "════════════════════════�
 echo ""
 
 # Oferecer backup
-read -p "📦 Deseja fazer backup antes de deletar? (s/N): " backup_choice
+read -r -p "📦 Deseja fazer backup antes de deletar? (s/N): " backup_choice
 
 if [[ "$backup_choice" =~ ^[Ss]$ ]]; then
     BACKUP_DIR="$HOME/nvim-backup-$(date +%Y%m%d-%H%M%S)"
@@ -101,23 +101,8 @@ echo ""
 echo "════════════════════════════════════════════════════════════════════"
 echo ""
 
-# Perguntar sobre Django type stubs
-read -p "🐍 Deseja remover Django type stubs instalados globalmente? (s/N): " remove_stubs
-
-if [[ "$remove_stubs" =~ ^[Ss]$ ]]; then
-    echo ""
-    echo "🗑️  Removendo Django type stubs..."
-
-    if command -v pip3 &> /dev/null; then
-        pip3 uninstall -y django-stubs djangorestframework-stubs django-types django-stubs-ext 2>/dev/null || true
-        echo "   ✅ Type stubs removidos"
-    else
-        echo "   ⚠️  pip3 não encontrado - pule esta etapa"
-    fi
-else
-    echo ""
-    echo "   ℹ️  Django type stubs mantidos (podem ser úteis para outros projetos)"
-fi
+# Os stubs instalados por install.sh pertencem ao venv em share/nvim, já removido.
+# Pacotes de projetos e do Python do sistema não pertencem a esta configuração.
 
 echo ""
 echo "════════════════════════════════════════════════════════════════════"
