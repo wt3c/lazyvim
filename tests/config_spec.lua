@@ -208,7 +208,9 @@ describe("config/keymaps", function()
 
   it("duplica <leader>cf (formatação do LazyVim) em Ctrl+Alt+L e Ctrl+Alt+/", function()
     assert.truthy(src:find('for _, lhs in ipairs({ "<C-M-l>", "<C-M-/>", "<C-M-_>" }) do', 1, true))
-    assert.truthy(src:find('vim.keymap.set({ "n", "i", "x", "s" }, lhs, function()\n    LazyVim.format({ force = true })', 1, true))
+    assert.truthy(
+      src:find('vim.keymap.set({ "n", "i", "x", "s" }, lhs, function()\n    LazyVim.format({ force = true })', 1, true)
+    )
   end)
 
   it("alterna entre as abas (buffers) com Alt+setas", function()
@@ -487,6 +489,31 @@ end)
 
 describe("plugins/test-runner (sem colisão terminal × teste)", function()
   local specs = require("plugins.test-runner")
+
+  it("habilita o extra Go do LazyVim", function()
+    local config = vim.json.decode(read("lazyvim.json"))
+    assert.is_true(vim.tbl_contains(config.extras, "lazyvim.plugins.extras.lang.go"))
+  end)
+
+  it("preserva Python e instancia o adaptador Go fornecido pelo extra", function()
+    local python = package.loaded["neotest-python"]
+    local golang = package.loaded["neotest-golang"]
+    package.loaded["neotest-python"] = function(opts)
+      return opts
+    end
+    package.loaded["neotest-golang"] = function(opts)
+      return { name = "neotest-golang", options = opts }
+    end
+    local ok, opts = pcall(find_plugin(specs, "nvim-neotest/neotest").opts, nil, {
+      adapters = { ["neotest-golang"] = { dap_go_enabled = true } },
+    })
+    package.loaded["neotest-python"] = python
+    package.loaded["neotest-golang"] = golang
+    assert.is_true(ok, tostring(opts))
+    assert.equals("pytest", opts.adapters[1].runner)
+    assert.equals("neotest-golang", opts.adapters[2].name)
+    assert.is_true(opts.adapters[2].options.dap_go_enabled)
+  end)
 
   it("terminal usa Snacks.terminal com <leader>T*, não <leader>tf", function()
     assert.is_nil(find_plugin(specs, "akinsho/toggleterm.nvim"))

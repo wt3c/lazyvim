@@ -118,7 +118,7 @@ return {
         desc = "Next Failed Test",
       },
     },
-    opts = function()
+    opts = function(_, inherited)
       local ignored_discovery_dirs = {
         [".git"] = true,
         [".pytest_cache"] = true,
@@ -126,7 +126,7 @@ return {
         ["__pycache__"] = true,
       }
 
-      return {
+      local options = {
         adapters = {
           require("neotest-python")({
             dap = { justMyCode = false },
@@ -211,6 +211,12 @@ return {
           },
         },
       }
+      -- O extra Go declara opções por nome; nosso setup recebe instâncias dos adaptadores.
+      local golang = inherited and inherited.adapters and inherited.adapters["neotest-golang"]
+      if golang then
+        table.insert(options.adapters, require("neotest-golang")(golang))
+      end
+      return options
     end,
     config = function(_, opts)
       local neotest_ns = vim.api.nvim_create_namespace("neotest")

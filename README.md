@@ -1,6 +1,6 @@
 # 🚀 LazyVim - Configuração Moderna e Completa
 
-**IDE completo para Python, Django, Docker, Git e muito mais!**
+**Configuração do Neovim para Python/Django, Go, Docker, SQL, Git e Jupyter.**
 
 ---
 
@@ -27,47 +27,49 @@ Na primeira abertura, aguarde o Lazy e o Mason instalarem plugins e ferramentas.
 
 ### Dependências obrigatórias do sistema
 
-| Executável | Uso |
-| --- | --- |
-| `nvim` 0.12+ | Runtime da configuração e APIs utilizadas |
-| `git`, `curl` | Bootstrap de plugins e downloads |
-| `rg`, `fd` | Telescope e descoberta de ambientes pelo `venv-selector.nvim` |
-| `make`, `cc`, `tree-sitter` | Extensões nativas e parsers do Treesitter |
-| `node`, `npm` | Servidores e ferramentas JavaScript instalados pelo Mason |
-| `python3`, `uv` | Projetos Python e provider isolado do Neovim/Jupyter |
-| `unzip`, `tar`, `gzip` | Extração de pacotes pelo Mason |
+| Executável                  | Uso                                                           |
+| --------------------------- | ------------------------------------------------------------- |
+| `nvim` 0.12+                | Runtime da configuração e APIs utilizadas                     |
+| `git`, `curl`               | Bootstrap de plugins e downloads                              |
+| `rg`, `fd`                  | Telescope e descoberta de ambientes pelo `venv-selector.nvim` |
+| `make`, `cc`, `tree-sitter` | Extensões nativas e parsers do Treesitter                     |
+| `node`, `npm`               | Servidores e ferramentas JavaScript instalados pelo Mason     |
+| `python3`, `uv`             | Projetos Python e provider isolado do Neovim/Jupyter          |
+| `unzip`, `tar`, `gzip`      | Extração de pacotes pelo Mason                                |
 
 O `install.sh` valida esses executáveis e cria o ambiente Jupyter com `pynvim`, `jupyter-client`, `jupytext` e
 `ipykernel`. Os comandos de instalação para openSUSE e a matriz completa estão em [INSTALL.md](INSTALL.md).
 
 ### Dependências por funcionalidade
 
-| Recurso | Dependência externa |
-| --- | --- |
-| Clipboard do sistema | `wl-copy` (`wl-clipboard`) no Wayland ou `xclip` no X11 |
-| Busca fuzzy no terminal | `fzf` |
-| Interface Git em terminal | `lazygit` |
-| Atalhos Docker | Docker com `docker compose` ou o legado `docker-compose` |
-| Plots e imagens inline | ImageMagick (`magick`) e Kitty ou terminal compatível com o protocolo gráfico Kitty |
-| Claude Code | CLI `claude` instalado e autenticado |
-| Bancos via Dadbod | Cliente do banco usado: `psql`, `sqlite3` ou `mysql` |
-| Ícones completos | Nerd Font v3 configurada no terminal |
+| Recurso                   | Dependência externa                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| Desenvolvimento Go        | `go` disponível no `PATH`; instalação descrita em [INSTALL.md](INSTALL.md#desenvolvimento-go) |
+| Clipboard do sistema      | `wl-copy` (`wl-clipboard`) no Wayland ou `xclip` no X11                                       |
+| Busca fuzzy no terminal   | `fzf`                                                                                         |
+| Interface Git em terminal | `lazygit`                                                                                     |
+| Atalhos Docker            | Docker com `docker compose` ou o legado `docker-compose`                                      |
+| Plots e imagens inline    | ImageMagick (`magick`) e Kitty ou terminal compatível com o protocolo gráfico Kitty           |
+| Claude Code               | CLI `claude` instalado e autenticado                                                          |
+| Bancos via Dadbod         | Cliente do banco usado: `psql`, `sqlite3` ou `mysql`                                          |
+| Ícones completos          | Nerd Font v3 configurada no terminal                                                          |
 
-Pyright, Ruff, Mypy, debugpy, sqlfluff, Marksman, markdownlint, formatadores e servidores de linguagem são
-declarados pela configuração e gerenciados pelo Mason; não devem ser instalados globalmente só para o Neovim.
+Pyright, Ruff, Mypy, debugpy, sqlfluff, Marksman, markdownlint, formatadores e servidores de linguagem são declarados
+pela configuração e gerenciados pelo Mason; não devem ser instalados globalmente só para o Neovim. Para Go, isso inclui
+`gopls`, `goimports`, `gofumpt`, `delve` e `golangci-lint`; o compilador Go é instalado separadamente.
 
 ### Atalhos Mais Usados
 
-| Atalho               | Ação                         |
-|----------------------|------------------------------|
-| `<Space>?`           | Atalhos locais (which-key)   |
-| `<Space>ff`          | Buscar arquivo               |
-| `<Space>fg`          | Buscar texto (grep)          |
-| `<Space>fk`          | Ver todos keybindings        |
-| `Ctrl+/`             | Comentar linha               |
-| `Ctrl+s`             | Salvar                       |
-| `Ctrl+\`             | Terminal                     |
-| `<Space>gg`          | Git (Neogit)                 |
+| Atalho      | Ação                       |
+| ----------- | -------------------------- |
+| `<Space>?`  | Atalhos locais (which-key) |
+| `<Space>ff` | Buscar arquivo             |
+| `<Space>fg` | Buscar texto (grep)        |
+| `<Space>fk` | Ver todos keybindings      |
+| `Ctrl+/`    | Comentar linha             |
+| `Ctrl+s`    | Salvar                     |
+| `Ctrl+\`    | Terminal                   |
+| `<Space>gg` | Git (Neogit)               |
 
 ### Verificar tudo
 
@@ -81,6 +83,31 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 
 ## 🎯 Funcionalidades Principais
 
+### Desenvolvimento Go
+
+- Extra oficial `lazyvim.plugins.extras.lang.go` habilitado em `lazyvim.json`
+- **gopls** — autocomplete, navegação, diagnósticos, ações de código e dicas de tipos/parâmetros
+- **Conform** — organização de imports com `goimports` e formatação com `gofumpt` ao salvar
+- **Treesitter** — parsers para Go, `go.mod`, `go.work` e `go.sum`
+- **golangci-lint** — lint via `nvim-lint`
+- **Neotest** — adaptador `neotest-golang`, junto do adaptador Python já configurado
+- **DAP** — depuração com Delve e `nvim-dap-go`, integrada ao extra `dap.core`
+
+Abra um projeto com `go.mod` ou `go.work` e um arquivo `.go`. Confira `:LspInfo` e `:ConformInfo` para verificar o
+servidor e os formatadores disponíveis.
+
+| Atalho      | Ação em arquivos Go                 |
+| ----------- | ----------------------------------- |
+| `<Space>cf` | Formatar o arquivo                  |
+| `<Space>tt` | Executar o teste próximo ao cursor  |
+| `<Space>tf` | Executar os testes do arquivo       |
+| `<Space>tT` | Executar a suíte do projeto         |
+| `<Space>td` | Depurar o teste próximo ao cursor   |
+| `<Space>ts` | Abrir ou fechar o resumo dos testes |
+
+Pré-requisitos e instalação: [perfil Go em INSTALL.md](INSTALL.md#desenvolvimento-go). Referências oficiais:
+[extra Go do LazyVim](https://www.lazyvim.org/extras/lang/go) e [gopls](https://go.dev/gopls/).
+
 ### 🐍 Python/Django
 
 - **Ruff como ferramenta central** — lint + format + organize imports (line-length 120)
@@ -92,15 +119,14 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 - Django management commands (`<Space>p`)
 - Virtual environment selector (`<Space>cv`, fornecido pelo extra do LazyVim)
 - **uv.nvim** — roda/gerencia projeto uv sem sair do editor (`<Space>U`, ver [KEYBINDINGS.md](KEYBINDINGS.md))
-- **Overseer** — task runner (`<Space>r*`) com templates Django prontos: `runserver`, `migrate`,
-  `makemigrations` e `shell` (via `uv run python manage.py ...`, visíveis só quando há `manage.py` no CWD)
+- **Overseer** — task runner (`<Space>r*`) com templates Django prontos: `runserver`, `migrate`, `makemigrations` e
+  `shell` (via `uv run python manage.py ...`, visíveis só quando há `manage.py` no CWD)
 
 ### 🧩 LSP
 
 - Servidores declarados nos extras do LazyVim e em `mason-tools.lua`
-- **Auto-instalação por filetype** (`lua/config/lsp_autoinstall.lua`): ao abrir um arquivo cujo filetype tem
-  servidor disponível no Mason e nenhum instalado, instala sozinho; com vários candidatos, apenas notifica e
-  sugere `:LspInstall`
+- **Auto-instalação por filetype** (`lua/config/lsp_autoinstall.lua`): ao abrir um arquivo cujo filetype tem servidor
+  disponível no Mason e nenhum instalado, instala sozinho; com vários candidatos, apenas notifica e sugere `:LspInstall`
 - `lua_ls` apontado para o runtime do Neovim, para editar esta própria config com autocomplete de `vim.*`
 
 ### 📓 Jupyter (.ipynb)
@@ -148,14 +174,14 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 
 ### 🤖 Claude Code
 
-- `claudecode.nvim` — bridge nativo com o CLI `claude` já autenticado (`<Space>a*`,
-  ver [KEYBINDINGS.md](KEYBINDINGS.md))
+- `claudecode.nvim` — bridge nativo com o CLI `claude` já autenticado (`<Space>a*`, ver
+  [KEYBINDINGS.md](KEYBINDINGS.md))
 - Toggle/focus do painel, seleção de modelo, envio de seleção/buffer, aceitar/recusar diffs
 
 ### 🎨 UI Moderna
 
 - Noice (mensagens)
-- Notify (notificações)
+- Snacks.notifier (notificações)
 - Telescope (busca fuzzy)
 - Trouble (diagnósticos)
 - Which-key (descoberta contextual de atalhos; `<Space>?` mostra os atalhos locais do buffer)
@@ -164,15 +190,15 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 
 ### 🖌️ Temas (Omarchy + Themery)
 
-- `lua/plugins/theme.lua` é um **symlink** para `~/.local/state/omarchy/current/theme/neovim.lua`: o tema do
-  Omarchy prevalece no boot
-- `omarchy-theme-hotreload.lua` reaplica o tema quando o Omarchy troca de tema (evento `LazyReload`), sem
-  reiniciar o Neovim; `omarchy-themes.lua` deixa os colorschemes do Omarchy disponíveis (lazy)
-- Themery (`<Space>uC`) continua disponível para troca manual durante a sessão, com Kanagawa, Gruvbox e
-  Nightfox além de Tokyo Night/Catppuccin
+- `lua/plugins/theme.lua` é um **symlink** para `~/.local/state/omarchy/current/theme/neovim.lua`: o tema do Omarchy
+  prevalece no boot
+- `omarchy-theme-hotreload.lua` reaplica o tema quando o Omarchy troca de tema (evento `LazyReload`), sem reiniciar o
+  Neovim; `omarchy-themes.lua` deixa os colorschemes do Omarchy disponíveis (lazy)
+- Themery (`<Space>uC`) continua disponível para troca manual durante a sessão, com Kanagawa, Gruvbox e Nightfox além de
+  Tokyo Night/Catppuccin
 
-> Fora do Omarchy o symlink fica quebrado — recrie `lua/plugins/theme.lua` como arquivo normal com o
-> colorscheme desejado.
+> Fora do Omarchy o symlink fica quebrado — recrie `lua/plugins/theme.lua` como arquivo normal com o colorscheme
+> desejado.
 
 ### 🧭 Navegação e Edição
 
@@ -183,8 +209,8 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 
 ### 📝 Notas (Quicknote)
 
-- Notas por **projeto** gravadas em `.quicknote/` na raiz do repositório (versionáveis): `<Space>Na` / `No` /
-  `Nl` / `Nd`, e `<Space>Np` lista com preview no Telescope
+- Notas por **projeto** gravadas em `.quicknote/` na raiz do repositório (versionáveis): `<Space>Na` / `No` / `Nl` /
+  `Nd`, e `<Space>Np` lista com preview no Telescope
 - Notas por **arquivo/linha**: `<Space>Nfa` / `Nfo` / `Nfl` / `Nfd`
 - Linhas com nota ganham o sinal 📝 na gutter automaticamente
 
@@ -237,7 +263,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 │       ├── omarchy-themes.lua       # Colorschemes do Omarchy (lazy)
 │       ├── omarchy-theme-hotreload.lua  # Reaplica tema ao trocar no Omarchy
 │       └── mason-tools.lua          # Tool installation
-├── tests/                           # config_spec.lua, smoke.lua (+ smoke/), check_syntax.lua, run.sh
+├── tests/                           # Specs, smoke de boot, go_smoke.lua, sintaxe e run.sh
 ├── snippets/python.json             # Snippets Python
 ├── spell/                           # Dicionários PT-BR/EN
 └── ruff-config/pyproject.toml       # Config base do Ruff
@@ -290,7 +316,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 ## 📦 Plugins Principais
 
 | Plugin             | Função                           |
-|--------------------|----------------------------------|
+| ------------------ | -------------------------------- |
 | LazyVim            | Base do setup                    |
 | blink.cmp          | Autocomplete                     |
 | Ruff (LSP)         | Lint + format + organize imports |
@@ -298,12 +324,17 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 | Treesitter         | Syntax highlighting              |
 | Treesitter Context | Cabeçalho fixo de classe/função  |
 | LSP                | Language servers (Pyright, etc.) |
+| gopls              | Servidor de linguagem Go         |
+| Conform            | Formatação por linguagem         |
 | Mason              | Gerenciador de ferramentas       |
 | Neotest            | Framework de testes              |
+| neotest-golang     | Adaptador de testes Go           |
+| nvim-dap-go        | Integração com o depurador Delve |
 | Overseer           | Task runner (templates Django)   |
 | Neogit             | Interface Git                    |
 | Diffview           | Visualizador de diffs            |
 | Snacks.terminal    | Terminais                        |
+| Snacks.notifier    | Notificações                     |
 | Noice              | UI moderna                       |
 | Trouble            | Lista de diagnósticos            |
 | Legendary          | Paleta de comandos/keymaps       |
@@ -325,7 +356,7 @@ declarados pela configuração e gerenciados pelo Mason; não devem ser instalad
 A config tem uma suíte de testes em `tests/` (specs com plenary/busted + smoke de boot):
 
 ```bash
-make test         # tudo: sintaxe + specs + smoke (boot da config completa)
+make test         # sintaxe + specs + smoke (boot da config completa)
 make test-unit    # só sintaxe + specs (não instala todos os plugins)
 make test-smoke   # só o smoke de boot
 make syntax       # só validação de sintaxe Lua
@@ -334,10 +365,23 @@ make syntax       # só validação de sintaxe Lua
 - **Specs** (`tests/config_spec.lua`): invariantes — Ruff no conform, picker = Telescope, sem colisão de keymaps,
   plugins presentes, APIs não-deprecadas.
 - **Smoke** (`tests/smoke.lua`): boota a config real e valida o estado em runtime. Em `tests/smoke/`, pressiona os
-  atalhos de terminal num projeto temporário (posição, comando e cwd) e simula o hot reload do tema; o que depende
-  de ferramenta ausente (lazygit, Docker Compose, symlink do Omarchy) aparece como `[SKIP]`.
-- **CI**: `.github/workflows/test.yml` roda `make test-ci` (sintaxe + specs) e, em job separado, o smoke com a
-  config instalada (`install.sh` + `:Lazy! restore`) a cada push na `main` e em todo PR.
+  atalhos de terminal num projeto temporário (posição, comando e cwd) e simula o hot reload do tema; o que depende de
+  ferramenta ausente (lazygit, Docker Compose, symlink do Omarchy) aparece como `[SKIP]`.
+- **CI**: `.github/workflows/test.yml` roda `make test-ci` (sintaxe + specs) e, em job separado, o smoke com a config
+  instalada (`install.sh` + `:Lazy! restore`) a cada push na `main` e em todo PR.
+
+### Integração Go (execução separada)
+
+O teste `tests/go_smoke.lua` não faz parte de `make test` nem dos jobs atuais de CI. Com Go, as ferramentas do Mason e o
+parser Go já instalados, execute da raiz desta configuração:
+
+```bash
+nvim --headless +"luafile tests/go_smoke.lua"
+```
+
+Ele cria um módulo temporário e verifica o vínculo do `gopls` com o buffer e uma resposta de hover, formatação com
+`goimports`/`gofumpt`, execução de testes pelo Neotest, `go test -race` e uma sessão real de Delve via DAP. O teste
+exige suporte ao detector de condições de corrida e à depuração no ambiente onde for executado.
 
 ---
 
@@ -348,6 +392,7 @@ make syntax       # só validação de sintaxe Lua
 :Lazy                  " Gerenciar plugins
 :Mason                 " Gerenciar ferramentas LSP
 :LspInfo               " Info sobre LSPs ativos
+:ConformInfo           " Formatadores disponíveis para o buffer
 :checkhealth           " Verificar saúde do Neovim
 
 " Telescope (busca)
@@ -538,7 +583,7 @@ Se encontrar problemas:
 - **Plugins:** ~90 (conforme `lazy-lock.json`)
 - **Keybindings:** 160+
 - **LSPs:** Python, Docker, SQL, JSON, YAML, Bash, Markdown, Lua
-- **Linguagens:** Python, Lua, Docker, SQL, Markdown, Shell
+- **Linguagens:** Python, Go, Lua, Docker, SQL, Markdown, Shell, JavaScript/TypeScript, JSON, YAML e TOML
 - **Frameworks:** Django (suporte nativo)
 
 ---
@@ -548,14 +593,14 @@ Se encontrar problemas:
 **2.3 - Claude Code, Jupyter & Temas**  
 Data: 09/08/2026
 
-> Destaques 2.3: claudecode.nvim integrado (`<Space>a*`), suporte a Jupyter notebooks (jupytext + molten,
-> `<Space>m*`), uv.nvim para projetos Python (`<Space>U`), themery.nvim com novos colorschemes (Kanagawa,
-> Gruvbox, Nightfox) e correção de colisões de keymap em `<Space>u*`.
+> Destaques 2.3: claudecode.nvim integrado (`<Space>a*`), suporte a Jupyter notebooks (jupytext + molten, `<Space>m*`),
+> uv.nvim para projetos Python (`<Space>U`), themery.nvim com novos colorschemes (Kanagawa, Gruvbox, Nightfox) e
+> correção de colisões de keymap em `<Space>u*`.
 >
 > **Não lançado:** integração com o tema do Omarchy (hot reload), compatibilidade com Neovim 0.12 e
 > `:checkhealth nvim_config`, extra oficial de DAP do LazyVim, which-key restaurado com Legendary como paleta
-> complementar (`<Space>sL`), quicknote (`<Space>N*`), LSP auto-instalado por filetype e templates Django no
-> Overseer. Ver [CHANGELOG.md](./CHANGELOG.md) para detalhes.
+> complementar (`<Space>sL`), quicknote (`<Space>N*`), LSP auto-instalado por filetype, templates Django no Overseer e
+> perfil Go com gopls, formatação, Neotest e Delve. Ver [CHANGELOG.md](./CHANGELOG.md) para detalhes.
 
 ---
 

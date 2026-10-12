@@ -27,6 +27,21 @@ de modificar a configuração do Ruff ou o ambiente Jupyter.
 
 Ausências nesta seção não impedem o Neovim de iniciar; apenas desativam a integração correspondente.
 
+### Desenvolvimento Go
+
+No Omarchy, `omarchy install dev-env go` instala o Go pelo mise e configura `go@latest` globalmente.
+Valide com `go version` e `mise ls go`. O extra `lang.go` está habilitado em `lazyvim.json` e utiliza o Go do PATH.
+
+O Mason gerencia `gopls`, `goimports`, `gofumpt`, `delve` e `golangci-lint`. O perfil oferece autocomplete,
+diagnósticos, formatação ao salvar, testes pelo Neotest e depuração pelo DAP. Os atalhos existentes `<Space>tt`
+(teste próximo), `<Space>tf` (arquivo) e `<Space>td` (depurar teste) também funcionam com Go.
+
+Execute `nvim --headless +"luafile tests/go_smoke.lua"` para verificar o perfil com um módulo temporário real.
+Esse teste exige Go, as ferramentas do Mason e o parser Go instalados.
+
+Referências: [instalação oficial do Go](https://go.dev/doc/install),
+[gopls](https://go.dev/gopls/) e [extra Go do LazyVim](https://www.lazyvim.org/extras/lang/go).
+
 | Funcionalidade | Dependência |
 | --- | --- |
 | Clipboard no Wayland | `wl-copy`, fornecido por `wl-clipboard` |

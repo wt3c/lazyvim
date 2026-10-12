@@ -2,6 +2,12 @@
 
 ## Não lançado
 
+### Desenvolvimento Go
+
+- Habilitado o extra Go do LazyVim: gopls, goimports/gofumpt, Treesitter e Delve.
+- Neotest carrega o adaptador Go fornecido pelo extra junto do adaptador Python.
+- Adicionado teste de integração com módulo Go real para LSP, formatação, testes e configuração do depurador.
+
 ### 🧹 Plugins redundantes com o LazyVim/Snacks
 
 - Removidos **nvim-spectre** (substituído pelo grug-far do LazyVim em `<leader>sr`), **ToggleTerm** (terminais via
