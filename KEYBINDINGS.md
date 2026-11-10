@@ -439,6 +439,19 @@ Bridge com o CLI `claude` já autenticado.
 
 ---
 
+## 🐑 HERDR (herdr-nvim)
+
+Anotações de código enviadas ao agente no pane vizinho do herdr. O prefixo é `<leader>H`, porque `<leader>a` é do
+claudecode.nvim e `<leader>h` é do Harpoon. A barra lateral e o seletor ficam no herdr (`prefix+e` e `prefix+o`).
+
+- `<leader>Hc` - Comentar linha/seleção
+- `<leader>Hl` - Listar comentários (`⏎` edita, `d` apaga)
+- `<leader>Hs` - Colar os comentários no input do agente
+- `<leader>HS` - Enviar os comentários ao agente (submete)
+- `<leader>Hi` - Inserir `arquivo:linha` no cursor do agente
+
+---
+
 ## 🐍 PYTHON (uv.nvim)
 
 Prefixo `<leader>U` (o default `<leader>x` colide com Trouble e o core do LazyVim). Ativo apenas em buffers `python`.
