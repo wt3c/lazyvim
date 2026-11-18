@@ -4,7 +4,8 @@
 
 ### Rastro do cursor
 
-- Adicionado rastro ao mover o cursor no modo normal e visual, com cores do tema, em buffers de arquivo.
+- Adicionado rastro ao mover o cursor no modo normal, com cores do tema, em buffers de arquivo, inclusive linhas vazias.
+- `<leader>uR` liga e desliga o rastro; arquivos grandes e buffers abertos em mais de uma janela não são animados.
 
 ### Documentação do README
 

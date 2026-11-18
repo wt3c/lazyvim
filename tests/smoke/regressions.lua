@@ -19,6 +19,13 @@ return function(check)
   -- LazyReload do teste anterior pode limpar os handlers locais; recarrega os atalhos.
   dofile("lua/config/keymaps.lua")
 
+  local cursor_animation = require("config.cursor_animation")
+  local cursor_toggle = vim.fn.maparg(" uR", "n", false, true)
+  ok = pcall(cursor_toggle.callback)
+  check("<leader>uR desliga o rastro do cursor", ok and not cursor_animation.enabled())
+  ok = pcall(cursor_toggle.callback)
+  check("<leader>uR religa o rastro do cursor", ok and cursor_animation.enabled())
+
   local first = vim.api.nvim_create_buf(true, false)
   local second = vim.api.nvim_create_buf(true, false)
   vim.api.nvim_set_current_buf(first)

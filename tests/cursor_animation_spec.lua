@@ -27,7 +27,9 @@ end
 
 describe("config/cursor_animation", function()
   before_each(function()
+    vim.cmd.only()
     animation.setup()
+    animation.set_enabled(true)
     vim.v.errmsg = ""
   end)
 
@@ -72,11 +74,72 @@ describe("config/cursor_animation", function()
     assert.are.equal(0, #marks(buf))
   end)
 
-  it("ignora linha vazia", function()
+  it("desenha o rastro em linha vazia, esmaece e remove", function()
     local buf = file_buffer({ "" })
     move()
-    assert.are.equal(0, #marks(buf))
+    assert.are.equal("CursorAnimationStart", marks(buf)[1][4].virt_text[1][2])
+    local faded = vim.wait(1000, function()
+      local mark = marks(buf)[1]
+      return mark and mark[4].virt_text[1][2] == "CursorAnimationFade"
+    end, 5)
+    assert.is_true(faded)
+    assert.is_true(wait_until_clear(buf))
     assert.are.equal("", vim.v.errmsg)
+  end)
+
+  it("não anima buffer aberto em mais de uma janela", function()
+    local buf = file_buffer({ "abc" })
+    vim.cmd.vsplit()
+    move()
+    assert.are.equal(0, #marks(buf))
+  end)
+
+  it("não anima no modo visual", function()
+    local buf = file_buffer({ "abc" })
+    vim.cmd("normal! v")
+    move()
+    vim.cmd("normal! \27")
+    assert.are.equal(0, #marks(buf))
+  end)
+
+  it("mantém uma marca por célula", function()
+    local buf = file_buffer({ "abc" })
+    for _ = 1, 5 do
+      move()
+    end
+    assert.are.equal(1, #marks(buf))
+  end)
+
+  it("reinicia a animação ao voltar para a mesma célula", function()
+    local buf = file_buffer({ "abc" })
+    move()
+    vim.wait(1000, function()
+      local mark = marks(buf)[1]
+      return mark and mark[4].hl_group == "CursorAnimationFade"
+    end, 5)
+    move()
+    assert.are.equal("CursorAnimationStart", marks(buf)[1][4].hl_group)
+  end)
+
+  it("ignora arquivos grandes marcados pelo Snacks", function()
+    local buf = file_buffer({ "abc" })
+    vim.bo[buf].filetype = "bigfile"
+    move()
+    assert.are.equal(0, #marks(buf))
+  end)
+
+  it("pode ser desligado e religado", function()
+    local buf = file_buffer({ "abc" })
+    move()
+    animation.set_enabled(false)
+    assert.is_false(animation.enabled())
+    assert.are.equal(0, #marks(buf))
+    move()
+    assert.are.equal(0, #marks(buf))
+    animation.set_enabled(true)
+    assert.is_true(animation.enabled())
+    move()
+    assert.are.equal(1, #marks(buf))
   end)
 
   it("não anima durante a execução de macro", function()

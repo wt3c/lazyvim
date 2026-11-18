@@ -371,6 +371,7 @@ No modo Insert, enquanto o menu de sugestões está aberto:
 - `<leader>ur` - Toggle relative numbers (LazyVim core)
 - `<leader>uc` - Toggle conceal level (LazyVim core)
 - `<leader>uv` - Toggle list chars (view whitespace)
+- `<leader>uR` - Ligar/desligar o rastro do cursor
 - `<leader>uC` - Themery: trocar colorscheme (live preview)
 - `<leader>uB` - Alternar tema claro/escuro na sessão (catppuccin-latte / tokyonight-moon)
 - `<leader>ut` - Toggle Treesitter Context (cabeçalho fixo de classe/função)

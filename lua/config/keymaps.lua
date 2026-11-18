@@ -344,6 +344,15 @@ vim.keymap.set("n", "<leader>so", "<cmd>source %<cr>", { desc = "Source Current 
 -- (Snacks.toggle em <leader>uw/us/uL/ul) -- nao duplicar aqui, so o que falta:
 vim.keymap.set("n", "<leader>uv", "<cmd>set list!<cr>", { desc = "Toggle List Chars (view whitespace)" })
 
+local cursor_animation = require("config.cursor_animation")
+Snacks.toggle
+  .new({
+    name = "Cursor Trail",
+    get = cursor_animation.enabled,
+    set = cursor_animation.set_enabled,
+  })
+  :map("<leader>uR")
+
 -- ============================================================================
 -- DICTIONARY (DEFINITIONS)
 -- ============================================================================
