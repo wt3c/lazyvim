@@ -284,6 +284,7 @@ Instalação e toolchain: [perfil Rust em INSTALL.md](INSTALL.md#desenvolvimento
 │   │   ├── autocmds.lua             # Autocommands (hot-reload, auto-reload de buffers, indentação)
 │   │   ├── python.lua               # Raiz do projeto e executáveis do venv por buffer
 │   │   ├── docker.lua               # Comando Docker Compose (v2 primeiro) e cwd do compose file
+│   │   ├── cursor_animation.lua     # Rastro do cursor com cores do tema
 │   │   └── lsp_autoinstall.lua      # Instala LSP ausente por filetype
 │   ├── nvim_config/
 │   │   └── health.lua               # :checkhealth nvim_config

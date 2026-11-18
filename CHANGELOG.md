@@ -2,6 +2,10 @@
 
 ## Não lançado
 
+### Rastro do cursor
+
+- Adicionado rastro ao mover o cursor no modo normal e visual, com cores do tema, em buffers de arquivo.
+
 ### Documentação do README
 
 - Adicionado sumário e corrigidas as orientações de instalação, recuperação de plugins, Ruff, Quicknote e Tutor.

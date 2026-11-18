@@ -46,7 +46,7 @@ columns) — keep it at 0 issues when editing any `.md`.
   map), `python.lua` (per-buffer project root and venv executables — used by keymaps, conform, Neotest, Overseer
   and terminals), `docker.lua` (Compose command, v2 first, and the compose file's cwd), `autocmds.lua` (also
   loads `lsp_autoinstall.lua`, which auto-installs an LSP server via Mason when a filetype has exactly one
-  candidate and none installed), `lazy.lua` (bootstrap, above).
+  candidate and none installed, and `cursor_animation.lua`, the cursor trail), `lazy.lua` (bootstrap, above).
 - `lua/nvim_config/health.lua` — backs `:checkhealth nvim_config` (external dependency checks).
 - `lua/plugins/*.lua` — one file per concern (not per plugin necessarily): `python-tools.lua` (Ruff/Pyright/Mypy/DAP),
   `jupyter-tools.lua` (jupytext + molten for `.ipynb`), `uv-tools.lua`, `formatting.lua` (conform.nvim,

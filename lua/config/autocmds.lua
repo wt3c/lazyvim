@@ -8,6 +8,9 @@
 -- LSP: instalacao automatica ao abrir arquivo sem servidor instalado (config/lsp_autoinstall.lua)
 require("config.lsp_autoinstall")
 
+-- Rastro visual do cursor (config/cursor_animation.lua)
+require("config.cursor_animation").setup()
+
 -- Auto-reload: recarregar buffers quando arquivos sao modificados externamente
 local auto_reload_group = vim.api.nvim_create_augroup("auto_reload_files", { clear = true })
 
