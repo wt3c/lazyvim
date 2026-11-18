@@ -5,7 +5,9 @@
 ### Correção do CI
 
 - Runner de testes executa só os specs desta configuração, sem os do plenary clonado em `tests/.deps`.
-- Job `smoke` instala Ruff e Mypy pelo Mason antes de iniciar, sem depender da instalação em segundo plano.
+- Job `smoke` instala Ruff e Mypy com `uv tool` antes de iniciar, sem depender da instalação em segundo plano do Mason.
+- Primeiro boot não dispara mais `Package is already installing`: os adaptadores de debug são instalados só pela lista
+  do Mason.
 
 ### Rastro do cursor
 

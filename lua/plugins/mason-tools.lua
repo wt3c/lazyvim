@@ -14,4 +14,13 @@ return {
       },
     },
   },
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    optional = true,
+    opts = {
+      -- Os adaptadores já estão no ensure_installed do Mason. Instalar por aqui também
+      -- gera, no primeiro boot, o erro "Package is already installing".
+      automatic_installation = false,
+    },
+  },
 }

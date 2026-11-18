@@ -62,9 +62,9 @@ jobs:
       - name: Instalar plugins nas versões do lazy-lock.json
         run: nvim --headless "+Lazy! restore" +qa
 
-      - name: Instalar Ruff e Mypy pelo Mason
+      - name: Instalar Ruff e Mypy
         # No boot o Mason instala em segundo plano e o smoke chegaria antes de terminar.
-        run: nvim --headless "+Lazy! load mason.nvim" "+MasonInstall ruff mypy" +qa
+        run: uv tool install ruff && uv tool install mypy
 
       - name: Smoke (boot da config completa)
         run: make test-smoke
