@@ -2,6 +2,11 @@
 
 ## Não lançado
 
+### Correção do CI
+
+- Runner de testes executa só os specs desta configuração, sem os do plenary clonado em `tests/.deps`.
+- Job `smoke` instala Ruff e Mypy pelo Mason antes de iniciar, sem depender da instalação em segundo plano.
+
 ### Rastro do cursor
 
 - Adicionado rastro ao mover o cursor no modo normal, com cores do tema, em buffers de arquivo, inclusive linhas vazias.

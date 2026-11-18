@@ -46,11 +46,16 @@ run_unit() {
     return
   fi
   step "Specs (plenary/busted)"
-  local out status=0
-  out="$(nvim --headless -u tests/minimal_init.lua \
-    -c "PlenaryBustedDirectory tests/ {minimal_init='tests/minimal_init.lua', sequential=true}" \
-    +qa 2>&1)" || status=$?
-  echo "$out"
+  local out="" spec_out spec status=0 spec_status specs=()
+  # tests/.deps guarda o clone do plenary, com specs próprios que não são desta config.
+  mapfile -t specs < <(find tests -path tests/.deps -prune -o -type f -name '*_spec.lua' -print | sort)
+  for spec in "${specs[@]}"; do
+    spec_status=0
+    spec_out="$(nvim --headless -u tests/minimal_init.lua -c "PlenaryBustedFile $spec" +qa 2>&1)" || spec_status=$?
+    echo "$spec_out"
+    out+="$spec_out"$'\n'
+    if [ "$spec_status" -ne 0 ]; then status="$spec_status"; fi
+  done
   # A saída do plenary separa rótulo e número por TAB e usa cores ANSI;
   # normaliza antes de extrair os contadores.
   local clean failed errors success

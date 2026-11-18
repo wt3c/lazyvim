@@ -18,6 +18,9 @@ case "${SCRIPT_TEST_CASE:-multi}" in
     exit 7 ;;
   empty)
     printf 'Success: \t0\nFailed : \t0\nErrors : \t0\n' ;;
+  record)
+    printf '%s\n' "$*" >> "$SCRIPT_TEST_LOG"
+    printf 'Success: \t1\nFailed : \t0\nErrors : \t0\n' ;;
 esac
 NVIM
 chmod +x "$runtime_dir/bin/nvim"
@@ -30,6 +33,20 @@ for scenario in multi exit empty; do
   fi
 done
 echo "PASS: runner rejeita falha anterior, saída não zero e zero testes"
+
+# O clone do plenary em tests/.deps traz specs próprios, que não são desta config.
+fixture="$runtime_dir/runner-fixture"
+mkdir -p "$fixture/tests/.deps/plenary.nvim/tests"
+cp "$ROOT/tests/run.sh" "$fixture/tests/run.sh"
+touch "$fixture/tests/local_spec.lua" "$fixture/tests/.deps/plenary.nvim/tests/externo_spec.lua"
+PATH="$runtime_dir/bin:$PATH" SCRIPT_TEST_CASE=record SCRIPT_TEST_LOG="$runtime_dir/specs.log" \
+  bash "$fixture/tests/run.sh" unit > "$runtime_dir/runner.log" 2>&1
+if ! grep -q 'tests/local_spec.lua' "$runtime_dir/specs.log" || grep -qE '\.deps|PlenaryBustedDirectory' "$runtime_dir/specs.log"; then
+  echo "FAIL: runner não restringiu os specs aos desta config"
+  cat "$runtime_dir/specs.log"
+  exit 1
+fi
+echo "PASS: runner ignora os specs das dependências de teste"
 
 # Impede que uma versão antiga sem suporte XDG toque a configuração real.
 for script in backup-config.sh restore-config.sh; do

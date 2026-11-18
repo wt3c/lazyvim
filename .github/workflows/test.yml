@@ -56,11 +56,15 @@ jobs:
           mkdir -p "$HOME/.config"
           ln -s "$GITHUB_WORKSPACE" "$HOME/.config/nvim"
 
-      - name: install.sh (Ruff global + provider Python/Jupyter)
+      - name: install.sh (configuração do Ruff + provider Python/Jupyter)
         run: ./install.sh
 
       - name: Instalar plugins nas versões do lazy-lock.json
         run: nvim --headless "+Lazy! restore" +qa
+
+      - name: Instalar Ruff e Mypy pelo Mason
+        # No boot o Mason instala em segundo plano e o smoke chegaria antes de terminar.
+        run: nvim --headless "+Lazy! load mason.nvim" "+MasonInstall ruff mypy" +qa
 
       - name: Smoke (boot da config completa)
         run: make test-smoke
