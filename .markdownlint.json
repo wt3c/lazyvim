@@ -7,6 +7,6 @@
     "tables": false
   },
   "MD024": { "siblings_only": true },
-  "MD033": { "allowed_elements": ["details", "summary"] },
+  "MD033": { "allowed_elements": ["details", "summary", "br"] },
   "MD060": { "style": "any" }
 }

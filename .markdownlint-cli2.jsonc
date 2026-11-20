@@ -16,8 +16,8 @@
     // Study plans legitimately repeat section names under different modules.
     "MD024": { "siblings_only": true },
 
-    // Collapsible study-journal sections are supported by GitHub Flavored Markdown.
-    "MD033": { "allowed_elements": ["details", "summary"] },
+    // Collapsible sections and line breaks inside table cells are supported by GitHub Flavored Markdown.
+    "MD033": { "allowed_elements": ["details", "summary", "br"] },
 
     // Allow aligned, compact, or tight tables, but require each table to be consistent.
     "MD060": { "style": "any" }
