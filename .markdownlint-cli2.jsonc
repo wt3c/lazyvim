@@ -1,14 +1,37 @@
 {
-  // markdownlint-cli2 configuration
+  // Pinned to the schema shipped with markdownlint-cli2 v0.23.2.
+  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/v0.23.2/schema/markdownlint-cli2-config-schema.json",
+
   "config": {
     "default": true,
+
+    // Keep prose readable without imposing artificial wrapping on code and tables.
     "MD013": {
       "line_length": 120,
       "heading_line_length": 120,
-      "code_block_line_length": 120,
+      "code_blocks": false,
       "tables": false
     },
-    "MD024": { "siblings_only": true }
+
+    // Study plans legitimately repeat section names under different modules.
+    "MD024": { "siblings_only": true },
+
+    // Collapsible study-journal sections are supported by GitHub Flavored Markdown.
+    "MD033": { "allowed_elements": ["details", "summary"] },
+
+    // Allow aligned, compact, or tight tables, but require each table to be consistent.
+    "MD060": { "style": "any" }
   },
-  "globs": ["**/*.md"]
+
+  // Respect generated files and local dependencies already excluded by Git.
+  "gitignore": true,
+
+  "globs": ["**/*.md"],
+  "ignores": [
+    "**/.venv/**",
+    "**/node_modules/**",
+
+    // Ephemeral editor notes are outside the authored docs.
+    ".quicknote/**"
+  ]
 }
